@@ -3,27 +3,53 @@ import { useRef, useState, useEffect } from "react";
 
 export default function InfiniteCanvas() {
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Canvas transform state
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
 
+  // Shapes state
+  const [shapes, setShapes] = useState([
+    { id: 1, x: 500, y: 500, width: 160, height: 112, color: "bg-blue-500" },
+    { id: 2, x: 750, y: 750, width: 160, height: 112, color: "bg-blue-500" },
+  ]);
+  const [draggingShapeId, setDraggingShapeId] = useState<number | null>(null);
+
   // --- Panning ---
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).dataset.shapeid) return; // skip if clicking shape
       setIsPanning(true);
       setLastMousePos({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isPanning) return;
-      const dx = e.clientX - lastMousePos.x;
-      const dy = e.clientY - lastMousePos.y;
-      setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-      setLastMousePos({ x: e.clientX, y: e.clientY });
+      if (draggingShapeId !== null) {
+        const worldDX = (e.clientX - lastMousePos.x) / scale;
+        const worldDY = (e.clientY - lastMousePos.y) / scale;
+
+        setShapes((prev) =>
+          prev.map((shape) =>
+            shape.id === draggingShapeId
+              ? { ...shape, x: shape.x + worldDX, y: shape.y + worldDY }
+              : shape
+          )
+        );
+        setLastMousePos({ x: e.clientX, y: e.clientY });
+      } else if (isPanning) {
+        const dx = e.clientX - lastMousePos.x;
+        const dy = e.clientY - lastMousePos.y;
+        setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+        setLastMousePos({ x: e.clientX, y: e.clientY });
+      }
     };
 
-    const handleMouseUp = () => setIsPanning(false);
+    const handleMouseUp = () => {
+      setIsPanning(false);
+      setDraggingShapeId(null);
+    };
 
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mousemove", handleMouseMove);
@@ -34,9 +60,9 @@ export default function InfiniteCanvas() {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isPanning, lastMousePos]);
+  }, [isPanning, lastMousePos, draggingShapeId, scale]);
 
-  // --- Zoom with passive:false ---
+  // --- Zoom with mouse position ---
   useEffect(() => {
     const el = canvasRef.current;
     if (!el) return;
@@ -47,19 +73,15 @@ export default function InfiniteCanvas() {
       const zoomIntensity = 0.001;
       const delta = -e.deltaY * zoomIntensity;
 
-      // Get mouse position relative to the canvas
       const mouseX = e.clientX;
       const mouseY = e.clientY;
 
-      // Convert screen coords to world coords
       const worldX = (mouseX - position.x) / scale;
       const worldY = (mouseY - position.y) / scale;
 
-      // Update scale
       let newScale = scale + delta;
       newScale = Math.min(Math.max(newScale, 0.1), 4);
 
-      // Adjust position so zoom centers on mouse
       setPosition({
         x: mouseX - worldX * newScale,
         y: mouseY - worldY * newScale,
@@ -74,6 +96,16 @@ export default function InfiniteCanvas() {
       el.removeEventListener("wheel", handleWheelEvent);
     };
   }, [scale, position]);
+
+  // --- Shape dragging ---
+  const startDraggingShape = (
+    e: React.MouseEvent<HTMLDivElement>,
+    id: number
+  ) => {
+    e.stopPropagation();
+    setDraggingShapeId(id);
+    setLastMousePos({ x: e.clientX, y: e.clientY });
+  };
 
   return (
     <div
@@ -101,17 +133,23 @@ export default function InfiniteCanvas() {
           transformOrigin: "0 0",
         }}
       >
-        {/* Default shape */}
-        <div
-          style={{
-            position: "absolute",
-            left: "500px",
-            top: "500px",
-          }}
-          className="w-40 h-28 bg-blue-500 text-white flex items-center justify-center rounded shadow"
-        >
-          Default Shape
-        </div>
+        {shapes.map((shape) => (
+          <div
+            key={shape.id}
+            data-shapeid={shape.id}
+            onMouseDown={(e) => startDraggingShape(e, shape.id)}
+            style={{
+              position: "absolute",
+              left: `${shape.x}px`,
+              top: `${shape.y}px`,
+              width: `${shape.width}px`,
+              height: `${shape.height}px`,
+            }}
+            className={`${shape.color} text-white flex items-center justify-center rounded shadow`}
+          >
+            Shape {shape.id}
+          </div>
+        ))}
       </div>
     </div>
   );
