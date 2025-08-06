@@ -12,22 +12,61 @@ export default function InfiniteCanvas() {
 
   // Shapes state
   const [shapes, setShapes] = useState([
-    { id: 1, x: 500, y: 500, width: 160, height: 112, color: "#e74c3c" },
+    { id: 1, x: 500, y: 500, width: 160, height: 112, color: "bg-blue-500" },
+    { id: 2, x: 750, y: 750, width: 160, height: 112, color: "bg-red-500" },
   ]);
-  const [draggingShapeId, setDraggingShapeId] = useState<number | null>(null);
   const [selectedShapeId, setSelectedShapeId] = useState<number | null>(null);
+  const [draggingShapeId, setDraggingShapeId] = useState<number | null>(null);
+
+  // Resizing state
+  const [resizing, setResizing] = useState<null | {
+    id: number;
+    handle: string;
+  }>(null);
 
   // --- Panning & Dragging ---
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.dataset.shapeid) return; // skip panning if clicking a shape
+      if (target.dataset.shapeid || target.dataset.handle) return; // skip panning if clicking shape or handle
       setSelectedShapeId(null); // deselect if clicking empty space
       setIsPanning(true);
       setLastMousePos({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseMove = (e: MouseEvent) => {
+      // Resizing
+      if (resizing) {
+        const dx = (e.clientX - lastMousePos.x) / scale;
+        const dy = (e.clientY - lastMousePos.y) / scale;
+        setShapes((prev) =>
+          prev.map((shape) => {
+            if (shape.id !== resizing.id) return shape;
+            let { x, y, width, height } = shape;
+
+            if (resizing.handle.includes("e")) {
+              width = Math.max(20, width + dx);
+            }
+            if (resizing.handle.includes("s")) {
+              height = Math.max(20, height + dy);
+            }
+            if (resizing.handle.includes("w")) {
+              x += dx;
+              width = Math.max(20, width - dx);
+            }
+            if (resizing.handle.includes("n")) {
+              y += dy;
+              height = Math.max(20, height - dy);
+            }
+
+            return { ...shape, x, y, width, height };
+          })
+        );
+        setLastMousePos({ x: e.clientX, y: e.clientY });
+        return;
+      }
+
+      // Dragging shapes
       if (draggingShapeId !== null) {
         const worldDX = (e.clientX - lastMousePos.x) / scale;
         const worldDY = (e.clientY - lastMousePos.y) / scale;
@@ -40,7 +79,9 @@ export default function InfiniteCanvas() {
           )
         );
         setLastMousePos({ x: e.clientX, y: e.clientY });
-      } else if (isPanning) {
+      }
+      // Panning
+      else if (isPanning) {
         const dx = e.clientX - lastMousePos.x;
         const dy = e.clientY - lastMousePos.y;
         setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
@@ -51,6 +92,7 @@ export default function InfiniteCanvas() {
     const handleMouseUp = () => {
       setIsPanning(false);
       setDraggingShapeId(null);
+      setResizing(null);
     };
 
     window.addEventListener("mousedown", handleMouseDown);
@@ -62,7 +104,7 @@ export default function InfiniteCanvas() {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isPanning, lastMousePos, draggingShapeId, scale]);
+  }, [isPanning, lastMousePos, draggingShapeId, scale, resizing]);
 
   // --- Zoom with mouse position ---
   useEffect(() => {
@@ -105,9 +147,54 @@ export default function InfiniteCanvas() {
     id: number
   ) => {
     e.stopPropagation();
-    setSelectedShapeId(id); // select on click
+    setSelectedShapeId(id);
     setDraggingShapeId(id);
     setLastMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  const startResizing = (
+    e: React.MouseEvent<HTMLDivElement>,
+    id: number,
+    handle: string
+  ) => {
+    e.stopPropagation();
+    setResizing({ id, handle });
+    setLastMousePos({ x: e.clientX, y: e.clientY });
+  };
+
+  // Render resize handles
+  const renderHandles = (shape: any) => {
+    const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+    return handles.map((handle) => {
+      const size = 8;
+      const style: React.CSSProperties = {
+        width: `${size}px`,
+        height: `${size}px`,
+        background: "#3B82F6", // blue-500
+        position: "absolute",
+        cursor: `${handle}-resize`,
+        zIndex: 40,
+      };
+      if (handle.includes("n")) style.top = `-4px`;
+      if (handle.includes("s")) style.top = `calc(100% + 4px)`;
+      if (handle.includes("w")) style.left = `-4px`;
+      if (handle.includes("e")) style.left = `calc(100% + 4px)`;
+
+      // Center edges
+      if (handle === "n" || handle === "s") style.left = "50%";
+      if (handle === "e" || handle === "w") style.top = "50%";
+
+      style.transform = "translate(-50%, -50%)";
+
+      return (
+        <div
+          key={handle}
+          data-handle
+          onMouseDown={(e) => startResizing(e, shape.id, handle)}
+          style={style}
+        />
+      );
+    });
   };
 
   return (
@@ -147,32 +234,33 @@ export default function InfiniteCanvas() {
               top: `${shape.y}px`,
               width: `${shape.width}px`,
               height: `${shape.height}px`,
+              zIndex: selectedShapeId === shape.id ? 20 : 1,
             }}
-            className="relative"
           >
-            {/* Selection box */}
+            {/* Selection box + handles */}
             {selectedShapeId === shape.id && (
-              <div
-                className="absolute border-2 border-blue-500 rounded pointer-events-none"
-                style={{
-                  top: "-4px",
-                  left: "-4px",
-                  width: `${shape.width + 8}px`,
-                  height: `${shape.height + 8}px`,
-                  zIndex: 30, // force above shape
-                }}
-              />
+              <>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-4px",
+                    left: "-4px",
+                    width: `${shape.width + 8}px`,
+                    height: `${shape.height + 8}px`,
+                    border: "2px solid #60A5FA", // blue-400
+                    borderRadius: "4px",
+                    pointerEvents: "none",
+                    zIndex: 30,
+                  }}
+                />
+                {renderHandles(shape)}
+              </>
             )}
+
             {/* Shape */}
             <div
-              style={{
-                zIndex: 25,
-                backgroundColor: shape.color,
-                position: "relative",
-              }}
-              className={
-                "text-white flex items-center justify-center rounded shadow w-full h-full"
-              }
+              className={`${shape.color} text-white flex items-center justify-center rounded shadow w-full h-full`}
+              style={{ position: "relative", zIndex: 25 }}
             >
               Shape {shape.id}
             </div>
