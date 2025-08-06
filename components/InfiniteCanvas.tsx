@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { Shape } from "./CanvasModule/Shape";
 import SelectionGroup from "./CanvasModule/SelectionBox";
 import { useCanvasTransform } from "./CanvasModule/hooks/useCanvasTransform";
+import { useMarqueeSelection } from "./CanvasModule/hooks/useMarqueeSelection";
 
 type ShapeType = "rect" | "ellipse" | "text";
 
@@ -44,13 +45,18 @@ export default function InfiniteCanvas() {
 
   // Panning & marquee selection
   const [isPanning, setIsPanning] = useState(false);
-  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
-  const [marquee, setMarquee] = useState<null | {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  }>(null);
+  const [canvasMousePos, setCanvasMousePos] = useState({ x: 0, y: 0 });
+
+  const {
+    marquee,
+    startMarquee,
+    setLastMousePos: setMarqueeMousePos,
+  } = useMarqueeSelection({
+    scale,
+    position,
+    shapes,
+    setSelectedShapeIds,
+  });
 
   // Shape ID generator
   const nextIdRef = useRef(1000);
@@ -66,40 +72,37 @@ export default function InfiniteCanvas() {
       if (e.button === 1) {
         e.preventDefault();
         setIsPanning(true);
-        setLastMousePos({ x: e.clientX, y: e.clientY });
+        setCanvasMousePos({ x: e.clientX, y: e.clientY });
         return;
       }
 
       // Multi-selection bounding box click → move group
       if (target.dataset.groupdrag === "true") {
         setDragging(true);
-        setLastMousePos({ x: e.clientX, y: e.clientY });
+        setCanvasMousePos({ x: e.clientX, y: e.clientY });
         return;
       }
 
-      // Left click empty space → marquee
       if (!target.dataset.shapeid && !target.dataset.handle) {
-        const startX = (e.clientX - position.x) / scale;
-        const startY = (e.clientY - position.y) / scale;
-        setMarquee({ x: startX, y: startY, w: 0, h: 0 });
-        setLastMousePos({ x: e.clientX, y: e.clientY });
+        startMarquee(e.clientX, e.clientY);
+        setMarqueeMousePos({ x: e.clientX, y: e.clientY });
       }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       // Panning
       if (isPanning) {
-        const dx = e.clientX - lastMousePos.x;
-        const dy = e.clientY - lastMousePos.y;
+        const dx = e.clientX - canvasMousePos.x;
+        const dy = e.clientY - canvasMousePos.y;
         setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-        setLastMousePos({ x: e.clientX, y: e.clientY });
+        setCanvasMousePos({ x: e.clientX, y: e.clientY });
         return;
       }
 
       // Resizing
       if (resizing) {
-        const dx = (e.clientX - lastMousePos.x) / scale;
-        const dy = (e.clientY - lastMousePos.y) / scale;
+        const dx = (e.clientX - canvasMousePos.x) / scale;
+        const dy = (e.clientY - canvasMousePos.y) / scale;
         setShapes((prev) =>
           prev.map((shape) => {
             if (shape.id !== resizing.id) return shape;
@@ -119,14 +122,14 @@ export default function InfiniteCanvas() {
             return { ...shape, x, y, width, height };
           })
         );
-        setLastMousePos({ x: e.clientX, y: e.clientY });
+        setCanvasMousePos({ x: e.clientX, y: e.clientY });
         return;
       }
 
       // Dragging selection (single or multi)
       if (dragging && selectedShapeIds.length > 0) {
-        const worldDX = (e.clientX - lastMousePos.x) / scale;
-        const worldDY = (e.clientY - lastMousePos.y) / scale;
+        const worldDX = (e.clientX - canvasMousePos.x) / scale;
+        const worldDY = (e.clientY - canvasMousePos.y) / scale;
         setShapes((prev) =>
           prev.map((shape) =>
             selectedShapeIds.includes(shape.id)
@@ -134,41 +137,12 @@ export default function InfiniteCanvas() {
               : shape
           )
         );
-        setLastMousePos({ x: e.clientX, y: e.clientY });
-        return;
-      }
-
-      // Marquee update
-      if (marquee) {
-        const startX = (lastMousePos.x - position.x) / scale;
-        const startY = (lastMousePos.y - position.y) / scale;
-        const currentX = (e.clientX - position.x) / scale;
-        const currentY = (e.clientY - position.y) / scale;
-
-        setMarquee({
-          x: Math.min(startX, currentX),
-          y: Math.min(startY, currentY),
-          w: Math.abs(currentX - startX),
-          h: Math.abs(currentY - startY),
-        });
+        setCanvasMousePos({ x: e.clientX, y: e.clientY });
         return;
       }
     };
 
     const handleMouseUp = () => {
-      if (marquee) {
-        const selected = shapes
-          .filter(
-            (s) =>
-              s.x >= marquee.x &&
-              s.y >= marquee.y &&
-              s.x + s.width <= marquee.x + marquee.w &&
-              s.y + s.height <= marquee.y + marquee.h
-          )
-          .map((s) => s.id);
-        setSelectedShapeIds(selected);
-        setMarquee(null);
-      }
       setDragging(false);
       setResizing(null);
       setIsPanning(false);
@@ -185,80 +159,14 @@ export default function InfiniteCanvas() {
   }, [
     scale,
     position,
-    lastMousePos,
+    canvasMousePos,
     shapes,
     selectedShapeIds,
-    marquee,
+
     resizing,
     dragging,
     isPanning,
   ]);
-
-  // --- Wheel: pinch zoom + panning + mouse zoom ---
-  //   useEffect(() => {
-  //     const el = canvasRef.current;
-  //     if (!el) return;
-
-  //     const handleWheel = (e: WheelEvent) => {
-  //       // Trackpad pinch zoom
-  //       if (e.ctrlKey && e.deltaMode === 0) {
-  //         e.preventDefault();
-  //         const zoomIntensity = 0.01;
-  //         const delta = -e.deltaY * zoomIntensity;
-
-  //         const mouseX = e.clientX;
-  //         const mouseY = e.clientY;
-  //         const worldX = (mouseX - position.x) / scale;
-  //         const worldY = (mouseY - position.y) / scale;
-
-  //         let newScale = scale + delta;
-  //         newScale = Math.min(Math.max(newScale, 0.1), 4);
-  //         setPosition({
-  //           x: mouseX - worldX * newScale,
-  //           y: mouseY - worldY * newScale,
-  //         });
-  //         setScale(newScale);
-  //         return;
-  //       }
-
-  //       // Trackpad panning
-  //       if (
-  //         !e.ctrlKey &&
-  //         e.deltaMode === 0 &&
-  //         (Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) > 0)
-  //       ) {
-  //         e.preventDefault();
-  //         setPosition((prev) => ({
-  //           x: prev.x - e.deltaX,
-  //           y: prev.y - e.deltaY,
-  //         }));
-  //         return;
-  //       }
-
-  //       // Mouse wheel zoom
-  //       if (!e.ctrlKey) {
-  //         e.preventDefault();
-  //         const zoomIntensity = 0.001;
-  //         const delta = -e.deltaY * zoomIntensity;
-
-  //         const mouseX = e.clientX;
-  //         const mouseY = e.clientY;
-  //         const worldX = (mouseX - position.x) / scale;
-  //         const worldY = (mouseY - position.y) / scale;
-
-  //         let newScale = scale + delta;
-  //         newScale = Math.min(Math.max(newScale, 0.1), 4);
-  //         setPosition({
-  //           x: mouseX - worldX * newScale,
-  //           y: mouseY - worldY * newScale,
-  //         });
-  //         setScale(newScale);
-  //       }
-  //     };
-
-  //     el.addEventListener("wheel", handleWheel, { passive: false });
-  //     return () => el.removeEventListener("wheel", handleWheel);
-  //   }, [scale, position]);
 
   // --- Shape interactions ---
   const handleShapeMouseDown = (
@@ -274,7 +182,7 @@ export default function InfiniteCanvas() {
       setSelectedShapeIds([id]);
     }
     setDragging(true);
-    setLastMousePos({ x: e.clientX, y: e.clientY });
+    setCanvasMousePos({ x: e.clientX, y: e.clientY });
   };
 
   const startResizing = (
@@ -284,7 +192,7 @@ export default function InfiniteCanvas() {
   ) => {
     e.stopPropagation();
     setResizing({ id, handle });
-    setLastMousePos({ x: e.clientX, y: e.clientY });
+    setCanvasMousePos({ x: e.clientX, y: e.clientY });
   };
 
   const renderHandles = (shape: Shape) => {
