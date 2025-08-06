@@ -12,15 +12,17 @@ export default function InfiniteCanvas() {
 
   // Shapes state
   const [shapes, setShapes] = useState([
-    { id: 1, x: 500, y: 500, width: 160, height: 112, color: "bg-blue-500" },
-    { id: 2, x: 750, y: 750, width: 160, height: 112, color: "bg-blue-500" },
+    { id: 1, x: 500, y: 500, width: 160, height: 112, color: "#e74c3c" },
   ]);
   const [draggingShapeId, setDraggingShapeId] = useState<number | null>(null);
+  const [selectedShapeId, setSelectedShapeId] = useState<number | null>(null);
 
-  // --- Panning ---
+  // --- Panning & Dragging ---
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
-      if ((e.target as HTMLElement).dataset.shapeid) return; // skip if clicking shape
+      const target = e.target as HTMLElement;
+      if (target.dataset.shapeid) return; // skip panning if clicking a shape
+      setSelectedShapeId(null); // deselect if clicking empty space
       setIsPanning(true);
       setLastMousePos({ x: e.clientX, y: e.clientY });
     };
@@ -97,12 +99,13 @@ export default function InfiniteCanvas() {
     };
   }, [scale, position]);
 
-  // --- Shape dragging ---
+  // --- Shape interactions ---
   const startDraggingShape = (
     e: React.MouseEvent<HTMLDivElement>,
     id: number
   ) => {
     e.stopPropagation();
+    setSelectedShapeId(id); // select on click
     setDraggingShapeId(id);
     setLastMousePos({ x: e.clientX, y: e.clientY });
   };
@@ -145,9 +148,34 @@ export default function InfiniteCanvas() {
               width: `${shape.width}px`,
               height: `${shape.height}px`,
             }}
-            className={`${shape.color} text-white flex items-center justify-center rounded shadow`}
+            className="relative"
           >
-            Shape {shape.id}
+            {/* Selection box */}
+            {selectedShapeId === shape.id && (
+              <div
+                className="absolute border-2 border-blue-500 rounded pointer-events-none"
+                style={{
+                  top: "-4px",
+                  left: "-4px",
+                  width: `${shape.width + 8}px`,
+                  height: `${shape.height + 8}px`,
+                  zIndex: 30, // force above shape
+                }}
+              />
+            )}
+            {/* Shape */}
+            <div
+              style={{
+                zIndex: 25,
+                backgroundColor: shape.color,
+                position: "relative",
+              }}
+              className={
+                "text-white flex items-center justify-center rounded shadow w-full h-full"
+              }
+            >
+              Shape {shape.id}
+            </div>
           </div>
         ))}
       </div>
