@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Shape } from "./CanvasModule/Shape";
 import SelectionGroup from "./CanvasModule/SelectionBox";
+import { useCanvasTransform } from "./CanvasModule/hooks/useCanvasTransform";
 
 type ShapeType = "rect" | "ellipse" | "text";
 
@@ -17,11 +18,8 @@ interface Shape {
 }
 
 export default function InfiniteCanvas() {
-  const canvasRef = useRef<HTMLDivElement>(null);
-
-  // Canvas transform
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(1);
+  const { scale, canvasRef, position, setPosition, setScale } =
+    useCanvasTransform();
 
   // Shapes
   const [shapes, setShapes] = useState<Shape[]>([
@@ -197,70 +195,70 @@ export default function InfiniteCanvas() {
   ]);
 
   // --- Wheel: pinch zoom + panning + mouse zoom ---
-  useEffect(() => {
-    const el = canvasRef.current;
-    if (!el) return;
+  //   useEffect(() => {
+  //     const el = canvasRef.current;
+  //     if (!el) return;
 
-    const handleWheel = (e: WheelEvent) => {
-      // Trackpad pinch zoom
-      if (e.ctrlKey && e.deltaMode === 0) {
-        e.preventDefault();
-        const zoomIntensity = 0.01;
-        const delta = -e.deltaY * zoomIntensity;
+  //     const handleWheel = (e: WheelEvent) => {
+  //       // Trackpad pinch zoom
+  //       if (e.ctrlKey && e.deltaMode === 0) {
+  //         e.preventDefault();
+  //         const zoomIntensity = 0.01;
+  //         const delta = -e.deltaY * zoomIntensity;
 
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-        const worldX = (mouseX - position.x) / scale;
-        const worldY = (mouseY - position.y) / scale;
+  //         const mouseX = e.clientX;
+  //         const mouseY = e.clientY;
+  //         const worldX = (mouseX - position.x) / scale;
+  //         const worldY = (mouseY - position.y) / scale;
 
-        let newScale = scale + delta;
-        newScale = Math.min(Math.max(newScale, 0.1), 4);
-        setPosition({
-          x: mouseX - worldX * newScale,
-          y: mouseY - worldY * newScale,
-        });
-        setScale(newScale);
-        return;
-      }
+  //         let newScale = scale + delta;
+  //         newScale = Math.min(Math.max(newScale, 0.1), 4);
+  //         setPosition({
+  //           x: mouseX - worldX * newScale,
+  //           y: mouseY - worldY * newScale,
+  //         });
+  //         setScale(newScale);
+  //         return;
+  //       }
 
-      // Trackpad panning
-      if (
-        !e.ctrlKey &&
-        e.deltaMode === 0 &&
-        (Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) > 0)
-      ) {
-        e.preventDefault();
-        setPosition((prev) => ({
-          x: prev.x - e.deltaX,
-          y: prev.y - e.deltaY,
-        }));
-        return;
-      }
+  //       // Trackpad panning
+  //       if (
+  //         !e.ctrlKey &&
+  //         e.deltaMode === 0 &&
+  //         (Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) > 0)
+  //       ) {
+  //         e.preventDefault();
+  //         setPosition((prev) => ({
+  //           x: prev.x - e.deltaX,
+  //           y: prev.y - e.deltaY,
+  //         }));
+  //         return;
+  //       }
 
-      // Mouse wheel zoom
-      if (!e.ctrlKey) {
-        e.preventDefault();
-        const zoomIntensity = 0.001;
-        const delta = -e.deltaY * zoomIntensity;
+  //       // Mouse wheel zoom
+  //       if (!e.ctrlKey) {
+  //         e.preventDefault();
+  //         const zoomIntensity = 0.001;
+  //         const delta = -e.deltaY * zoomIntensity;
 
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-        const worldX = (mouseX - position.x) / scale;
-        const worldY = (mouseY - position.y) / scale;
+  //         const mouseX = e.clientX;
+  //         const mouseY = e.clientY;
+  //         const worldX = (mouseX - position.x) / scale;
+  //         const worldY = (mouseY - position.y) / scale;
 
-        let newScale = scale + delta;
-        newScale = Math.min(Math.max(newScale, 0.1), 4);
-        setPosition({
-          x: mouseX - worldX * newScale,
-          y: mouseY - worldY * newScale,
-        });
-        setScale(newScale);
-      }
-    };
+  //         let newScale = scale + delta;
+  //         newScale = Math.min(Math.max(newScale, 0.1), 4);
+  //         setPosition({
+  //           x: mouseX - worldX * newScale,
+  //           y: mouseY - worldY * newScale,
+  //         });
+  //         setScale(newScale);
+  //       }
+  //     };
 
-    el.addEventListener("wheel", handleWheel, { passive: false });
-    return () => el.removeEventListener("wheel", handleWheel);
-  }, [scale, position]);
+  //     el.addEventListener("wheel", handleWheel, { passive: false });
+  //     return () => el.removeEventListener("wheel", handleWheel);
+  //   }, [scale, position]);
 
   // --- Shape interactions ---
   const handleShapeMouseDown = (
