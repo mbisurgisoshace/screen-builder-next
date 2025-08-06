@@ -11,8 +11,8 @@ export default function InfiniteCanvas() {
   // Shapes
   const [shapes, setShapes] = useState([
     { id: 1, x: 500, y: 500, width: 160, height: 112, color: "bg-blue-500" },
-    { id: 2, x: 650, y: 650, width: 200, height: 140, color: "bg-red-500" },
-    { id: 3, x: 700, y: 700, width: 120, height: 160, color: "bg-green-500" },
+    { id: 2, x: 550, y: 550, width: 200, height: 140, color: "bg-red-500" },
+    { id: 3, x: 600, y: 600, width: 120, height: 160, color: "bg-green-500" },
   ]);
 
   // Selection & interaction
@@ -171,33 +171,68 @@ export default function InfiniteCanvas() {
     isPanning,
   ]);
 
-  // --- Zoom ---
+  // --- Wheel: trackpad pinch zoom + panning + mouse zoom ---
   useEffect(() => {
     const el = canvasRef.current;
     if (!el) return;
+
     const handleWheel = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) return; // let browser zoom gestures pass
-      if (Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) > 0) {
-        if (e.buttons === 4) return; // handled in mousedown for middle mouse
+      // Trackpad pinch zoom
+      if (e.ctrlKey && e.deltaMode === 0) {
+        e.preventDefault(); // prevent browser zoom
+        const zoomIntensity = 0.01; // slightly faster for trackpad pinch
+        const delta = -e.deltaY * zoomIntensity;
+
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        const worldX = (mouseX - position.x) / scale;
+        const worldY = (mouseY - position.y) / scale;
+
+        let newScale = scale + delta;
+        newScale = Math.min(Math.max(newScale, 0.1), 4);
+        setPosition({
+          x: mouseX - worldX * newScale,
+          y: mouseY - worldY * newScale,
+        });
+        setScale(newScale);
+        return;
       }
 
-      e.preventDefault();
-      const zoomIntensity = 0.001;
-      const delta = -e.deltaY * zoomIntensity;
+      // Trackpad panning (two-finger drag)
+      if (
+        !e.ctrlKey &&
+        e.deltaMode === 0 &&
+        (Math.abs(e.deltaX) > 0 || Math.abs(e.deltaY) > 0)
+      ) {
+        e.preventDefault();
+        setPosition((prev) => ({
+          x: prev.x - e.deltaX,
+          y: prev.y - e.deltaY,
+        }));
+        return;
+      }
 
-      const mouseX = e.clientX;
-      const mouseY = e.clientY;
-      const worldX = (mouseX - position.x) / scale;
-      const worldY = (mouseY - position.y) / scale;
+      // Mouse wheel zoom
+      if (!e.ctrlKey) {
+        e.preventDefault();
+        const zoomIntensity = 0.001;
+        const delta = -e.deltaY * zoomIntensity;
 
-      let newScale = scale + delta;
-      newScale = Math.min(Math.max(newScale, 0.1), 4);
-      setPosition({
-        x: mouseX - worldX * newScale,
-        y: mouseY - worldY * newScale,
-      });
-      setScale(newScale);
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        const worldX = (mouseX - position.x) / scale;
+        const worldY = (mouseY - position.y) / scale;
+
+        let newScale = scale + delta;
+        newScale = Math.min(Math.max(newScale, 0.1), 4);
+        setPosition({
+          x: mouseX - worldX * newScale,
+          y: mouseY - worldY * newScale,
+        });
+        setScale(newScale);
+      }
     };
+
     el.addEventListener("wheel", handleWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleWheel);
   }, [scale, position]);
@@ -229,7 +264,6 @@ export default function InfiniteCanvas() {
     setLastMousePos({ x: e.clientX, y: e.clientY });
   };
 
-  // --- Render resize handles ---
   const renderHandles = (shape: any) => {
     const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
     return handles.map((handle) => {
@@ -260,7 +294,6 @@ export default function InfiniteCanvas() {
     });
   };
 
-  // --- Calculate group selection bounding box ---
   const getGroupBounds = () => {
     const selectedShapes = shapes.filter((s) =>
       selectedShapeIds.includes(s.id)
