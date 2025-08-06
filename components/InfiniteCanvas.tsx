@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
+import { Shape } from "./CanvasModule/Shape";
 
 type ShapeType = "rect" | "ellipse" | "text";
 
@@ -460,54 +461,14 @@ export default function InfiniteCanvas() {
 
           {/* Shapes */}
           {shapes.map((shape) => (
-            <div
+            <Shape
               key={shape.id}
-              data-shapeid={shape.id}
+              shape={shape}
+              renderHandles={renderHandles}
+              selectedCount={selectedShapeIds.length}
+              isSelected={selectedShapeIds.includes(shape.id)}
               onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
-              style={{
-                position: "absolute",
-                left: `${shape.x}px`,
-                top: `${shape.y}px`,
-                width: `${shape.width}px`,
-                height: `${shape.height}px`,
-                zIndex: selectedShapeIds.includes(shape.id) ? 20 : 1,
-              }}
-            >
-              {/* Selection outline for single selection */}
-              {selectedShapeIds.length === 1 &&
-                selectedShapeIds[0] === shape.id && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "-4px",
-                      left: "-4px",
-                      width: `${shape.width + 8}px`,
-                      height: `${shape.height + 8}px`,
-                      border: "2px solid #60A5FA",
-                      borderRadius: "4px",
-                      pointerEvents: "none",
-                      zIndex: 30,
-                    }}
-                  />
-                )}
-
-              {/* Resize handles for single selection */}
-              {selectedShapeIds.length === 1 &&
-                selectedShapeIds[0] === shape.id &&
-                renderHandles(shape)}
-
-              {/* Shape rendering */}
-              <div
-                className={`${shape.color} flex items-center justify-center rounded shadow w-full h-full`}
-                style={{
-                  position: "relative",
-                  zIndex: 25,
-                  borderRadius: shape.type === "ellipse" ? "9999px" : undefined,
-                }}
-              >
-                {shape.type === "text" ? shape.text : shape.type.toUpperCase()}
-              </div>
-            </div>
+            />
           ))}
         </div>
       </div>
