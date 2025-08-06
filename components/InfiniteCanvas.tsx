@@ -60,6 +60,8 @@ export default function InfiniteCanvas() {
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
 
+      if (target.draggable) return;
+
       // Middle mouse → start panning
       if (e.button === 1) {
         e.preventDefault();
@@ -369,6 +371,10 @@ export default function InfiniteCanvas() {
     e.preventDefault();
   };
 
+  const handleDragStart = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-100 relative flex">
       {/* Toolbar */}
@@ -407,6 +413,7 @@ export default function InfiniteCanvas() {
         className="flex-1 relative"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
+        onDragStart={handleDragStart}
       >
         <div
           className="absolute top-0 left-0 w-full h-full"
