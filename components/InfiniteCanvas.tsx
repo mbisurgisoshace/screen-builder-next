@@ -1,6 +1,19 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 
+type ShapeType = "rect" | "ellipse" | "text";
+
+interface Shape {
+  id: number;
+  type: ShapeType;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+  text?: string;
+}
+
 export default function InfiniteCanvas() {
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -9,10 +22,16 @@ export default function InfiniteCanvas() {
   const [scale, setScale] = useState(1);
 
   // Shapes
-  const [shapes, setShapes] = useState([
-    { id: 1, x: 500, y: 500, width: 160, height: 112, color: "bg-blue-500" },
-    { id: 2, x: 550, y: 550, width: 200, height: 140, color: "bg-red-500" },
-    { id: 3, x: 600, y: 600, width: 120, height: 160, color: "bg-green-500" },
+  const [shapes, setShapes] = useState<Shape[]>([
+    {
+      id: 1,
+      type: "rect",
+      x: 500,
+      y: 500,
+      width: 160,
+      height: 112,
+      color: "bg-blue-500",
+    },
   ]);
 
   // Selection & interaction
@@ -32,6 +51,9 @@ export default function InfiniteCanvas() {
     w: number;
     h: number;
   }>(null);
+
+  // Shape ID generator
+  const nextIdRef = useRef(1000);
 
   // --- Mouse handling ---
   useEffect(() => {
@@ -132,7 +154,6 @@ export default function InfiniteCanvas() {
     };
 
     const handleMouseUp = () => {
-      // Apply marquee selection
       if (marquee) {
         const selected = shapes
           .filter(
@@ -171,7 +192,7 @@ export default function InfiniteCanvas() {
     isPanning,
   ]);
 
-  // --- Wheel: trackpad pinch zoom + panning + mouse zoom ---
+  // --- Wheel: pinch zoom + panning + mouse zoom ---
   useEffect(() => {
     const el = canvasRef.current;
     if (!el) return;
@@ -179,8 +200,8 @@ export default function InfiniteCanvas() {
     const handleWheel = (e: WheelEvent) => {
       // Trackpad pinch zoom
       if (e.ctrlKey && e.deltaMode === 0) {
-        e.preventDefault(); // prevent browser zoom
-        const zoomIntensity = 0.01; // slightly faster for trackpad pinch
+        e.preventDefault();
+        const zoomIntensity = 0.01;
         const delta = -e.deltaY * zoomIntensity;
 
         const mouseX = e.clientX;
@@ -198,7 +219,7 @@ export default function InfiniteCanvas() {
         return;
       }
 
-      // Trackpad panning (two-finger drag)
+      // Trackpad panning
       if (
         !e.ctrlKey &&
         e.deltaMode === 0 &&
@@ -264,7 +285,7 @@ export default function InfiniteCanvas() {
     setLastMousePos({ x: e.clientX, y: e.clientY });
   };
 
-  const renderHandles = (shape: any) => {
+  const renderHandles = (shape: Shape) => {
     const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
     return handles.map((handle) => {
       const size = 8;
@@ -308,114 +329,180 @@ export default function InfiniteCanvas() {
 
   const groupBounds = getGroupBounds();
 
+  // --- Shape creation ---
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const type = e.dataTransfer.getData("shape-type") as ShapeType;
+    if (!type) return;
+
+    // Canvas coords adjusted for pan/zoom
+    const dropX = (e.clientX - position.x) / scale;
+    const dropY = (e.clientY - position.y) / scale;
+
+    const newId = nextIdRef.current++;
+    const colors = [
+      "bg-blue-400",
+      "bg-green-400",
+      "bg-yellow-400",
+      "bg-pink-400",
+      "bg-purple-400",
+    ];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
+    const newShape: Shape = {
+      id: newId,
+      type,
+      x: dropX,
+      y: dropY,
+      width: type === "text" ? 120 : 160,
+      height: type === "text" ? 40 : 112,
+      color,
+      text: type === "text" ? "New text" : undefined,
+    };
+
+    setShapes((prev) => [...prev, newShape]);
+    setSelectedShapeIds([newId]);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   return (
-    <div
-      ref={canvasRef}
-      className="w-screen h-screen overflow-hidden bg-gray-100 relative"
-    >
+    <div className="w-screen h-screen overflow-hidden bg-gray-100 relative flex">
       {/* Toolbar */}
-      <div className="absolute top-4 left-4 z-10 bg-white p-2 rounded shadow flex gap-2">
-        <button onClick={() => setScale((s) => Math.min(s + 0.1, 4))}>
-          Zoom +
+      <div className="absolute top-4 left-4 z-20 bg-white p-2 rounded shadow flex flex-col gap-2">
+        <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "rect");
+          }}
+          className="w-10 h-10 bg-blue-400 rounded"
+          title="Rectangle"
+        />
+        <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "ellipse");
+          }}
+          className="w-10 h-10 bg-green-400 rounded-full"
+          title="Ellipse"
+        />
+        <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "text");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-yellow-300 rounded text-black font-bold"
+          title="Text"
+        >
+          A
         </button>
-        <button onClick={() => setScale((s) => Math.max(s - 0.1, 0.1))}>
-          Zoom -
-        </button>
-        <button onClick={() => setPosition({ x: 0, y: 0 })}>Reset Pan</button>
-        <button onClick={() => setScale(1)}>Reset Zoom</button>
       </div>
 
-      {/* Infinite World */}
+      {/* Canvas */}
       <div
-        className="absolute top-0 left-0 w-full h-full"
-        style={{
-          transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-          transformOrigin: "0 0",
-        }}
+        ref={canvasRef}
+        className="flex-1 relative"
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
       >
-        {/* Marquee selection visual */}
-        {marquee && (
-          <div
-            style={{
-              position: "absolute",
-              left: `${marquee.x}px`,
-              top: `${marquee.y}px`,
-              width: `${marquee.w}px`,
-              height: `${marquee.h}px`,
-              background: "rgba(96, 165, 250, 0.2)",
-              border: "1px solid #60A5FA",
-              zIndex: 100,
-              pointerEvents: "none",
-            }}
-          />
-        )}
-
-        {/* Group bounding box */}
-        {groupBounds && (
-          <div
-            data-groupdrag="true"
-            style={{
-              position: "absolute",
-              left: `${groupBounds.x - 4}px`,
-              top: `${groupBounds.y - 4}px`,
-              width: `${groupBounds.w + 8}px`,
-              height: `${groupBounds.h + 8}px`,
-              border: "2px solid #60A5FA",
-              borderRadius: "4px",
-              pointerEvents: "auto",
-              zIndex: 50,
-              background: "transparent",
-            }}
-          />
-        )}
-
-        {/* Shapes */}
-        {shapes.map((shape) => (
-          <div
-            key={shape.id}
-            data-shapeid={shape.id}
-            onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
-            style={{
-              position: "absolute",
-              left: `${shape.x}px`,
-              top: `${shape.y}px`,
-              width: `${shape.width}px`,
-              height: `${shape.height}px`,
-              zIndex: selectedShapeIds.includes(shape.id) ? 20 : 1,
-            }}
-          >
-            {/* Selection outline for single selection */}
-            {selectedShapeIds.length === 1 &&
-              selectedShapeIds[0] === shape.id && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "-4px",
-                    left: "-4px",
-                    width: `${shape.width + 8}px`,
-                    height: `${shape.height + 8}px`,
-                    border: "2px solid #60A5FA",
-                    borderRadius: "4px",
-                    pointerEvents: "none",
-                    zIndex: 30,
-                  }}
-                />
-              )}
-
-            {/* Resize handles for single selection */}
-            {selectedShapeIds.length === 1 &&
-              selectedShapeIds[0] === shape.id &&
-              renderHandles(shape)}
-
-            {/* Shape */}
+        <div
+          className="absolute top-0 left-0 w-full h-full"
+          style={{
+            transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+            transformOrigin: "0 0",
+          }}
+        >
+          {/* Marquee selection */}
+          {marquee && (
             <div
-              className={`${shape.color} text-white flex items-center justify-center rounded shadow w-full h-full`}
-              style={{ position: "relative", zIndex: 25 }}
+              style={{
+                position: "absolute",
+                left: `${marquee.x}px`,
+                top: `${marquee.y}px`,
+                width: `${marquee.w}px`,
+                height: `${marquee.h}px`,
+                background: "rgba(96, 165, 250, 0.2)",
+                border: "1px solid #60A5FA",
+                zIndex: 100,
+                pointerEvents: "none",
+              }}
+            />
+          )}
+
+          {/* Group bounding box */}
+          {groupBounds && (
+            <div
+              data-groupdrag="true"
+              style={{
+                position: "absolute",
+                left: `${groupBounds.x - 4}px`,
+                top: `${groupBounds.y - 4}px`,
+                width: `${groupBounds.w + 8}px`,
+                height: `${groupBounds.h + 8}px`,
+                border: "2px solid #60A5FA",
+                borderRadius: "4px",
+                pointerEvents: "auto",
+                zIndex: 50,
+                background: "transparent",
+              }}
+            />
+          )}
+
+          {/* Shapes */}
+          {shapes.map((shape) => (
+            <div
+              key={shape.id}
+              data-shapeid={shape.id}
+              onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
+              style={{
+                position: "absolute",
+                left: `${shape.x}px`,
+                top: `${shape.y}px`,
+                width: `${shape.width}px`,
+                height: `${shape.height}px`,
+                zIndex: selectedShapeIds.includes(shape.id) ? 20 : 1,
+              }}
             >
-              Shape {shape.id}
+              {/* Selection outline for single selection */}
+              {selectedShapeIds.length === 1 &&
+                selectedShapeIds[0] === shape.id && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "-4px",
+                      left: "-4px",
+                      width: `${shape.width + 8}px`,
+                      height: `${shape.height + 8}px`,
+                      border: "2px solid #60A5FA",
+                      borderRadius: "4px",
+                      pointerEvents: "none",
+                      zIndex: 30,
+                    }}
+                  />
+                )}
+
+              {/* Resize handles for single selection */}
+              {selectedShapeIds.length === 1 &&
+                selectedShapeIds[0] === shape.id &&
+                renderHandles(shape)}
+
+              {/* Shape rendering */}
+              <div
+                className={`${shape.color} flex items-center justify-center rounded shadow w-full h-full`}
+                style={{
+                  position: "relative",
+                  zIndex: 25,
+                  borderRadius: shape.type === "ellipse" ? "9999px" : undefined,
+                }}
+              >
+                {shape.type === "text" ? shape.text : shape.type.toUpperCase()}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
