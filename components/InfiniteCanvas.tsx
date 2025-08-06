@@ -13,29 +13,30 @@ export default function InfiniteCanvas() {
   // Shapes state
   const [shapes, setShapes] = useState([
     { id: 1, x: 500, y: 500, width: 160, height: 112, color: "bg-blue-500" },
-    { id: 2, x: 750, y: 750, width: 160, height: 112, color: "bg-red-500" },
+    { id: 2, x: 650, y: 650, width: 200, height: 140, color: "bg-red-500" },
+    { id: 3, x: 700, y: 700, width: 120, height: 160, color: "bg-green-500" },
   ]);
-  const [selectedShapeId, setSelectedShapeId] = useState<number | null>(null);
-  const [draggingShapeId, setDraggingShapeId] = useState<number | null>(null);
 
-  // Resizing state
+  // Selection & dragging/resizing state
+  const [selectedShapeIds, setSelectedShapeIds] = useState<number[]>([]);
+  const [dragging, setDragging] = useState(false);
   const [resizing, setResizing] = useState<null | {
     id: number;
     handle: string;
   }>(null);
 
-  // --- Panning & Dragging ---
+  // --- Panning, dragging, resizing ---
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.dataset.shapeid || target.dataset.handle) return; // skip panning if clicking shape or handle
-      setSelectedShapeId(null); // deselect if clicking empty space
+      if (target.dataset.shapeid || target.dataset.handle) return; // skip if clicking shape/handle
+      setSelectedShapeIds([]);
       setIsPanning(true);
       setLastMousePos({ x: e.clientX, y: e.clientY });
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      // Resizing
+      // Resizing (only if single shape selected)
       if (resizing) {
         const dx = (e.clientX - lastMousePos.x) / scale;
         const dy = (e.clientY - lastMousePos.y) / scale;
@@ -44,12 +45,9 @@ export default function InfiniteCanvas() {
             if (shape.id !== resizing.id) return shape;
             let { x, y, width, height } = shape;
 
-            if (resizing.handle.includes("e")) {
-              width = Math.max(20, width + dx);
-            }
-            if (resizing.handle.includes("s")) {
+            if (resizing.handle.includes("e")) width = Math.max(20, width + dx);
+            if (resizing.handle.includes("s"))
               height = Math.max(20, height + dy);
-            }
             if (resizing.handle.includes("w")) {
               x += dx;
               width = Math.max(20, width - dx);
@@ -58,7 +56,6 @@ export default function InfiniteCanvas() {
               y += dy;
               height = Math.max(20, height - dy);
             }
-
             return { ...shape, x, y, width, height };
           })
         );
@@ -66,22 +63,24 @@ export default function InfiniteCanvas() {
         return;
       }
 
-      // Dragging shapes
-      if (draggingShapeId !== null) {
+      // Dragging shapes (single or multi)
+      if (dragging && selectedShapeIds.length > 0) {
         const worldDX = (e.clientX - lastMousePos.x) / scale;
         const worldDY = (e.clientY - lastMousePos.y) / scale;
 
         setShapes((prev) =>
           prev.map((shape) =>
-            shape.id === draggingShapeId
+            selectedShapeIds.includes(shape.id)
               ? { ...shape, x: shape.x + worldDX, y: shape.y + worldDY }
               : shape
           )
         );
         setLastMousePos({ x: e.clientX, y: e.clientY });
+        return;
       }
+
       // Panning
-      else if (isPanning) {
+      if (isPanning) {
         const dx = e.clientX - lastMousePos.x;
         const dy = e.clientY - lastMousePos.y;
         setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
@@ -91,7 +90,7 @@ export default function InfiniteCanvas() {
 
     const handleMouseUp = () => {
       setIsPanning(false);
-      setDraggingShapeId(null);
+      setDragging(false);
       setResizing(null);
     };
 
@@ -104,7 +103,7 @@ export default function InfiniteCanvas() {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isPanning, lastMousePos, draggingShapeId, scale, resizing]);
+  }, [isPanning, lastMousePos, dragging, scale, selectedShapeIds, resizing]);
 
   // --- Zoom with mouse position ---
   useEffect(() => {
@@ -113,13 +112,11 @@ export default function InfiniteCanvas() {
 
     const handleWheelEvent = (e: WheelEvent) => {
       e.preventDefault();
-
       const zoomIntensity = 0.001;
       const delta = -e.deltaY * zoomIntensity;
 
       const mouseX = e.clientX;
       const mouseY = e.clientY;
-
       const worldX = (mouseX - position.x) / scale;
       const worldY = (mouseY - position.y) / scale;
 
@@ -130,25 +127,27 @@ export default function InfiniteCanvas() {
         x: mouseX - worldX * newScale,
         y: mouseY - worldY * newScale,
       });
-
       setScale(newScale);
     };
 
     el.addEventListener("wheel", handleWheelEvent, { passive: false });
-
-    return () => {
-      el.removeEventListener("wheel", handleWheelEvent);
-    };
+    return () => el.removeEventListener("wheel", handleWheelEvent);
   }, [scale, position]);
 
   // --- Shape interactions ---
-  const startDraggingShape = (
+  const handleShapeMouseDown = (
     e: React.MouseEvent<HTMLDivElement>,
     id: number
   ) => {
     e.stopPropagation();
-    setSelectedShapeId(id);
-    setDraggingShapeId(id);
+    if (e.shiftKey) {
+      setSelectedShapeIds((prev) =>
+        prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
+      );
+    } else {
+      setSelectedShapeIds([id]);
+    }
+    setDragging(true);
     setLastMousePos({ x: e.clientX, y: e.clientY });
   };
 
@@ -162,7 +161,7 @@ export default function InfiniteCanvas() {
     setLastMousePos({ x: e.clientX, y: e.clientY });
   };
 
-  // Render resize handles
+  // Render resize handles for single selection
   const renderHandles = (shape: any) => {
     const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
     return handles.map((handle) => {
@@ -170,7 +169,7 @@ export default function InfiniteCanvas() {
       const style: React.CSSProperties = {
         width: `${size}px`,
         height: `${size}px`,
-        background: "#3B82F6", // blue-500
+        background: "#3B82F6",
         position: "absolute",
         cursor: `${handle}-resize`,
         zIndex: 40,
@@ -227,35 +226,37 @@ export default function InfiniteCanvas() {
           <div
             key={shape.id}
             data-shapeid={shape.id}
-            onMouseDown={(e) => startDraggingShape(e, shape.id)}
+            onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
             style={{
               position: "absolute",
               left: `${shape.x}px`,
               top: `${shape.y}px`,
               width: `${shape.width}px`,
               height: `${shape.height}px`,
-              zIndex: selectedShapeId === shape.id ? 20 : 1,
+              zIndex: selectedShapeIds.includes(shape.id) ? 20 : 1,
             }}
           >
-            {/* Selection box + handles */}
-            {selectedShapeId === shape.id && (
-              <>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "-4px",
-                    left: "-4px",
-                    width: `${shape.width + 8}px`,
-                    height: `${shape.height + 8}px`,
-                    border: "2px solid #60A5FA", // blue-400
-                    borderRadius: "4px",
-                    pointerEvents: "none",
-                    zIndex: 30,
-                  }}
-                />
-                {renderHandles(shape)}
-              </>
+            {/* Selection box */}
+            {selectedShapeIds.includes(shape.id) && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "-4px",
+                  left: "-4px",
+                  width: `${shape.width + 8}px`,
+                  height: `${shape.height + 8}px`,
+                  border: "2px solid #60A5FA",
+                  borderRadius: "4px",
+                  pointerEvents: "none",
+                  zIndex: 30,
+                }}
+              />
             )}
+
+            {/* Resize handles only if exactly 1 shape is selected */}
+            {selectedShapeIds.length === 1 &&
+              selectedShapeIds[0] === shape.id &&
+              renderHandles(shape)}
 
             {/* Shape */}
             <div
