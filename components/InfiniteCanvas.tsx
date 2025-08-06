@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { Shape } from "./CanvasModule/Shape";
+import SelectionGroup from "./CanvasModule/SelectionBox";
 
 type ShapeType = "rect" | "ellipse" | "text";
 
@@ -441,23 +442,7 @@ export default function InfiniteCanvas() {
           )}
 
           {/* Group bounding box */}
-          {groupBounds && (
-            <div
-              data-groupdrag="true"
-              style={{
-                position: "absolute",
-                left: `${groupBounds.x - 4}px`,
-                top: `${groupBounds.y - 4}px`,
-                width: `${groupBounds.w + 8}px`,
-                height: `${groupBounds.h + 8}px`,
-                border: "2px solid #60A5FA",
-                borderRadius: "4px",
-                pointerEvents: "auto",
-                zIndex: 50,
-                background: "transparent",
-              }}
-            />
-          )}
+          {groupBounds && <SelectionGroup bounds={groupBounds} />}
 
           {/* Shapes */}
           {shapes.map((shape) => (
