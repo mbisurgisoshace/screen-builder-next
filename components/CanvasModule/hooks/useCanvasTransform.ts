@@ -1,8 +1,10 @@
 import { useRef, useState, useEffect } from "react";
 
+import { Position } from "../types";
+
 export function useCanvasTransform() {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
 
   useEffect(() => {

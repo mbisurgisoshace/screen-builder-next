@@ -1,25 +1,12 @@
-// components/Shape.tsx
 import React from "react";
-
-type ShapeType = "rect" | "ellipse" | "text";
-
-export interface ShapeData {
-  x: number;
-  y: number;
-  id: number;
-  color: string;
-  width: number;
-  text?: string;
-  type: ShapeType;
-  height: number;
-}
+import { Shape as IShape } from "./types";
 
 interface Props {
-  shape: ShapeData;
+  shape: IShape;
   isSelected: boolean;
   selectedCount: number;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
-  renderHandles?: (shape: ShapeData) => React.ReactNode;
+  renderHandles?: (shape: IShape) => React.ReactNode;
 }
 
 export const Shape: React.FC<Props> = ({

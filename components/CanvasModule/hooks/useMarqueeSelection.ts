@@ -1,40 +1,26 @@
 import { useEffect, useState } from "react";
 
-interface Position {
-  x: number;
-  y: number;
-}
-
-interface Shape {
-  id: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-interface Marquee {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
+import { Marquee, Position, Shape } from "../types";
 
 interface UseMarqueeSelectionParams {
   scale: number;
   position: Position;
   shapes: Shape[];
   setSelectedShapeIds: (ids: number[]) => void;
+  setMarquee?: (marquee: Marquee | null) => void;
 }
 
 export function useMarqueeSelection({
   scale,
-  position,
   shapes,
+  position,
   setSelectedShapeIds,
+  setMarquee: externalSetMarquee,
 }: UseMarqueeSelectionParams) {
-  const [marquee, setMarquee] = useState<Marquee | null>(null);
+  const [marquee, internalSetMarquee] = useState<Marquee | null>(null);
   const [lastMousePos, setLastMousePos] = useState<Position>({ x: 0, y: 0 });
+
+  const setMarquee = externalSetMarquee || internalSetMarquee;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {

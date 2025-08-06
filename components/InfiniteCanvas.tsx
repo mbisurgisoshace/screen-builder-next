@@ -1,29 +1,19 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { Shape } from "./CanvasModule/Shape";
+
+import { Shape as IShape, ShapeType } from "./CanvasModule/types";
 import SelectionGroup from "./CanvasModule/SelectionBox";
+import { useShapeDragging } from "./CanvasModule/hooks/useShapeDragging";
 import { useCanvasTransform } from "./CanvasModule/hooks/useCanvasTransform";
 import { useMarqueeSelection } from "./CanvasModule/hooks/useMarqueeSelection";
-
-type ShapeType = "rect" | "ellipse" | "text";
-
-interface Shape {
-  id: number;
-  type: ShapeType;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  color: string;
-  text?: string;
-}
+import { Shape } from "./CanvasModule/Shape";
 
 export default function InfiniteCanvas() {
   const { scale, canvasRef, position, setPosition, setScale } =
     useCanvasTransform();
 
   // Shapes
-  const [shapes, setShapes] = useState<Shape[]>([
+  const [shapes, setShapes] = useState<IShape[]>([
     {
       id: 1,
       type: "rect",
@@ -56,6 +46,17 @@ export default function InfiniteCanvas() {
     position,
     shapes,
     setSelectedShapeIds,
+  });
+
+  useShapeDragging({
+    selectedShapeIds,
+    setShapes,
+    scale,
+    setLastMousePos: setCanvasMousePos,
+    lastMousePos: canvasMousePos,
+    shapes,
+    dragging,
+    setDragging,
   });
 
   // Shape ID generator
@@ -125,21 +126,6 @@ export default function InfiniteCanvas() {
         setCanvasMousePos({ x: e.clientX, y: e.clientY });
         return;
       }
-
-      // Dragging selection (single or multi)
-      if (dragging && selectedShapeIds.length > 0) {
-        const worldDX = (e.clientX - canvasMousePos.x) / scale;
-        const worldDY = (e.clientY - canvasMousePos.y) / scale;
-        setShapes((prev) =>
-          prev.map((shape) =>
-            selectedShapeIds.includes(shape.id)
-              ? { ...shape, x: shape.x + worldDX, y: shape.y + worldDY }
-              : shape
-          )
-        );
-        setCanvasMousePos({ x: e.clientX, y: e.clientY });
-        return;
-      }
     };
 
     const handleMouseUp = () => {
@@ -195,7 +181,7 @@ export default function InfiniteCanvas() {
     setCanvasMousePos({ x: e.clientX, y: e.clientY });
   };
 
-  const renderHandles = (shape: Shape) => {
+  const renderHandles = (shape: IShape) => {
     const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
     return handles.map((handle) => {
       const size = 8;
@@ -260,7 +246,7 @@ export default function InfiniteCanvas() {
     ];
     const color = colors[Math.floor(Math.random() * colors.length)];
 
-    const newShape: Shape = {
+    const newShape: IShape = {
       id: newId,
       type,
       x: dropX,
