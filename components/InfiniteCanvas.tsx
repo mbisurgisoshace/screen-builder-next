@@ -1,12 +1,13 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 
-import { Shape as IShape, ShapeType } from "./CanvasModule/types";
+import { Shape as IShape, Position, ShapeType } from "./CanvasModule/types";
 import SelectionGroup from "./CanvasModule/SelectionBox";
 import { useShapeDragging } from "./CanvasModule/hooks/useShapeDragging";
 import { useCanvasTransform } from "./CanvasModule/hooks/useCanvasTransform";
 import { useMarqueeSelection } from "./CanvasModule/hooks/useMarqueeSelection";
 import { Shape } from "./CanvasModule/Shape";
+import { useShapeResizing } from "./CanvasModule/hooks/useShapeResizing";
 
 export default function InfiniteCanvas() {
   const { scale, canvasRef, position, setPosition, setScale } =
@@ -35,7 +36,10 @@ export default function InfiniteCanvas() {
 
   // Panning & marquee selection
   const [isPanning, setIsPanning] = useState(false);
-  const [canvasMousePos, setCanvasMousePos] = useState({ x: 0, y: 0 });
+  const [canvasMousePos, setCanvasMousePos] = useState<Position>({
+    x: 0,
+    y: 0,
+  });
 
   const {
     marquee,
@@ -57,6 +61,16 @@ export default function InfiniteCanvas() {
     shapes,
     dragging,
     setDragging,
+  });
+
+  useShapeResizing({
+    resizing,
+    setResizing,
+    shapes,
+    setShapes,
+    scale,
+    lastMousePos: canvasMousePos,
+    setLastMousePos: setCanvasMousePos,
   });
 
   // Shape ID generator
@@ -99,38 +113,10 @@ export default function InfiniteCanvas() {
         setCanvasMousePos({ x: e.clientX, y: e.clientY });
         return;
       }
-
-      // Resizing
-      if (resizing) {
-        const dx = (e.clientX - canvasMousePos.x) / scale;
-        const dy = (e.clientY - canvasMousePos.y) / scale;
-        setShapes((prev) =>
-          prev.map((shape) => {
-            if (shape.id !== resizing.id) return shape;
-            let { x, y, width, height } = shape;
-
-            if (resizing.handle.includes("e")) width = Math.max(20, width + dx);
-            if (resizing.handle.includes("s"))
-              height = Math.max(20, height + dy);
-            if (resizing.handle.includes("w")) {
-              x += dx;
-              width = Math.max(20, width - dx);
-            }
-            if (resizing.handle.includes("n")) {
-              y += dy;
-              height = Math.max(20, height - dy);
-            }
-            return { ...shape, x, y, width, height };
-          })
-        );
-        setCanvasMousePos({ x: e.clientX, y: e.clientY });
-        return;
-      }
     };
 
     const handleMouseUp = () => {
       setDragging(false);
-      setResizing(null);
       setIsPanning(false);
     };
 
