@@ -17,6 +17,11 @@ export type ShapeComponentProps = {
   selectedCount: number;
   renderHandles: (shape: Shape) => React.ReactNode;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onConnectorMouseDown?: (
+    e: React.MouseEvent,
+    shapeId: number,
+    direction: "top" | "right" | "bottom" | "left"
+  ) => void;
 };
 
 export type ShapeComponent = React.FC<ShapeComponentProps>;

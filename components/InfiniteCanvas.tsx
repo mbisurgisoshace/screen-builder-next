@@ -17,6 +17,61 @@ export default function InfiniteCanvas() {
   const { scale, canvasRef, position, setPosition, setScale } =
     useCanvasTransform();
 
+  const [connecting, setConnecting] = useState<{
+    fromShapeId: number;
+    fromDirection: "top" | "right" | "bottom" | "left";
+    fromPosition: { x: number; y: number };
+  } | null>(null);
+
+  const [connectingMousePos, setConnectingMousePos] = useState<Position | null>(
+    null
+  );
+
+  const [isDraggingConnector, setIsDraggingConnector] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (connecting) {
+        const x = (e.clientX - position.x) / scale;
+        const y = (e.clientY - position.y) / scale;
+        setConnectingMousePos({ x, y });
+
+        if (!isDraggingConnector) setIsDraggingConnector(true);
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isDraggingConnector) {
+        setConnecting(null);
+        setConnectingMousePos(null);
+        setIsDraggingConnector(false);
+      }
+    };
+
+    if (connecting) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [connecting, position, scale, isDraggingConnector]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setConnecting(null);
+        setConnectingMousePos(null);
+        setIsDraggingConnector(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const {
     shapes,
     setShapes,
@@ -128,6 +183,51 @@ export default function InfiniteCanvas() {
     });
   };
 
+  const handleConnectorMouseDown = (
+    e: React.MouseEvent,
+    shapeId: number,
+    direction: "top" | "right" | "bottom" | "left"
+  ) => {
+    e.preventDefault();
+
+    const shape = shapes.find((s) => s.id === shapeId);
+    if (!shape) return;
+
+    // Calculate the exact starting point of the arrow
+    const shapeCenter = {
+      x: shape.x + shape.width / 2,
+      y: shape.y + shape.height / 2,
+    };
+
+    let fromX = shapeCenter.x;
+    let fromY = shapeCenter.y;
+
+    switch (direction) {
+      case "top":
+        fromY = shape.y;
+        break;
+      case "bottom":
+        fromY = shape.y + shape.height;
+        break;
+      case "left":
+        fromX = shape.x;
+        break;
+      case "right":
+        fromX = shape.x + shape.width;
+        break;
+    }
+
+    setConnecting({
+      fromShapeId: shapeId,
+      fromDirection: direction,
+      fromPosition: { x: fromX, y: fromY },
+    });
+
+    // Prevent other interactions
+    setDragging(false);
+    setResizing(null);
+  };
+
   const groupBounds = getGroupBounds();
 
   // --- Shape creation ---
@@ -147,6 +247,8 @@ export default function InfiniteCanvas() {
   const handleDragStart = (e: React.DragEvent) => {
     e.preventDefault();
   };
+
+  console.log("connecting", connecting, connectingMousePos);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-100 relative flex">
@@ -215,17 +317,42 @@ export default function InfiniteCanvas() {
           {/* Group bounding box */}
           {groupBounds && <SelectionGroup bounds={groupBounds} />}
 
-          {/* Shapes */}
-          {/* {shapes.map((shape) => (
-            <Shape
-              key={shape.id}
-              shape={shape}
-              renderHandles={renderHandles}
-              selectedCount={selectedShapeIds.length}
-              isSelected={selectedShapeIds.includes(shape.id)}
-              onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
-            />
-          ))} */}
+          {connecting && connectingMousePos && (
+            <svg
+              className="absolute top-0 left-0 w-full h-full pointer-events-none z-30"
+              style={{
+                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                transformOrigin: "0 0",
+              }}
+            >
+              {/* <line
+                x1={connecting.fromPosition.x}
+                y1={connecting.fromPosition.y}
+                x2={connectingMousePos.x}
+                y2={connectingMousePos.y}
+                stroke="#3B82F6"
+                strokeWidth="2"
+                markerEnd="url(#arrowhead)"
+              /> */}
+              <CurvedArrow
+                from={connecting.fromPosition}
+                to={connectingMousePos}
+              />
+              <defs>
+                <marker
+                  id="arrowhead"
+                  markerWidth="10"
+                  markerHeight="7"
+                  refX="10"
+                  refY="3.5"
+                  orient="auto"
+                >
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6" />
+                </marker>
+              </defs>
+            </svg>
+          )}
+
           {shapes.map((shape) => {
             const Component = shapeRegistry[shape.type];
             if (!Component) return null;
@@ -238,6 +365,7 @@ export default function InfiniteCanvas() {
                 selectedCount={selectedShapeIds.length}
                 isSelected={selectedShapeIds.includes(shape.id)}
                 onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
+                onConnectorMouseDown={handleConnectorMouseDown}
               />
             );
           })}
@@ -246,3 +374,39 @@ export default function InfiniteCanvas() {
     </div>
   );
 }
+
+interface CurvedArrowProps {
+  from: { x: number; y: number };
+  to: { x: number; y: number };
+  color?: string;
+  strokeWidth?: number;
+}
+
+export const CurvedArrow: React.FC<CurvedArrowProps> = ({
+  from,
+  to,
+  color = "#3B82F6",
+  strokeWidth = 2,
+}) => {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+
+  const curveFactor = 0.3;
+  const cp1 = {
+    x: from.x + dx * curveFactor,
+    y: from.y,
+  };
+  const cp2 = {
+    x: to.x - dx * curveFactor,
+    y: to.y,
+  };
+
+  const path = `M ${from.x},${from.y} C ${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${to.x},${to.y}`;
+
+  return (
+    <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
+      <path d={path} stroke={color} strokeWidth={strokeWidth} fill="none" />
+      <circle cx={to.x} cy={to.y} r={3} fill={color} />
+    </svg>
+  );
+};

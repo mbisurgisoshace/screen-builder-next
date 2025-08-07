@@ -65,7 +65,14 @@ export const Shape: React.FC<Props> = ({
   );
 };
 
-export const renderConnectorPoints = () => {
+export const renderConnectorPoints = (
+  shapeId: number,
+  onMouseDown: (
+    e: React.MouseEvent,
+    shapeId: number,
+    direction: "top" | "right" | "bottom" | "left"
+  ) => void
+) => {
   const dotSize = 8;
   const offset = 12; // A bit more than before for visual balance
 
@@ -124,6 +131,9 @@ export const renderConnectorPoints = () => {
       data-connector-id={point.id}
       className="group absolute z-40"
       style={point.style}
+      onMouseDown={(e) =>
+        onMouseDown(e, shapeId, point.id as "top" | "right" | "bottom" | "left")
+      }
     >
       <div className="w-2 h-2 rounded-full bg-blue-500 transition-all duration-200 group-hover:scale-150 group-hover:bg-blue-600 relative flex items-center justify-center">
         <svg

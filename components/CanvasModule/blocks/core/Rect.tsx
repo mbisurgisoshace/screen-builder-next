@@ -2,8 +2,14 @@ import { renderConnectorPoints } from "../../Shape";
 import { ShapeComponentProps } from "../../types";
 
 export function Rect(props: ShapeComponentProps) {
-  const { shape, isSelected, selectedCount, onMouseDown, renderHandles } =
-    props;
+  const {
+    shape,
+    isSelected,
+    selectedCount,
+    onMouseDown,
+    renderHandles,
+    onConnectorMouseDown,
+  } = props;
   return (
     <div
       onMouseDown={onMouseDown}
@@ -22,7 +28,8 @@ export function Rect(props: ShapeComponentProps) {
       {isSelected && selectedCount === 1 && (
         <>
           {renderHandles(shape)}
-          {renderConnectorPoints(shape)}
+          {onConnectorMouseDown &&
+            renderConnectorPoints(shape.id, onConnectorMouseDown)}
         </>
       )}
     </div>
