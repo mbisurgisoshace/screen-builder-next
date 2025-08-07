@@ -8,6 +8,8 @@ import { useCanvasTransform } from "./CanvasModule/hooks/useCanvasTransform";
 import { useMarqueeSelection } from "./CanvasModule/hooks/useMarqueeSelection";
 import { Shape } from "./CanvasModule/Shape";
 import { useShapeResizing } from "./CanvasModule/hooks/useShapeResizing";
+import { useCanvasInteraction } from "./CanvasModule/hooks/useCanvasInteraction";
+import { useShapeInteraction } from "./CanvasModule/hooks/useShapeInteraction";
 
 export default function InfiniteCanvas() {
   const { scale, canvasRef, position, setPosition, setScale } =
@@ -73,99 +75,28 @@ export default function InfiniteCanvas() {
     setLastMousePos: setCanvasMousePos,
   });
 
+  useCanvasInteraction({
+    canvasRef,
+    setPosition,
+    canvasMousePos,
+    setCanvasMousePos,
+    scale,
+    setIsPanning,
+    setResizing,
+    setDragging,
+    startMarquee,
+    setMarqueeMousePos,
+  });
+
+  const { handleShapeMouseDown, startResizing } = useShapeInteraction({
+    setSelectedShapeIds,
+    setDragging,
+    setCanvasMousePos,
+    setResizing,
+  });
+
   // Shape ID generator
   const nextIdRef = useRef(1000);
-
-  // --- Mouse handling ---
-  useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-
-      if (target.draggable) return;
-
-      // Middle mouse → start panning
-      if (e.button === 1) {
-        e.preventDefault();
-        setIsPanning(true);
-        setCanvasMousePos({ x: e.clientX, y: e.clientY });
-        return;
-      }
-
-      // Multi-selection bounding box click → move group
-      if (target.dataset.groupdrag === "true") {
-        setDragging(true);
-        setCanvasMousePos({ x: e.clientX, y: e.clientY });
-        return;
-      }
-
-      if (!target.dataset.shapeid && !target.dataset.handle) {
-        startMarquee(e.clientX, e.clientY);
-        setMarqueeMousePos({ x: e.clientX, y: e.clientY });
-      }
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      // Panning
-      if (isPanning) {
-        const dx = e.clientX - canvasMousePos.x;
-        const dy = e.clientY - canvasMousePos.y;
-        setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-        setCanvasMousePos({ x: e.clientX, y: e.clientY });
-        return;
-      }
-    };
-
-    const handleMouseUp = () => {
-      setDragging(false);
-      setIsPanning(false);
-    };
-
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => {
-      window.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [
-    scale,
-    position,
-    canvasMousePos,
-    shapes,
-    selectedShapeIds,
-
-    resizing,
-    dragging,
-    isPanning,
-  ]);
-
-  // --- Shape interactions ---
-  const handleShapeMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>,
-    id: number
-  ) => {
-    e.stopPropagation();
-    if (e.shiftKey) {
-      setSelectedShapeIds((prev) =>
-        prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
-      );
-    } else {
-      setSelectedShapeIds([id]);
-    }
-    setDragging(true);
-    setCanvasMousePos({ x: e.clientX, y: e.clientY });
-  };
-
-  const startResizing = (
-    e: React.MouseEvent<HTMLDivElement>,
-    id: number,
-    handle: string
-  ) => {
-    e.stopPropagation();
-    setResizing({ id, handle });
-    setCanvasMousePos({ x: e.clientX, y: e.clientY });
-  };
 
   const renderHandles = (shape: IShape) => {
     const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
