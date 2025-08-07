@@ -7,9 +7,19 @@ export interface Shape {
   color: string;
   width: number;
   text?: string;
-  type: ShapeType;
   height: number;
+  type: ShapeType;
 }
+
+export type ShapeComponentProps = {
+  shape: Shape;
+  isSelected: boolean;
+  selectedCount: number;
+  renderHandles: (shape: Shape) => React.ReactNode;
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+};
+
+export type ShapeComponent = React.FC<ShapeComponentProps>;
 
 export interface Position {
   x: number;

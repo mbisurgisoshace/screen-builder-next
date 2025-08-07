@@ -11,6 +11,7 @@ import { useShapeResizing } from "./CanvasModule/hooks/useShapeResizing";
 import { useCanvasInteraction } from "./CanvasModule/hooks/useCanvasInteraction";
 import { useShapeInteraction } from "./CanvasModule/hooks/useShapeInteraction";
 import { useShapeManager } from "./CanvasModule/hooks/useShapeManager";
+import { shapeRegistry } from "./CanvasModule/blocks/blockRegistry";
 
 export default function InfiniteCanvas() {
   const { scale, canvasRef, position, setPosition, setScale } =
@@ -33,27 +34,6 @@ export default function InfiniteCanvas() {
     addShape,
     updateShape,
   } = useShapeManager(scale, position);
-
-  // Shapes
-  // const [shapes, setShapes] = useState<IShape[]>([
-  //   {
-  //     id: 1,
-  //     type: "rect",
-  //     x: 500,
-  //     y: 500,
-  //     width: 160,
-  //     height: 112,
-  //     color: "bg-blue-500",
-  //   },
-  // ]);
-
-  // Selection & interaction
-  // const [selectedShapeIds, setSelectedShapeIds] = useState<number[]>([]);
-  // const [dragging, setDragging] = useState(false);
-  // const [resizing, setResizing] = useState<null | {
-  //   id: number;
-  //   handle: string;
-  // }>(null);
 
   // Panning & marquee selection
   const [isPanning, setIsPanning] = useState(false);
@@ -148,18 +128,6 @@ export default function InfiniteCanvas() {
     });
   };
 
-  // const getGroupBounds = () => {
-  //   const selectedShapes = shapes.filter((s) =>
-  //     selectedShapeIds.includes(s.id)
-  //   );
-  //   if (selectedShapes.length < 2) return null;
-  //   const minX = Math.min(...selectedShapes.map((s) => s.x));
-  //   const minY = Math.min(...selectedShapes.map((s) => s.y));
-  //   const maxX = Math.max(...selectedShapes.map((s) => s.x + s.width));
-  //   const maxY = Math.max(...selectedShapes.map((s) => s.y + s.height));
-  //   return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
-  // };
-
   const groupBounds = getGroupBounds();
 
   // --- Shape creation ---
@@ -170,34 +138,6 @@ export default function InfiniteCanvas() {
     if (!type) return;
 
     addShape(type, e.clientX, e.clientY);
-
-    // // Canvas coords adjusted for pan/zoom
-    // const dropX = (e.clientX - position.x) / scale;
-    // const dropY = (e.clientY - position.y) / scale;
-
-    // const newId = nextIdRef.current++;
-    // const colors = [
-    //   "bg-blue-400",
-    //   "bg-green-400",
-    //   "bg-yellow-400",
-    //   "bg-pink-400",
-    //   "bg-purple-400",
-    // ];
-    // const color = colors[Math.floor(Math.random() * colors.length)];
-
-    // const newShape: IShape = {
-    //   id: newId,
-    //   type,
-    //   x: dropX,
-    //   y: dropY,
-    //   width: type === "text" ? 120 : 160,
-    //   height: type === "text" ? 40 : 112,
-    //   color,
-    //   text: type === "text" ? "New text" : undefined,
-    // };
-
-    // setShapes((prev) => [...prev, newShape]);
-    // setSelectedShapeIds([newId]);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -276,7 +216,7 @@ export default function InfiniteCanvas() {
           {groupBounds && <SelectionGroup bounds={groupBounds} />}
 
           {/* Shapes */}
-          {shapes.map((shape) => (
+          {/* {shapes.map((shape) => (
             <Shape
               key={shape.id}
               shape={shape}
@@ -285,7 +225,22 @@ export default function InfiniteCanvas() {
               isSelected={selectedShapeIds.includes(shape.id)}
               onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
             />
-          ))}
+          ))} */}
+          {shapes.map((shape) => {
+            const Component = shapeRegistry[shape.type];
+            if (!Component) return null;
+
+            return (
+              <Component
+                key={shape.id}
+                shape={shape}
+                renderHandles={renderHandles}
+                selectedCount={selectedShapeIds.length}
+                isSelected={selectedShapeIds.includes(shape.id)}
+                onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
+              />
+            );
+          })}
         </div>
       </div>
     </div>
