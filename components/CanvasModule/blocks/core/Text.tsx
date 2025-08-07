@@ -1,3 +1,4 @@
+import { renderConnectorPoints } from "../../Shape";
 import { ShapeComponentProps } from "../../types";
 
 export function Text({
@@ -25,7 +26,12 @@ export function Text({
       }`}
     >
       {shape.text || "Text"}
-      {isSelected && selectedCount === 1 && renderHandles(shape)}
+      {isSelected && selectedCount === 1 && (
+        <>
+          {renderHandles(shape)}
+          {renderConnectorPoints(shape)}
+        </>
+      )}
     </div>
   );
 }

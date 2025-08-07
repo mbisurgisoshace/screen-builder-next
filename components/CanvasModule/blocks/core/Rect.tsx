@@ -1,3 +1,4 @@
+import { renderConnectorPoints } from "../../Shape";
 import { ShapeComponentProps } from "../../types";
 
 export function Rect(props: ShapeComponentProps) {
@@ -18,7 +19,12 @@ export function Rect(props: ShapeComponentProps) {
         isSelected && selectedCount === 1 ? "ring-2 ring-blue-500" : ""
       }`}
     >
-      {isSelected && selectedCount === 1 && renderHandles(shape)}
+      {isSelected && selectedCount === 1 && (
+        <>
+          {renderHandles(shape)}
+          {renderConnectorPoints(shape)}
+        </>
+      )}
     </div>
   );
 }
