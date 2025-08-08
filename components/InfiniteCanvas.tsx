@@ -12,6 +12,29 @@ import { useCanvasInteraction } from "./CanvasModule/hooks/useCanvasInteraction"
 import { useShapeInteraction } from "./CanvasModule/hooks/useShapeInteraction";
 import { useShapeManager } from "./CanvasModule/hooks/useShapeManager";
 import { shapeRegistry } from "./CanvasModule/blocks/blockRegistry";
+import { useBorderSnapping } from "./CanvasModule/hooks/useBorderSnapping";
+
+type RelativeAnchor = {
+  x: number; // valor entre 0 y 1, representa el porcentaje del ancho
+  y: number; // valor entre 0 y 1, representa el porcentaje del alto
+};
+
+type Connection = {
+  fromShapeId: number;
+  fromAnchor: { x: number; y: number }; // relative [0-1] range
+  toShapeId: number;
+  toAnchor: { x: number; y: number }; // relative [0-1] range
+};
+
+export function getAbsoluteAnchorPosition(
+  shape: IShape,
+  anchor: { x: number; y: number }
+): Position {
+  return {
+    x: shape.x + shape.width * anchor.x,
+    y: shape.y + shape.height * anchor.y,
+  };
+}
 
 export default function InfiniteCanvas() {
   const { scale, canvasRef, position, setPosition, setScale } =
@@ -23,54 +46,21 @@ export default function InfiniteCanvas() {
     fromPosition: { x: number; y: number };
   } | null>(null);
 
+  // const [connections, setConnections] = useState<
+  //   {
+  //     fromShapeId: number;
+  //     fromDirection: "top" | "right" | "bottom" | "left";
+  //     toShapeId: number;
+  //     toPoint: { x: number; y: number };
+  //   }[]
+  // >([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
+
   const [connectingMousePos, setConnectingMousePos] = useState<Position | null>(
     null
   );
 
   const [isDraggingConnector, setIsDraggingConnector] = useState(false);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (connecting) {
-        const x = (e.clientX - position.x) / scale;
-        const y = (e.clientY - position.y) / scale;
-        setConnectingMousePos({ x, y });
-
-        if (!isDraggingConnector) setIsDraggingConnector(true);
-      }
-    };
-
-    const handleMouseUp = () => {
-      if (isDraggingConnector) {
-        setConnecting(null);
-        setConnectingMousePos(null);
-        setIsDraggingConnector(false);
-      }
-    };
-
-    if (connecting) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [connecting, position, scale, isDraggingConnector]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setConnecting(null);
-        setConnectingMousePos(null);
-        setIsDraggingConnector(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
   const {
     shapes,
@@ -89,6 +79,109 @@ export default function InfiniteCanvas() {
     addShape,
     updateShape,
   } = useShapeManager(scale, position);
+
+  const { snapResult } = useBorderSnapping(connectingMousePos, shapes);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (connecting) {
+        const x = (e.clientX - position.x) / scale;
+        const y = (e.clientY - position.y) / scale;
+        setConnectingMousePos({ x, y });
+
+        if (!isDraggingConnector) setIsDraggingConnector(true);
+      }
+    };
+
+    // const handleMouseUp = () => {
+    //   // if (isDraggingConnector) {
+    //   //   setConnecting(null);
+    //   //   setConnectingMousePos(null);
+    //   //   setIsDraggingConnector(false);
+    //   // }
+
+    //   console.log("snapResult", snapResult);
+
+    //   if (isDraggingConnector && connecting && snapResult?.shapeId) {
+    //     setConnections((prev) => [
+    //       ...prev,
+    //       {
+    //         fromShapeId: connecting.fromShapeId,
+    //         fromDirection: connecting.fromDirection,
+    //         toShapeId: snapResult.shapeId,
+    //         toPoint: snapResult.snappedPosition,
+    //       },
+    //     ]);
+
+    //     setConnecting(null);
+    //     setConnectingMousePos(null);
+    //     setIsDraggingConnector(false);
+    //   }
+
+    //   // Always reset
+    // };
+
+    const handleMouseUp = () => {
+      if (isDraggingConnector && connecting && snapResult?.shapeId) {
+        const fromShape = shapes.find((s) => s.id === connecting.fromShapeId);
+        const toShape = shapes.find((s) => s.id === snapResult.shapeId);
+
+        if (!fromShape || !toShape) {
+          setConnecting(null);
+          setConnectingMousePos(null);
+          setIsDraggingConnector(false);
+          return;
+        }
+
+        const fromAnchor = {
+          x: (connecting.fromPosition.x - fromShape.x) / fromShape.width,
+          y: (connecting.fromPosition.y - fromShape.y) / fromShape.height,
+        };
+
+        const toAnchor = {
+          x: (snapResult.snappedPosition.x - toShape.x) / toShape.width,
+          y: (snapResult.snappedPosition.y - toShape.y) / toShape.height,
+        };
+
+        setConnections((prev) => [
+          ...prev,
+          {
+            fromShapeId: connecting.fromShapeId,
+            toShapeId: snapResult.shapeId,
+            fromAnchor,
+            toAnchor,
+          },
+        ]);
+
+        setConnecting(null);
+        setConnectingMousePos(null);
+        setIsDraggingConnector(false);
+      }
+    };
+
+    if (connecting) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [connecting, position, scale, isDraggingConnector, snapResult]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setConnecting(null);
+        setConnectingMousePos(null);
+        setIsDraggingConnector(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Panning & marquee selection
   const [isPanning, setIsPanning] = useState(false);
@@ -250,6 +343,23 @@ export default function InfiniteCanvas() {
 
   console.log("connecting", connecting, connectingMousePos);
 
+  function getConnectorPosition(
+    shape: IShape,
+    direction: "top" | "right" | "bottom" | "left"
+  ): { x: number; y: number } {
+    switch (direction) {
+      case "top":
+        return { x: shape.x + shape.width / 2, y: shape.y };
+      case "bottom":
+        return { x: shape.x + shape.width / 2, y: shape.y + shape.height };
+      case "left":
+        return { x: shape.x, y: shape.y + shape.height / 2 };
+      case "right":
+      default:
+        return { x: shape.x + shape.width, y: shape.y + shape.height / 2 };
+    }
+  }
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-100 relative flex">
       {/* Toolbar */}
@@ -336,7 +446,8 @@ export default function InfiniteCanvas() {
               /> */}
               <CurvedArrow
                 from={connecting.fromPosition}
-                to={connectingMousePos}
+                // to={connectingMousePos}
+                to={snapResult?.snappedPosition ?? connectingMousePos}
               />
               <defs>
                 <marker
@@ -352,6 +463,28 @@ export default function InfiniteCanvas() {
               </defs>
             </svg>
           )}
+
+          {/* {connections.map((conn, idx) => {
+            const fromShape = shapes.find((s) => s.id === conn.fromShapeId);
+            if (!fromShape) return null;
+
+            const from = getConnectorPosition(fromShape, conn.fromDirection);
+
+            return <CurvedArrow key={idx} from={from} to={conn.toPoint} />;
+          })} */}
+          {connections.map((conn) => {
+            const fromShape = shapes.find((s) => s.id === conn.fromShapeId);
+            const toShape = shapes.find((s) => s.id === conn.toShapeId);
+            if (!fromShape || !toShape) return null;
+
+            const fromPos = getAbsoluteAnchorPosition(
+              fromShape,
+              conn.fromAnchor
+            );
+            const toPos = getAbsoluteAnchorPosition(toShape, conn.toAnchor);
+
+            return <CurvedArrow key={conn.id} from={fromPos} to={toPos} />;
+          })}
 
           {shapes.map((shape) => {
             const Component = shapeRegistry[shape.type];
