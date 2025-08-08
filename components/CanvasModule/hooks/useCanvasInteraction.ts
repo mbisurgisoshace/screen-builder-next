@@ -33,6 +33,7 @@ export function useCanvasInteraction({
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.draggable) return;
+      if (target.closest('[data-handle="true"]')) return;
 
       // Middle mouse → panning
       if (e.button === 1) {

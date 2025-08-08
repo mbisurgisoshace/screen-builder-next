@@ -15,7 +15,12 @@ export type ShapeComponentProps = {
   shape: Shape;
   isSelected: boolean;
   selectedCount: number;
-  renderHandles: (shape: Shape) => React.ReactNode;
+  // renderHandles: (shape: Shape) => React.ReactNode;
+  onResizeStart: (
+    e: React.MouseEvent<HTMLDivElement>,
+    id: number,
+    handle: string
+  ) => void;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   onConnectorMouseDown?: (
     e: React.MouseEvent,

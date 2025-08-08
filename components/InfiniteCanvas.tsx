@@ -1,18 +1,19 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 
-import { Shape as IShape, Position, ShapeType } from "./CanvasModule/types";
 import SelectionGroup from "./CanvasModule/SelectionBox";
+import { Shape as IShape, Position, ShapeType } from "./CanvasModule/types";
+
+import { shapeRegistry } from "./CanvasModule/blocks/blockRegistry";
+import { useShapeManager } from "./CanvasModule/hooks/useShapeManager";
 import { useShapeDragging } from "./CanvasModule/hooks/useShapeDragging";
+import { useShapeResizing } from "./CanvasModule/hooks/useShapeResizing";
+import { useBorderSnapping } from "./CanvasModule/hooks/useBorderSnapping";
 import { useCanvasTransform } from "./CanvasModule/hooks/useCanvasTransform";
 import { useMarqueeSelection } from "./CanvasModule/hooks/useMarqueeSelection";
-import { Shape } from "./CanvasModule/Shape";
-import { useShapeResizing } from "./CanvasModule/hooks/useShapeResizing";
-import { useCanvasInteraction } from "./CanvasModule/hooks/useCanvasInteraction";
 import { useShapeInteraction } from "./CanvasModule/hooks/useShapeInteraction";
-import { useShapeManager } from "./CanvasModule/hooks/useShapeManager";
-import { shapeRegistry } from "./CanvasModule/blocks/blockRegistry";
-import { useBorderSnapping } from "./CanvasModule/hooks/useBorderSnapping";
+import { useCanvasInteraction } from "./CanvasModule/hooks/useCanvasInteraction";
+import { useConnectionManager } from "./CanvasModule/hooks/useConnectionManager";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -54,7 +55,7 @@ export default function InfiniteCanvas() {
   //     toPoint: { x: number; y: number };
   //   }[]
   // >([]);
-  const [connections, setConnections] = useState<Connection[]>([]);
+  // const [connections, setConnections] = useState<Connection[]>([]);
 
   const [connectingMousePos, setConnectingMousePos] = useState<Position | null>(
     null
@@ -80,6 +81,20 @@ export default function InfiniteCanvas() {
     updateShape,
   } = useShapeManager(scale, position);
 
+  const {
+    connections,
+    finalizeFromSnap,
+    useConnectionEndpoints,
+    selectConnection,
+    selectedConnectionId,
+    removeSelectedConnection,
+    removeConnection, // (for later)
+    updateConnection, // (for later)
+    addConnectionRelative, // (for later/manual adds)
+  } = useConnectionManager();
+
+  const connectionEndpoints = useConnectionEndpoints(shapes);
+
   const { snapResult } = useBorderSnapping(connectingMousePos, shapes);
 
   useEffect(() => {
@@ -93,34 +108,6 @@ export default function InfiniteCanvas() {
       }
     };
 
-    // const handleMouseUp = () => {
-    //   // if (isDraggingConnector) {
-    //   //   setConnecting(null);
-    //   //   setConnectingMousePos(null);
-    //   //   setIsDraggingConnector(false);
-    //   // }
-
-    //   console.log("snapResult", snapResult);
-
-    //   if (isDraggingConnector && connecting && snapResult?.shapeId) {
-    //     setConnections((prev) => [
-    //       ...prev,
-    //       {
-    //         fromShapeId: connecting.fromShapeId,
-    //         fromDirection: connecting.fromDirection,
-    //         toShapeId: snapResult.shapeId,
-    //         toPoint: snapResult.snappedPosition,
-    //       },
-    //     ]);
-
-    //     setConnecting(null);
-    //     setConnectingMousePos(null);
-    //     setIsDraggingConnector(false);
-    //   }
-
-    //   // Always reset
-    // };
-
     const handleMouseUp = () => {
       if (isDraggingConnector && connecting && snapResult?.shapeId) {
         const fromShape = shapes.find((s) => s.id === connecting.fromShapeId);
@@ -133,25 +120,11 @@ export default function InfiniteCanvas() {
           return;
         }
 
-        const fromAnchor = {
-          x: (connecting.fromPosition.x - fromShape.x) / fromShape.width,
-          y: (connecting.fromPosition.y - fromShape.y) / fromShape.height,
-        };
-
-        const toAnchor = {
-          x: (snapResult.snappedPosition.x - toShape.x) / toShape.width,
-          y: (snapResult.snappedPosition.y - toShape.y) / toShape.height,
-        };
-
-        setConnections((prev) => [
-          ...prev,
-          {
-            fromShapeId: connecting.fromShapeId,
-            toShapeId: snapResult.shapeId,
-            fromAnchor,
-            toAnchor,
-          },
-        ]);
+        finalizeFromSnap({
+          connecting, // { fromShapeId, fromDirection, fromPosition }
+          snapResult, // { shapeId, snappedPosition }
+          shapes,
+        });
 
         setConnecting(null);
         setConnectingMousePos(null);
@@ -169,6 +142,24 @@ export default function InfiniteCanvas() {
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [connecting, position, scale, isDraggingConnector, snapResult]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (
+        (e.key === "Backspace" || e.key === "Delete") &&
+        selectedConnectionId
+      ) {
+        e.preventDefault();
+        removeSelectedConnection();
+      }
+      // Optional: ESC clears connection selection (and your shape selection if you want)
+      if (e.key === "Escape" && selectedConnectionId) {
+        selectConnection(null);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedConnectionId, removeSelectedConnection, selectConnection]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -245,36 +236,6 @@ export default function InfiniteCanvas() {
 
   // Shape ID generator
   const nextIdRef = useRef(1000);
-
-  const renderHandles = (shape: IShape) => {
-    const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
-    return handles.map((handle) => {
-      const size = 8;
-      const style: React.CSSProperties = {
-        width: `${size}px`,
-        height: `${size}px`,
-        background: "#3B82F6",
-        position: "absolute",
-        cursor: `${handle}-resize`,
-        zIndex: 40,
-      };
-      if (handle.includes("n")) style.top = `-4px`;
-      if (handle.includes("s")) style.top = `calc(100% + 4px)`;
-      if (handle.includes("w")) style.left = `-4px`;
-      if (handle.includes("e")) style.left = `calc(100% + 4px)`;
-      if (handle === "n" || handle === "s") style.left = "50%";
-      if (handle === "e" || handle === "w") style.top = "50%";
-      style.transform = "translate(-50%, -50%)";
-      return (
-        <div
-          key={handle}
-          data-handle
-          onMouseDown={(e) => startResizing(e, shape.id, handle)}
-          style={style}
-        />
-      );
-    });
-  };
 
   const handleConnectorMouseDown = (
     e: React.MouseEvent,
@@ -464,26 +425,48 @@ export default function InfiniteCanvas() {
             </svg>
           )}
 
-          {/* {connections.map((conn, idx) => {
-            const fromShape = shapes.find((s) => s.id === conn.fromShapeId);
-            if (!fromShape) return null;
+          {/* {connectionEndpoints.map(({ id, from, to }) => (
+            <CurvedArrow key={id} from={from} to={to} />
+          ))} */}
+          {connectionEndpoints.map(({ id, from, to }) => {
+            // build a cubic path like your CurvedArrow does
+            const dx = to.x - from.x;
+            const dy = to.y - from.y;
+            const curveFactor = 0.3;
+            const cp1 = { x: from.x + dx * curveFactor, y: from.y };
+            const cp2 = { x: to.x - dx * curveFactor, y: to.y };
+            const d = `M ${from.x},${from.y} C ${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${to.x},${to.y}`;
 
-            const from = getConnectorPosition(fromShape, conn.fromDirection);
+            const isSelected = selectedConnectionId === id;
 
-            return <CurvedArrow key={idx} from={from} to={conn.toPoint} />;
-          })} */}
-          {connections.map((conn) => {
-            const fromShape = shapes.find((s) => s.id === conn.fromShapeId);
-            const toShape = shapes.find((s) => s.id === conn.toShapeId);
-            if (!fromShape || !toShape) return null;
-
-            const fromPos = getAbsoluteAnchorPosition(
-              fromShape,
-              conn.fromAnchor
+            return (
+              <svg
+                key={id}
+                className="absolute top-0 left-0 w-full h-full z-20"
+                style={{ pointerEvents: "none" }} // let only the thick path capture events
+              >
+                {/* HIT AREA: wide transparent stroke to make clicking easy */}
+                <path
+                  d={d}
+                  stroke="transparent"
+                  strokeWidth={16}
+                  fill="none"
+                  style={{ pointerEvents: "stroke" }}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    selectConnection(id);
+                  }}
+                />
+                {/* VISIBLE STROKE */}
+                <path
+                  d={d}
+                  stroke={isSelected ? "#2563EB" : "#3B82F6"} // selected = darker blue
+                  strokeWidth={isSelected ? 3 : 2}
+                  fill="none"
+                  markerEnd="url(#arrowhead)"
+                />
+              </svg>
             );
-            const toPos = getAbsoluteAnchorPosition(toShape, conn.toAnchor);
-
-            return <CurvedArrow key={conn.id} from={fromPos} to={toPos} />;
           })}
 
           {shapes.map((shape) => {
@@ -494,7 +477,8 @@ export default function InfiniteCanvas() {
               <Component
                 key={shape.id}
                 shape={shape}
-                renderHandles={renderHandles}
+                //renderHandles={renderHandles}
+                onResizeStart={startResizing}
                 selectedCount={selectedShapeIds.length}
                 isSelected={selectedShapeIds.includes(shape.id)}
                 onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}

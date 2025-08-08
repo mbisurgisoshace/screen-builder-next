@@ -181,6 +181,21 @@ export function useConnectionManager(initial: Connection[] = []) {
     );
   }
 
+  // selection state for connections
+  const [selectedConnectionId, setSelectedConnectionId] = useState<
+    string | null
+  >(null);
+
+  function selectConnection(id: string | null) {
+    setSelectedConnectionId(id);
+  }
+
+  function removeSelectedConnection() {
+    if (!selectedConnectionId) return;
+    removeConnection(selectedConnectionId);
+    setSelectedConnectionId(null);
+  }
+
   return {
     // state
     connections,
@@ -191,6 +206,11 @@ export function useConnectionManager(initial: Connection[] = []) {
     removeConnection,
     updateConnection,
     finalizeFromSnap,
+
+    // selection
+    selectedConnectionId,
+    selectConnection,
+    removeSelectedConnection,
 
     // computed endpoints for rendering
     useConnectionEndpoints,
