@@ -14,6 +14,7 @@ import { useMarqueeSelection } from "./CanvasModule/hooks/useMarqueeSelection";
 import { useShapeInteraction } from "./CanvasModule/hooks/useShapeInteraction";
 import { useCanvasInteraction } from "./CanvasModule/hooks/useCanvasInteraction";
 import { useConnectionManager } from "./CanvasModule/hooks/useConnectionManager";
+import { SelectableConnectionArrow } from "./CanvasModule/SelectableConnectionArrow";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -95,7 +96,13 @@ export default function InfiniteCanvas() {
 
   const connectionEndpoints = useConnectionEndpoints(shapes);
 
-  const { snapResult } = useBorderSnapping(connectingMousePos, shapes);
+  // const { snapResult } = useBorderSnapping(connectingMousePos, shapes);
+  const { snapResult } = useBorderSnapping(
+    connectingMousePos,
+    shapes,
+    scale,
+    connecting?.fromShapeId ?? null
+  );
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -388,7 +395,7 @@ export default function InfiniteCanvas() {
           {/* Group bounding box */}
           {groupBounds && <SelectionGroup bounds={groupBounds} />}
 
-          {connecting && connectingMousePos && (
+          {/* {connecting && connectingMousePos && (
             <svg
               className="absolute top-0 left-0 w-full h-full pointer-events-none z-30"
               style={{
@@ -396,15 +403,6 @@ export default function InfiniteCanvas() {
                 transformOrigin: "0 0",
               }}
             >
-              {/* <line
-                x1={connecting.fromPosition.x}
-                y1={connecting.fromPosition.y}
-                x2={connectingMousePos.x}
-                y2={connectingMousePos.y}
-                stroke="#3B82F6"
-                strokeWidth="2"
-                markerEnd="url(#arrowhead)"
-              /> */}
               <CurvedArrow
                 from={connecting.fromPosition}
                 // to={connectingMousePos}
@@ -423,12 +421,25 @@ export default function InfiniteCanvas() {
                 </marker>
               </defs>
             </svg>
+          )} */}
+
+          {/* {connecting && connectingMousePos && (
+            <CurvedArrow
+              from={connecting.fromPosition}
+              to={connectingMousePos}
+            />
+          )} */}
+          {connecting && connectingMousePos && (
+            <CurvedArrow
+              from={connecting.fromPosition}
+              to={snapResult?.snappedPosition ?? connectingMousePos}
+            />
           )}
 
           {/* {connectionEndpoints.map(({ id, from, to }) => (
             <CurvedArrow key={id} from={from} to={to} />
           ))} */}
-          {connectionEndpoints.map(({ id, from, to }) => {
+          {/* {connectionEndpoints.map(({ id, from, to }) => {
             // build a cubic path like your CurvedArrow does
             const dx = to.x - from.x;
             const dy = to.y - from.y;
@@ -445,7 +456,6 @@ export default function InfiniteCanvas() {
                 className="absolute top-0 left-0 w-full h-full z-20"
                 style={{ pointerEvents: "none" }} // let only the thick path capture events
               >
-                {/* HIT AREA: wide transparent stroke to make clicking easy */}
                 <path
                   d={d}
                   stroke="transparent"
@@ -457,7 +467,6 @@ export default function InfiniteCanvas() {
                     selectConnection(id);
                   }}
                 />
-                {/* VISIBLE STROKE */}
                 <path
                   d={d}
                   stroke={isSelected ? "#2563EB" : "#3B82F6"} // selected = darker blue
@@ -467,7 +476,17 @@ export default function InfiniteCanvas() {
                 />
               </svg>
             );
-          })}
+          })} */}
+          {connectionEndpoints.map(({ id, from, to }) => (
+            <SelectableConnectionArrow
+              key={id}
+              id={id}
+              from={from}
+              to={to}
+              selected={selectedConnectionId === id}
+              onSelect={selectConnection}
+            />
+          ))}
 
           {shapes.map((shape) => {
             const Component = shapeRegistry[shape.type];
@@ -492,38 +511,118 @@ export default function InfiniteCanvas() {
   );
 }
 
+// interface CurvedArrowProps {
+//   from: { x: number; y: number };
+//   to: { x: number; y: number };
+//   color?: string;
+//   strokeWidth?: number;
+// }
+
+// export const CurvedArrow: React.FC<CurvedArrowProps> = ({
+//   from,
+//   to,
+//   color = "#3B82F6",
+//   strokeWidth = 2,
+// }) => {
+//   const dx = to.x - from.x;
+//   const dy = to.y - from.y;
+
+//   const curveFactor = 0.3;
+//   const cp1 = {
+//     x: from.x + dx * curveFactor,
+//     y: from.y,
+//   };
+//   const cp2 = {
+//     x: to.x - dx * curveFactor,
+//     y: to.y,
+//   };
+
+//   const path = `M ${from.x},${from.y} C ${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${to.x},${to.y}`;
+
+//   return (
+//     <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
+//       <path d={path} stroke={color} strokeWidth={strokeWidth} fill="none" />
+//       <circle cx={to.x} cy={to.y} r={3} fill={color} />
+//     </svg>
+//   );
+// };
+
 interface CurvedArrowProps {
   from: { x: number; y: number };
   to: { x: number; y: number };
   color?: string;
   strokeWidth?: number;
+  zIndex?: number; // optional, defaults below
 }
 
+/**
+ * An SVG that auto-sizes to the arrow's bounding box so it never clips
+ * when the canvas is heavily panned/zoomed.
+ */
 export const CurvedArrow: React.FC<CurvedArrowProps> = ({
   from,
   to,
   color = "#3B82F6",
   strokeWidth = 2,
+  zIndex = 30,
 }) => {
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
+  // Compute a padded bounding box around the two points
+  const pad = 40;
+  const minX = Math.min(from.x, to.x) - pad;
+  const minY = Math.min(from.y, to.y) - pad;
+  const maxX = Math.max(from.x, to.x) + pad;
+  const maxY = Math.max(from.y, to.y) + pad;
 
+  const width = Math.max(1, maxX - minX);
+  const height = Math.max(1, maxY - minY);
+
+  // Convert world points to local coords within this svg
+  const fx = from.x - minX;
+  const fy = from.y - minY;
+  const tx = to.x - minX;
+  const ty = to.y - minY;
+
+  // Curve control points (same logic as before, but in local coords)
+  const dx = tx - fx;
+  const dy = ty - fy;
   const curveFactor = 0.3;
-  const cp1 = {
-    x: from.x + dx * curveFactor,
-    y: from.y,
-  };
-  const cp2 = {
-    x: to.x - dx * curveFactor,
-    y: to.y,
-  };
+  const cp1 = { x: fx + dx * curveFactor, y: fy };
+  const cp2 = { x: tx - dx * curveFactor, y: ty };
 
-  const path = `M ${from.x},${from.y} C ${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${to.x},${to.y}`;
+  const d = `M ${fx},${fy} C ${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${tx},${ty}`;
 
   return (
-    <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
-      <path d={path} stroke={color} strokeWidth={strokeWidth} fill="none" />
-      <circle cx={to.x} cy={to.y} r={3} fill={color} />
+    <svg
+      className="absolute pointer-events-none"
+      style={{
+        left: `${minX}px`,
+        top: `${minY}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+        zIndex,
+      }}
+    >
+      <defs>
+        <marker
+          id="arrowhead-preview"
+          markerWidth="10"
+          markerHeight="7"
+          refX="10"
+          refY="3.5"
+          orient="auto"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill={color} />
+        </marker>
+      </defs>
+
+      {/* wide transparent hit area not needed for preview; keep only visible path */}
+      <path
+        d={d}
+        stroke={color}
+        strokeWidth={strokeWidth}
+        fill="none"
+        markerEnd="url(#arrowhead-preview)"
+      />
     </svg>
   );
 };
