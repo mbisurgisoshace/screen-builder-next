@@ -3,7 +3,7 @@ export type ShapeType = "rect" | "ellipse" | "text";
 export interface Shape {
   x: number;
   y: number;
-  id: number;
+  id: string;
   color: string;
   width: number;
   text?: string;

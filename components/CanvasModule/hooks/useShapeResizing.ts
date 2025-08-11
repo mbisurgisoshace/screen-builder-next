@@ -8,8 +8,9 @@ interface UseShapeResizingProps {
   shapes: Shape[];
   setResizing: (value: null) => void;
   lastMousePos: Position;
-  resizing: { id: number; handle: string } | null;
+  resizing: { id: string; handle: string } | null;
   setLastMousePos: (pos: Position) => void;
+  updateShape: (id: string, updater: (s: Shape) => Shape) => void;
   setShapes: React.Dispatch<React.SetStateAction<Shape[]>>;
 }
 
@@ -19,6 +20,7 @@ export const useShapeResizing = ({
   shapes,
   setShapes,
   scale,
+  updateShape,
   lastMousePos,
   setLastMousePos,
 }: UseShapeResizingProps) => {
@@ -29,25 +31,40 @@ export const useShapeResizing = ({
       const dx = (e.clientX - lastMousePos.x) / scale;
       const dy = (e.clientY - lastMousePos.y) / scale;
 
-      setShapes((prevShapes) =>
-        prevShapes.map((shape) => {
-          if (shape.id !== resizing.id) return shape;
-          let { x, y, width, height } = shape;
+      // setShapes((prevShapes) =>
+      //   prevShapes.map((shape) => {
+      //     if (shape.id !== resizing.id) return shape;
+      //     let { x, y, width, height } = shape;
 
-          if (resizing.handle.includes("e")) width = Math.max(20, width + dx);
-          if (resizing.handle.includes("s")) height = Math.max(20, height + dy);
-          if (resizing.handle.includes("w")) {
-            x += dx;
-            width = Math.max(20, width - dx);
-          }
-          if (resizing.handle.includes("n")) {
-            y += dy;
-            height = Math.max(20, height - dy);
-          }
+      //     if (resizing.handle.includes("e")) width = Math.max(20, width + dx);
+      //     if (resizing.handle.includes("s")) height = Math.max(20, height + dy);
+      //     if (resizing.handle.includes("w")) {
+      //       x += dx;
+      //       width = Math.max(20, width - dx);
+      //     }
+      //     if (resizing.handle.includes("n")) {
+      //       y += dy;
+      //       height = Math.max(20, height - dy);
+      //     }
 
-          return { ...shape, x, y, width, height };
-        })
-      );
+      //     return { ...shape, x, y, width, height };
+      //   })
+      // );
+      updateShape(resizing.id, (shape) => {
+        let { x, y, width, height } = shape;
+
+        if (resizing.handle.includes("e")) width = Math.max(20, width + dx);
+        if (resizing.handle.includes("s")) height = Math.max(20, height + dy);
+        if (resizing.handle.includes("w")) {
+          x += dx;
+          width = Math.max(20, width - dx);
+        }
+        if (resizing.handle.includes("n")) {
+          y += dy;
+          height = Math.max(20, height - dy);
+        }
+        return { ...shape, x, y, width, height };
+      });
 
       setLastMousePos({ x: e.clientX, y: e.clientY });
     };

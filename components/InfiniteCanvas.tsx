@@ -1,4 +1,5 @@
 "use client";
+import { v4 as uuidv4 } from "uuid";
 import { useRef, useState, useEffect } from "react";
 
 import SelectionGroup from "./CanvasModule/SelectionBox";
@@ -15,6 +16,8 @@ import { useShapeInteraction } from "./CanvasModule/hooks/useShapeInteraction";
 import { useCanvasInteraction } from "./CanvasModule/hooks/useCanvasInteraction";
 import { useConnectionManager } from "./CanvasModule/hooks/useConnectionManager";
 import { SelectableConnectionArrow } from "./CanvasModule/SelectableConnectionArrow";
+import { useRealtimeShapes } from "./CanvasModule/hooks/realtime/useRealtimeShapes";
+import { useRealtimeConnections } from "./CanvasModule/hooks/realtime/useRealtimeConnections";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -22,9 +25,9 @@ type RelativeAnchor = {
 };
 
 type Connection = {
-  fromShapeId: number;
+  fromShapeId: string;
   fromAnchor: { x: number; y: number }; // relative [0-1] range
-  toShapeId: number;
+  toShapeId: string;
   toAnchor: { x: number; y: number }; // relative [0-1] range
 };
 
@@ -43,7 +46,7 @@ export default function InfiniteCanvas() {
     useCanvasTransform();
 
   const [connecting, setConnecting] = useState<{
-    fromShapeId: number;
+    fromShapeId: string;
     fromDirection: "top" | "right" | "bottom" | "left";
     fromPosition: { x: number; y: number };
   } | null>(null);
@@ -66,6 +69,15 @@ export default function InfiniteCanvas() {
 
   const {
     shapes,
+    addShape,
+    updateShape,
+    updateMany,
+    removeShapes,
+    liveShapesReady,
+  } = useRealtimeShapes();
+
+  const {
+    //shapes,
     setShapes,
     selectedShapeIds,
     setSelectedShapeIds,
@@ -78,9 +90,9 @@ export default function InfiniteCanvas() {
     setResizing,
     dragging,
     setDragging,
-    addShape,
-    updateShape,
-  } = useShapeManager(scale, position);
+    //addShape,
+    //updateShape,
+  } = useShapeManager(scale, position, shapes);
 
   const {
     connections,
@@ -203,6 +215,7 @@ export default function InfiniteCanvas() {
     selectedShapeIds,
     setShapes,
     scale,
+    updateMany,
     setLastMousePos: setCanvasMousePos,
     lastMousePos: canvasMousePos,
     shapes,
@@ -215,6 +228,7 @@ export default function InfiniteCanvas() {
     setResizing,
     shapes,
     setShapes,
+    updateShape,
     scale,
     lastMousePos: canvasMousePos,
     setLastMousePos: setCanvasMousePos,
@@ -246,7 +260,7 @@ export default function InfiniteCanvas() {
 
   const handleConnectorMouseDown = (
     e: React.MouseEvent,
-    shapeId: number,
+    shapeId: string,
     direction: "top" | "right" | "bottom" | "left"
   ) => {
     e.preventDefault();
@@ -298,7 +312,7 @@ export default function InfiniteCanvas() {
     const type = e.dataTransfer.getData("shape-type") as ShapeType;
     if (!type) return;
 
-    addShape(type, e.clientX, e.clientY);
+    addShape(type, e.clientX, e.clientY, uuidv4());
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -308,8 +322,6 @@ export default function InfiniteCanvas() {
   const handleDragStart = (e: React.DragEvent) => {
     e.preventDefault();
   };
-
-  console.log("connecting", connecting, connectingMousePos);
 
   function getConnectorPosition(
     shape: IShape,

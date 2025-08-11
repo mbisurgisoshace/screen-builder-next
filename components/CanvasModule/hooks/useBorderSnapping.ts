@@ -55,7 +55,7 @@ import { useMemo } from "react";
 import type { Position, Shape } from "../types";
 
 type SnapResult = {
-  shapeId: number;
+  shapeId: string;
   snappedPosition: Position; // world coords
   side: "top" | "right" | "bottom" | "left";
 };
@@ -72,7 +72,7 @@ export function useBorderSnapping(
   connectingMousePos: Position | null,
   shapes: Shape[],
   scale: number, // <-- pass current scale
-  excludeShapeId?: number | null // <-- pass source shape id to avoid self-snap
+  excludeShapeId?: string | null // <-- pass source shape id to avoid self-snap
 ) {
   const snapResult = useMemo<SnapResult | null>(() => {
     if (!connectingMousePos) return null;

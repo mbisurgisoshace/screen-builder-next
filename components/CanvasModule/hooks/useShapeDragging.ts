@@ -3,17 +3,19 @@ import { Position, Shape } from "../types";
 
 interface UseShapeDraggingParams {
   scale: number;
-  selectedShapeIds: number[];
+  selectedShapeIds: string[];
   shapes: Shape[];
   setShapes: (shapes: Shape[] | ((prev: Shape[]) => Shape[])) => void;
   setDragging: (dragging: boolean) => void;
   dragging: boolean;
+  updateMany: (ids: string[], updater: (s: Shape) => Shape) => void;
   lastMousePos: Position;
   setLastMousePos: (pos: Position) => void;
 }
 
 export function useShapeDragging({
   scale,
+  updateMany,
   selectedShapeIds,
   shapes,
   setShapes,
@@ -27,13 +29,18 @@ export function useShapeDragging({
       if (dragging && selectedShapeIds.length > 0) {
         const worldDX = (e.clientX - lastMousePos.x) / scale;
         const worldDY = (e.clientY - lastMousePos.y) / scale;
-        setShapes((prev) =>
-          prev.map((shape) =>
-            selectedShapeIds.includes(shape.id)
-              ? { ...shape, x: shape.x + worldDX, y: shape.y + worldDY }
-              : shape
-          )
-        );
+        // setShapes((prev) =>
+        //   prev.map((shape) =>
+        //     selectedShapeIds.includes(shape.id)
+        //       ? { ...shape, x: shape.x + worldDX, y: shape.y + worldDY }
+        //       : shape
+        //   )
+        // );
+        updateMany(selectedShapeIds, (s) => ({
+          ...s,
+          x: s.x + worldDX,
+          y: s.y + worldDY,
+        }));
         setLastMousePos({ x: e.clientX, y: e.clientY });
       }
     };

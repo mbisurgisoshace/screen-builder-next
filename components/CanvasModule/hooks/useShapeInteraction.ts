@@ -3,10 +3,10 @@ import { Position } from "../types";
 type UseShapeInteractionParams = {
   setDragging: React.Dispatch<React.SetStateAction<boolean>>;
   setCanvasMousePos: (pos: Position) => void;
-  toggleSelection: (id: number) => void;
-  selectOnly: (id: number) => void;
+  toggleSelection: (id: string) => void;
+  selectOnly: (id: string) => void;
   setResizing: React.Dispatch<
-    React.SetStateAction<{ id: number; handle: string } | null>
+    React.SetStateAction<{ id: string; handle: string } | null>
   >;
 };
 
@@ -20,7 +20,7 @@ export function useShapeInteraction({
 }: UseShapeInteractionParams) {
   const handleShapeMouseDown = (
     e: React.MouseEvent<HTMLDivElement>,
-    id: number
+    id: string
   ) => {
     e.stopPropagation();
     if (e.shiftKey) {
@@ -34,7 +34,7 @@ export function useShapeInteraction({
 
   const startResizing = (
     e: React.MouseEvent<HTMLDivElement>,
-    id: number,
+    id: string,
     handle: string
   ) => {
     e.stopPropagation();

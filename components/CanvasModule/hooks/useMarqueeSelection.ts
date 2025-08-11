@@ -6,7 +6,7 @@ interface UseMarqueeSelectionParams {
   scale: number;
   position: Position;
   shapes: Shape[];
-  setSelectedShapeIds: (ids: number[]) => void;
+  setSelectedShapeIds: (ids: string[]) => void;
   setMarquee?: (marquee: Marquee | null) => void;
 }
 

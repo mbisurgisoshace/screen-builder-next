@@ -2,35 +2,39 @@
 import { useState, useRef } from "react";
 import { Shape as IShape, ShapeType, Position } from "../types";
 
-type ResizeState = { id: number; handle: string } | null;
+type ResizeState = { id: string; handle: string } | null;
 
-export function useShapeManager(scale: number, position: Position) {
-  const [shapes, setShapes] = useState<IShape[]>([
-    {
-      id: 1,
-      type: "rect",
-      x: 500,
-      y: 500,
-      width: 160,
-      height: 112,
-      color: "bg-blue-500",
-    },
-  ]);
+export function useShapeManager(
+  scale: number,
+  position: Position,
+  shapes: IShape[]
+) {
+  // const [shapes, setShapes] = useState<IShape[]>([
+  //   // {
+  //   //   id: 1,
+  //   //   type: "rect",
+  //   //   x: 500,
+  //   //   y: 500,
+  //   //   width: 160,
+  //   //   height: 112,
+  //   //   color: "bg-blue-500",
+  //   // },
+  // ]);
 
-  const [selectedShapeIds, setSelectedShapeIds] = useState<number[]>([]);
+  const [selectedShapeIds, setSelectedShapeIds] = useState<string[]>([]);
   const [resizing, setResizing] = useState<ResizeState>(null);
   const [dragging, setDragging] = useState(false);
 
   const nextIdRef = useRef(1000);
 
   // --- Selection ---
-  const toggleSelection = (id: number) => {
+  const toggleSelection = (id: string) => {
     setSelectedShapeIds((prev) =>
       prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
     );
   };
 
-  const selectOnly = (id: number) => setSelectedShapeIds([id]);
+  const selectOnly = (id: string) => setSelectedShapeIds([id]);
 
   const clearSelection = () => setSelectedShapeIds([]);
 
@@ -40,6 +44,7 @@ export function useShapeManager(scale: number, position: Position) {
   // --- Bounds for group selection ---
   const getGroupBounds = () => {
     const selected = getSelectedShapes();
+
     if (selected.length < 2) return null;
     const minX = Math.min(...selected.map((s) => s.x));
     const minY = Math.min(...selected.map((s) => s.y));
@@ -53,7 +58,8 @@ export function useShapeManager(scale: number, position: Position) {
     const dropX = (clientX - position.x) / scale;
     const dropY = (clientY - position.y) / scale;
 
-    const newId = nextIdRef.current++;
+    // const newId = nextIdRef.current++;
+    const newId = "";
     const colors = [
       "bg-blue-400",
       "bg-green-400",
@@ -74,17 +80,17 @@ export function useShapeManager(scale: number, position: Position) {
       text: type === "text" ? "New text" : undefined,
     };
 
-    setShapes((prev) => [...prev, newShape]);
+    //setShapes((prev) => [...prev, newShape]);
     setSelectedShapeIds([newId]);
   };
 
-  const updateShape = (id: number, updater: (shape: IShape) => IShape) => {
-    setShapes((prev) => prev.map((s) => (s.id === id ? updater(s) : s)));
+  const updateShape = (id: string, updater: (shape: IShape) => IShape) => {
+    //setShapes((prev) => prev.map((s) => (s.id === id ? updater(s) : s)));
   };
 
   return {
     shapes,
-    setShapes,
+    //setShapes,
     selectedShapeIds,
     setSelectedShapeIds,
     toggleSelection,
