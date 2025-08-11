@@ -514,6 +514,13 @@ export default function InfiniteCanvas() {
                 isSelected={selectedShapeIds.includes(shape.id)}
                 onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
                 onConnectorMouseDown={handleConnectorMouseDown}
+                onCommitText={(id, text) =>
+                  updateShape(id, (s) => ({
+                    ...s,
+                    // keep empty strings if user clears the text; Liveblocks adapter already null-coalesces
+                    text,
+                  }))
+                }
               />
             );
           })}
