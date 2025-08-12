@@ -310,9 +310,12 @@ export default function InfiniteCanvas() {
     e.preventDefault();
     e.stopPropagation();
     const type = e.dataTransfer.getData("shape-type") as ShapeType;
-    if (!type) return;
+    if (!type || !canvasRef.current) return;
 
-    addShape(type, e.clientX, e.clientY, uuidv4());
+    const { x, y } = clientToWorld(e, canvasRef.current, position, scale);
+
+    //addShape(type, e.clientX, e.clientY, uuidv4());
+    addShape(type, x, y, uuidv4());
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -322,6 +325,18 @@ export default function InfiniteCanvas() {
   const handleDragStart = (e: React.DragEvent) => {
     e.preventDefault();
   };
+
+  function clientToWorld(
+    e: React.DragEvent | React.MouseEvent,
+    canvasEl: HTMLDivElement,
+    position: { x: number; y: number },
+    scale: number
+  ) {
+    const rect = canvasEl.getBoundingClientRect();
+    const x = (e.clientX - rect.left - position.x) / scale;
+    const y = (e.clientY - rect.top - position.y) / scale;
+    return { x, y };
+  }
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-100 relative flex">
