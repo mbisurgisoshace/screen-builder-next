@@ -514,6 +514,7 @@ export default function InfiniteCanvas() {
                 isSelected={selectedShapeIds.includes(shape.id)}
                 onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
                 onConnectorMouseDown={handleConnectorMouseDown}
+                //@ts-ignore
                 onCommitText={(id, text) =>
                   updateShape(id, (s) => ({
                     ...s,
