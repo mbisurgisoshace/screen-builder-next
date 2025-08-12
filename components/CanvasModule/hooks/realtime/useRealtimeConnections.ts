@@ -31,15 +31,15 @@ export function useRealtimeConnections() {
   }, []);
 
   const removeConnectionsByShapeIds = useMutation(
-    ({ storage }, shapeIds: number[]) => {
+    ({ storage }, shapeIds: string[]) => {
       const list = storage.get("connections") as LiveList<
         LiveObject<Connection>
       >;
       const set = new Set(shapeIds);
       for (let i = list.length - 1; i >= 0; i--) {
         const lo = list.get(i)!;
-        const fromShapeId = lo.get("fromShapeId") as number;
-        const toShapeId = lo.get("toShapeId") as number;
+        const fromShapeId = lo.get("fromShapeId") as string;
+        const toShapeId = lo.get("toShapeId") as string;
         if (set.has(fromShapeId) || set.has(toShapeId)) {
           list.delete(i);
         }
