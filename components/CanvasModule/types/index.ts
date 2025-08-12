@@ -18,13 +18,13 @@ export type ShapeComponentProps = {
   // renderHandles: (shape: Shape) => React.ReactNode;
   onResizeStart: (
     e: React.MouseEvent<HTMLDivElement>,
-    id: number,
+    id: string,
     handle: string
   ) => void;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   onConnectorMouseDown?: (
     e: React.MouseEvent,
-    shapeId: number,
+    shapeId: string,
     direction: "top" | "right" | "bottom" | "left"
   ) => void;
 };
