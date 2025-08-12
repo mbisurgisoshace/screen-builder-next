@@ -84,10 +84,7 @@ export const Interview: React.FC<InterviewProps> = (props) => {
       resizable={true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
-      <div
-        className="w-full h-full bg-white border-2 border-white rounded-xl shadow flex flex-col overflow-hidden"
-        //onMouseDown={(e) => e.stopPropagation()} // prevent accidental drag when editing
-      >
+      <div className="w-full h-full bg-white border-2 border-white rounded-xl shadow flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-3 py-2 bg-gradient-to-r from-indigo-200 to-indigo-100 text-[#6376F2] font-semibold flex items-center justify-between">
           <span>Interview</span>
@@ -128,7 +125,10 @@ export const Interview: React.FC<InterviewProps> = (props) => {
             </div>
           </div>
 
-          <div className="mt-5 rounded-[8px] bg-[#E4E5ED]">
+          <div
+            className="mt-5 rounded-[8px] bg-[#E4E5ED]"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
             <RteEditor
               editorState={editorState}
               onEditorStateChange={setEditorState}

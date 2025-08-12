@@ -2,6 +2,7 @@ import { ShapeComponent } from "../types";
 
 import { Rect } from "./core/Rect";
 import { Text } from "./core/Text";
+import { Image } from "./core/Image";
 import { Ellipse } from "./core/Ellipse";
 import { Interview } from "./custom/Interview";
 
@@ -9,6 +10,7 @@ import { Interview } from "./custom/Interview";
 export const shapeRegistry: Record<string, ShapeComponent> = {
   rect: Rect,
   text: Text,
+  image: Image,
   ellipse: Ellipse,
   interview: Interview,
 };
