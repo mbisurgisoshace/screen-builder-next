@@ -16,12 +16,12 @@ export interface ShapeFrameProps {
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   onResizeStart: (
     e: React.MouseEvent<HTMLDivElement>,
-    id: number,
+    id: string,
     handle: Dir
   ) => void;
   onConnectorMouseDown?: (
     e: React.MouseEvent<HTMLDivElement>,
-    shapeId: number,
+    shapeId: string,
     direction: Connector
   ) => void;
 
