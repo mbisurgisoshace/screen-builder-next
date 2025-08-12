@@ -9,17 +9,17 @@ export function useShapeManager(
   position: Position,
   shapes: IShape[]
 ) {
-  // const [shapes, setShapes] = useState<IShape[]>([
-  //   // {
-  //   //   id: 1,
-  //   //   type: "rect",
-  //   //   x: 500,
-  //   //   y: 500,
-  //   //   width: 160,
-  //   //   height: 112,
-  //   //   color: "bg-blue-500",
-  //   // },
-  // ]);
+  const [_, setShapes] = useState<IShape[]>([
+    // {
+    //   id: 1,
+    //   type: "rect",
+    //   x: 500,
+    //   y: 500,
+    //   width: 160,
+    //   height: 112,
+    //   color: "bg-blue-500",
+    // },
+  ]);
 
   const [selectedShapeIds, setSelectedShapeIds] = useState<string[]>([]);
   const [resizing, setResizing] = useState<ResizeState>(null);
@@ -90,7 +90,7 @@ export function useShapeManager(
 
   return {
     shapes,
-    //setShapes,
+    setShapes,
     selectedShapeIds,
     setSelectedShapeIds,
     toggleSelection,

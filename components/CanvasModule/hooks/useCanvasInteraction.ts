@@ -10,7 +10,7 @@ interface UseCanvasInteractionProps {
   scale: number;
   setIsPanning: React.Dispatch<React.SetStateAction<boolean>>;
   setResizing: React.Dispatch<
-    React.SetStateAction<null | { id: number; handle: string }>
+    React.SetStateAction<null | { id: string; handle: string }>
   >;
   setDragging: React.Dispatch<React.SetStateAction<boolean>>;
   startMarquee: (x: number, y: number) => void;
