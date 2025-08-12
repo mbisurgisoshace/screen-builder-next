@@ -323,23 +323,6 @@ export default function InfiniteCanvas() {
     e.preventDefault();
   };
 
-  function getConnectorPosition(
-    shape: IShape,
-    direction: "top" | "right" | "bottom" | "left"
-  ): { x: number; y: number } {
-    switch (direction) {
-      case "top":
-        return { x: shape.x + shape.width / 2, y: shape.y };
-      case "bottom":
-        return { x: shape.x + shape.width / 2, y: shape.y + shape.height };
-      case "left":
-        return { x: shape.x, y: shape.y + shape.height / 2 };
-      case "right":
-      default:
-        return { x: shape.x + shape.width, y: shape.y + shape.height / 2 };
-    }
-  }
-
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-100 relative flex">
       {/* Toolbar */}
@@ -369,6 +352,16 @@ export default function InfiniteCanvas() {
           title="Text"
         >
           A
+        </button>
+        <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "interview");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-purple-300 rounded text-black font-bold"
+          title="Interview"
+        >
+          i
         </button>
       </div>
 
@@ -407,40 +400,6 @@ export default function InfiniteCanvas() {
           {/* Group bounding box */}
           {groupBounds && <SelectionGroup bounds={groupBounds} />}
 
-          {/* {connecting && connectingMousePos && (
-            <svg
-              className="absolute top-0 left-0 w-full h-full pointer-events-none z-30"
-              style={{
-                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-                transformOrigin: "0 0",
-              }}
-            >
-              <CurvedArrow
-                from={connecting.fromPosition}
-                // to={connectingMousePos}
-                to={snapResult?.snappedPosition ?? connectingMousePos}
-              />
-              <defs>
-                <marker
-                  id="arrowhead"
-                  markerWidth="10"
-                  markerHeight="7"
-                  refX="10"
-                  refY="3.5"
-                  orient="auto"
-                >
-                  <polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6" />
-                </marker>
-              </defs>
-            </svg>
-          )} */}
-
-          {/* {connecting && connectingMousePos && (
-            <CurvedArrow
-              from={connecting.fromPosition}
-              to={connectingMousePos}
-            />
-          )} */}
           {connecting && connectingMousePos && (
             <CurvedArrow
               from={connecting.fromPosition}
@@ -448,47 +407,6 @@ export default function InfiniteCanvas() {
             />
           )}
 
-          {/* {connectionEndpoints.map(({ id, from, to }) => (
-            <CurvedArrow key={id} from={from} to={to} />
-          ))} */}
-          {/* {connectionEndpoints.map(({ id, from, to }) => {
-            // build a cubic path like your CurvedArrow does
-            const dx = to.x - from.x;
-            const dy = to.y - from.y;
-            const curveFactor = 0.3;
-            const cp1 = { x: from.x + dx * curveFactor, y: from.y };
-            const cp2 = { x: to.x - dx * curveFactor, y: to.y };
-            const d = `M ${from.x},${from.y} C ${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${to.x},${to.y}`;
-
-            const isSelected = selectedConnectionId === id;
-
-            return (
-              <svg
-                key={id}
-                className="absolute top-0 left-0 w-full h-full z-20"
-                style={{ pointerEvents: "none" }} // let only the thick path capture events
-              >
-                <path
-                  d={d}
-                  stroke="transparent"
-                  strokeWidth={16}
-                  fill="none"
-                  style={{ pointerEvents: "stroke" }}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    selectConnection(id);
-                  }}
-                />
-                <path
-                  d={d}
-                  stroke={isSelected ? "#2563EB" : "#3B82F6"} // selected = darker blue
-                  strokeWidth={isSelected ? 3 : 2}
-                  fill="none"
-                  markerEnd="url(#arrowhead)"
-                />
-              </svg>
-            );
-          })} */}
           {connectionEndpoints.map(({ id, from, to }) => (
             <SelectableConnectionArrow
               key={id}
@@ -522,6 +440,10 @@ export default function InfiniteCanvas() {
                     text,
                   }))
                 }
+                //@ts-ignore
+                onCommitInterview={(id, patch) =>
+                  updateShape(id, (s) => ({ ...s, ...patch }))
+                }
               />
             );
           })}
@@ -530,43 +452,6 @@ export default function InfiniteCanvas() {
     </div>
   );
 }
-
-// interface CurvedArrowProps {
-//   from: { x: number; y: number };
-//   to: { x: number; y: number };
-//   color?: string;
-//   strokeWidth?: number;
-// }
-
-// export const CurvedArrow: React.FC<CurvedArrowProps> = ({
-//   from,
-//   to,
-//   color = "#3B82F6",
-//   strokeWidth = 2,
-// }) => {
-//   const dx = to.x - from.x;
-//   const dy = to.y - from.y;
-
-//   const curveFactor = 0.3;
-//   const cp1 = {
-//     x: from.x + dx * curveFactor,
-//     y: from.y,
-//   };
-//   const cp2 = {
-//     x: to.x - dx * curveFactor,
-//     y: to.y,
-//   };
-
-//   const path = `M ${from.x},${from.y} C ${cp1.x},${cp1.y} ${cp2.x},${cp2.y} ${to.x},${to.y}`;
-
-//   return (
-//     <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
-//       <path d={path} stroke={color} strokeWidth={strokeWidth} fill="none" />
-//       <circle cx={to.x} cy={to.y} r={3} fill={color} />
-//     </svg>
-//   );
-// };
-
 interface CurvedArrowProps {
   from: { x: number; y: number };
   to: { x: number; y: number };

@@ -76,8 +76,8 @@ export function useRealtimeShapes() {
         type,
         x,
         y,
-        width: type === "text" ? 120 : 160,
-        height: type === "text" ? 40 : 112,
+        width: type === "text" ? 120 : type === "interview" ? 580 : 160,
+        height: type === "text" ? 40 : type === "interview" ? 228 : 112,
         color: "bg-blue-500",
         text: type === "text" ? "New text" : undefined,
       };
@@ -93,17 +93,33 @@ export function useRealtimeShapes() {
         const lo = list.get(i)!;
         const s = fromLiveShape(lo);
         if (s.id === id) {
-          const ns = updater(s);
-          // batch updates to the LiveObject
-          lo.update({
-            x: ns.x,
-            y: ns.y,
-            width: ns.width,
-            height: ns.height,
-            color: ns.color,
-            text: ns.text ?? null,
-            type: ns.type,
-          });
+          // const ns = updater(s);
+          // // batch updates to the LiveObject
+          // lo.update({
+          //   x: ns.x,
+          //   y: ns.y,
+          //   width: ns.width,
+          //   height: ns.height,
+          //   color: ns.color,
+          //   text: ns.text ?? null,
+          //   type: ns.type,
+          // });
+          // break;
+          const current = lo.toObject() as Shape;
+          console.log("current:", current);
+
+          const ns = updater(current);
+
+          // Build a shallow patch for any changed flat key
+          const patch: Record<string, any> = {};
+          for (const k of Object.keys(ns)) {
+            if (k === "id") continue;
+            // only write if changed to reduce churn
+            if ((current as any)[k] !== (ns as any)[k]) {
+              (patch as any)[k] = (ns as any)[k];
+            }
+          }
+          if (Object.keys(patch).length > 0) lo.update(patch);
           break;
         }
       }

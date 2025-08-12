@@ -1,4 +1,4 @@
-export type ShapeType = "rect" | "ellipse" | "text";
+export type ShapeType = "rect" | "ellipse" | "text" | "interview";
 
 export interface Shape {
   x: number;
@@ -9,6 +9,8 @@ export interface Shape {
   text?: string;
   height: number;
   type: ShapeType;
+  draftRaw?: string;
+  images?: string[];
 }
 
 export type ShapeComponentProps = {
