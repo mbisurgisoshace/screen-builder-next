@@ -71,7 +71,8 @@ export function useRealtimeShapes() {
   const addShape = useMutation(
     ({ storage }, type: ShapeType, x: number, y: number, nextId: string) => {
       const list = storage.get("shapes") as LiveList<LiveObject<any>>;
-      const shape: Shape = {
+
+      let shape: Shape = {
         id: nextId,
         type,
         x,
@@ -81,6 +82,22 @@ export function useRealtimeShapes() {
         color: "bg-blue-500",
         text: type === "text" ? "New text" : undefined,
       };
+
+      if (type === "table") {
+        const rows = 3,
+          cols = 3;
+        shape = {
+          ...shape,
+          width: 360,
+          height: 240,
+          tableRows: rows,
+          tableCols: cols,
+          tableData: Array.from({ length: rows }, () =>
+            Array.from({ length: cols }, () => "")
+          ),
+        };
+      }
+
       list.push(toLiveShape(shape));
     },
     []

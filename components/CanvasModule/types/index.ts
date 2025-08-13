@@ -1,4 +1,10 @@
-export type ShapeType = "rect" | "ellipse" | "text" | "interview" | "image";
+export type ShapeType =
+  | "rect"
+  | "ellipse"
+  | "text"
+  | "interview"
+  | "image"
+  | "table";
 
 export interface Shape {
   x: number;
@@ -9,11 +15,19 @@ export interface Shape {
   text?: string;
   height: number;
   type: ShapeType;
+
+  // interview block
   draftRaw?: string;
   images?: string[];
 
+  // image block
   src?: string;
   keepAspect?: boolean;
+
+  // table block
+  tableRows?: number;
+  tableCols?: number;
+  tableData?: string[][];
 }
 
 export type ShapeComponentProps = {

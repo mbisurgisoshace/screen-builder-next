@@ -101,6 +101,7 @@ export default function InfiniteCanvas() {
     selectConnection,
     selectedConnectionId,
     removeSelectedConnection,
+    removeConnectionsByIds,
     removeConnection, // (for later)
     updateConnection, // (for later)
     addConnectionRelative, // (for later/manual adds)
@@ -164,13 +165,33 @@ export default function InfiniteCanvas() {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (
-        (e.key === "Backspace" || e.key === "Delete") &&
-        selectedConnectionId
-      ) {
-        e.preventDefault();
-        removeSelectedConnection();
+      // if (
+      //   (e.key === "Backspace" || e.key === "Delete") &&
+      //   selectedConnectionId
+      // ) {
+      //   e.preventDefault();
+      //   removeSelectedConnection();
+      // }
+      if (isTypingIntoField(e.target)) return;
+
+      const isDelete = e.key === "Backspace" || e.key === "Delete";
+
+      if (isDelete) {
+        // If a connection is selected, delete that first (preserves your existing UX)
+        if (selectedConnectionId) {
+          e.preventDefault();
+          removeSelectedConnection();
+          return;
+        }
+
+        // Otherwise, delete shapes (and their connections)
+        if (selectedShapeIds.length > 0) {
+          e.preventDefault();
+          deleteSelectedShapes();
+          return;
+        }
       }
+
       // Optional: ESC clears connection selection (and your shape selection if you want)
       if (e.key === "Escape" && selectedConnectionId) {
         selectConnection(null);
@@ -337,7 +358,6 @@ export default function InfiniteCanvas() {
 
     const files = Array.from(dt.files || []);
     const imageFile = files.find((f) => f.type && f.type.startsWith("image/"));
-    console.log("Dropped image file:", imageFile);
 
     if (imageFile) {
       const id = uuidv4();
@@ -435,6 +455,28 @@ export default function InfiniteCanvas() {
     return { x, y };
   }
 
+  function isTypingIntoField(target: EventTarget | null) {
+    const el = target as HTMLElement | null;
+    if (!el) return false;
+    return !!el.closest('input, textarea, [contenteditable="true"]');
+  }
+
+  const deleteSelectedShapes = () => {
+    if (selectedShapeIds.length === 0) return;
+
+    // 1) Remove all arrows attached to any of these shapes
+    removeConnectionsByIds(selectedShapeIds);
+
+    // 2) Remove the shapes themselves
+    removeShapes(selectedShapeIds);
+
+    // 3) Clear selection & any in-progress connection
+    clearSelection?.();
+    setConnecting?.(null);
+    setConnectingMousePos?.(null);
+    setIsDraggingConnector?.(false);
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-100 relative flex">
       {/* Toolbar */}
@@ -463,7 +505,7 @@ export default function InfiniteCanvas() {
           className="w-10 h-10 flex items-center justify-center bg-yellow-300 rounded text-black font-bold"
           title="Text"
         >
-          A
+          Tx
         </button>
         <button
           draggable
@@ -473,7 +515,18 @@ export default function InfiniteCanvas() {
           className="w-10 h-10 flex items-center justify-center bg-purple-300 rounded text-black font-bold"
           title="Interview"
         >
-          i
+          In
+        </button>
+
+        <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "table");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-purple-200 rounded text-black font-bold"
+          title="Table"
+        >
+          Tb
         </button>
       </div>
 

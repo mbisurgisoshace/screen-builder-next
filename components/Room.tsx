@@ -8,14 +8,19 @@ import {
 } from "@liveblocks/react/suspense";
 import { LiveList } from "@liveblocks/client";
 
-export function Room({ children }: { children: ReactNode }) {
+interface RoomProps {
+  roomId: string;
+  children: ReactNode;
+}
+
+export function Room({ roomId, children }: RoomProps) {
   return (
     <LiveblocksProvider
       throttle={16}
       publicApiKey={process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY!}
     >
       <RoomProvider
-        id="my-room"
+        id={`${roomId}`}
         initialStorage={{
           shapes: new LiveList([]),
           connections: new LiveList([]),
