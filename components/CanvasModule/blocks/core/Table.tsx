@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Shape as IShape } from "../../types";
 import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 
@@ -43,7 +43,7 @@ export const Table: React.FC<Props> = (props) => {
   const rows = Math.max(1, shape.tableRows ?? 3);
   const cols = Math.max(1, shape.tableCols ?? 3);
 
-  // Local working copy (keeps UX snappy; we commit on blur / structure changes)
+  // Local working copy for smooth typing
   const [data, setData] = useState<string[][]>(() =>
     normalizeData(shape.tableData, rows, cols)
   );
@@ -52,23 +52,23 @@ export const Table: React.FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shape.tableData, rows, cols]);
 
-  // Track selected cell (for delete-target or adding after)
-  const [sel, setSel] = useState<{ r: number; c: number } | null>(null);
+  // Grid fills the entire frame: equal-width columns, equal-height rows
+  const gridTemplateColumns = useMemo(() => `repeat(${cols}, 1fr)`, [cols]);
 
-  // --- Actions ---
-  const addRow = (afterIndex?: number) => {
-    const i = typeof afterIndex === "number" ? afterIndex + 1 : data.length;
+  // ==== Row/Col actions (commit immediately) ====
+  const addRow = (after = rows - 1) => {
+    const i = Math.min(Math.max(after, 0), rows - 1) + 1;
     const next = [
       ...data.slice(0, i),
       Array.from({ length: cols }, () => ""),
       ...data.slice(i),
     ];
     setData(next);
-    commit({ tableRows: next.length, tableCols: cols, tableData: next });
+    commit({ tableRows: rows + 1, tableCols: cols, tableData: next });
   };
 
-  const addCol = (afterIndex?: number) => {
-    const j = typeof afterIndex === "number" ? afterIndex + 1 : cols;
+  const addCol = (after = cols - 1) => {
+    const j = Math.min(Math.max(after, 0), cols - 1) + 1;
     const next = data.map((row) => {
       const copy = row.slice();
       copy.splice(j, 0, "");
@@ -78,43 +78,35 @@ export const Table: React.FC<Props> = (props) => {
     commit({ tableRows: rows, tableCols: cols + 1, tableData: next });
   };
 
-  const removeRow = (index?: number) => {
+  const removeRow = (index = rows - 1) => {
     if (rows <= 1) return;
-    const i = typeof index === "number" ? index : data.length - 1;
+    const i = Math.min(Math.max(index, 0), rows - 1);
     const next = data.slice(0, i).concat(data.slice(i + 1));
     setData(next);
     commit({ tableRows: rows - 1, tableCols: cols, tableData: next });
-    if (sel && sel.r >= next.length)
-      setSel({ r: next.length - 1, c: Math.min(sel.c, cols - 1) });
   };
 
-  const removeCol = (index?: number) => {
+  const removeCol = (index = cols - 1) => {
     if (cols <= 1) return;
-    const j = typeof index === "number" ? index : cols - 1;
+    const j = Math.min(Math.max(index, 0), cols - 1);
     const next = data.map((row) => row.slice(0, j).concat(row.slice(j + 1)));
     setData(next);
     commit({ tableRows: rows, tableCols: cols - 1, tableData: next });
-    if (sel && sel.c >= cols - 1)
-      setSel({ r: Math.min(sel.r, rows - 1), c: cols - 2 });
   };
 
-  // Cell change: we update local and commit on blur
-  const handleCellInput = (r: number, c: number, text: string) => {
+  // ==== Cell editing ====
+  const setCell = (r: number, c: number, text: string) => {
     setData((prev) => {
       const next = prev.map((row) => row.slice());
       next[r][c] = text;
       return next;
     });
   };
-  const handleCellBlur = (r: number, c: number) => {
-    commit({ tableData: data }); // commit whole table for simplicity
-  };
 
-  // Grid styles
-  const gridTemplateColumns = useMemo(
-    () => `repeat(${cols}, minmax(80px, 1fr))`,
-    [cols]
-  );
+  const commitCell = () => {
+    // Commit whole table on blur for simplicity and fewer storage writes
+    commit({ tableData: data });
+  };
 
   return (
     <ShapeFrame
@@ -122,19 +114,20 @@ export const Table: React.FC<Props> = (props) => {
       resizable={true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
+      {/* Full-size container */}
       <div className="w-full h-full bg-white rounded-xl shadow flex flex-col overflow-hidden">
-        {/* Toolbar */}
+        {/* Toolbar (stays small; grid below fills rest) */}
         <div
+          data-nodrag="true"
           className="px-2 py-1 border-b bg-gray-50 flex items-center gap-2 text-xs"
-          onMouseDown={(e) => e.stopPropagation()}
+          // onMouseDown={(e) => e.stopPropagation()}
         >
           <button
             className="px-2 py-1 rounded bg-gray-200"
             onClick={(e) => {
               e.stopPropagation();
-              addRow(sel?.r);
+              addRow();
             }}
-            title="Add row"
           >
             + Row
           </button>
@@ -142,78 +135,60 @@ export const Table: React.FC<Props> = (props) => {
             className="px-2 py-1 rounded bg-gray-200"
             onClick={(e) => {
               e.stopPropagation();
-              addCol(sel?.c);
+              addCol();
             }}
-            title="Add column"
           >
             + Col
           </button>
           <button
-            className="px-2 py-1 rounded bg-gray-200"
+            className="px-2 py-1 rounded bg-gray-200 disabled:opacity-40"
+            disabled={rows <= 1}
             onClick={(e) => {
               e.stopPropagation();
-              removeRow(sel?.r);
+              removeRow();
             }}
-            title="Remove row"
-            disabled={rows <= 1}
           >
             − Row
           </button>
           <button
-            className="px-2 py-1 rounded bg-gray-200"
+            className="px-2 py-1 rounded bg-gray-200 disabled:opacity-40"
+            disabled={cols <= 1}
             onClick={(e) => {
               e.stopPropagation();
-              removeCol(sel?.c);
+              removeCol();
             }}
-            title="Remove column"
-            disabled={cols <= 1}
           >
             − Col
           </button>
-          {sel && (
-            <span className="ml-2 text-gray-500">
-              Cell: {sel.r + 1}×{sel.c + 1}
-            </span>
-          )}
+          <span className="ml-2 text-gray-500">
+            {rows}×{cols}
+          </span>
         </div>
 
-        {/* Grid */}
-        <div className="flex-1 overflow-auto p-2">
+        {/* Grid: fills ALL remaining height/width */}
+        <div className="flex-1 p-2 overflow-hidden">
           <div
-            className="grid gap-[1px] bg-gray-300"
-            style={{ gridTemplateColumns }}
-            onMouseDown={(e) => e.stopPropagation()}
+            className="grid w-full h-full bg-gray-300 gap-[1px] overflow-auto"
+            style={{
+              gridTemplateColumns,
+              gridAutoRows: "1fr", // equal-height rows
+            }}
+            //onMouseDown={(e) => e.stopPropagation()} // don't start dragging the shape from inside the grid
           >
             {data.map((row, r) =>
               row.map((val, c) => (
-                <div
-                  key={`${r}-${c}`}
-                  className={`bg-white min-h-[32px] relative ${
-                    sel && sel.r === r && sel.c === c
-                      ? "outline outline-2 outline-blue-400"
-                      : ""
-                  }`}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    setSel({ r, c });
-                  }}
-                >
-                  <div
-                    role="textbox"
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="px-2 py-1 text-sm outline-none"
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onInput={(e) =>
-                      handleCellInput(
-                        r,
-                        c,
-                        (e.currentTarget as HTMLDivElement).innerText
-                      )
-                    }
-                    onBlur={() => handleCellBlur(r, c)}
-                    // initialize content
-                    dangerouslySetInnerHTML={{ __html: escapeHtml(val) }}
+                <div key={`${r}-${c}`} className="bg-white min-w-0 min-h-0">
+                  <textarea
+                    value={val}
+                    onChange={(e) => setCell(r, c, e.target.value)}
+                    onBlur={commitCell}
+                    // prevent shape drag when editing/selecting text
+                    //onMouseDown={(e) => e.stopPropagation()}
+                    //onKeyDown={(e) => e.stopPropagation()}
+                    data-nodrag="true"
+                    onKeyDown={(e) => e.stopPropagation()}
+                    className="w-full h-full p-2 text-sm resize-none bg-transparent outline-none"
+                    placeholder=""
                   />
                 </div>
               ))
@@ -224,11 +199,3 @@ export const Table: React.FC<Props> = (props) => {
     </ShapeFrame>
   );
 };
-
-// Simple escape to avoid interpreting < & > as tags inside contentEditable
-function escapeHtml(s: string) {
-  return s
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}

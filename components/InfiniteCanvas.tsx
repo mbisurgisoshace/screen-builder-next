@@ -648,6 +648,10 @@ export default function InfiniteCanvas() {
                 onCommitInterview={(id, patch) =>
                   updateShape(id, (s) => ({ ...s, ...patch }))
                 }
+                //@ts-ignore
+                onCommitTable={(id, patch) =>
+                  updateShape(id, (s) => ({ ...s, ...patch }))
+                }
               />
             );
           })}
