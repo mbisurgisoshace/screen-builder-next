@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useHistory } from "@liveblocks/react";
+
 import { Position, Shape } from "../types";
 
 interface UseShapeDraggingParams {
@@ -24,7 +26,15 @@ export function useShapeDragging({
   lastMousePos,
   setLastMousePos,
 }: UseShapeDraggingParams) {
+  const { pause, resume } = useHistory();
+
   useEffect(() => {
+    let didPause = false;
+    if (dragging) {
+      pause();
+      didPause = true;
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       if (dragging && selectedShapeIds.length > 0) {
         const worldDX = (e.clientX - lastMousePos.x) / scale;
@@ -48,6 +58,11 @@ export function useShapeDragging({
     const handleMouseUp = () => {
       if (dragging) {
         setDragging(false);
+
+        if (didPause) {
+          resume();
+          didPause = false;
+        }
       }
     };
 

@@ -1,5 +1,12 @@
 "use client";
 import { v4 as uuidv4 } from "uuid";
+import {
+  useUndo,
+  useRedo,
+  useCanUndo,
+  useHistory,
+  useCanRedo,
+} from "@liveblocks/react";
 import { useRef, useState, useEffect } from "react";
 
 import SelectionGroup from "./CanvasModule/SelectionBox";
@@ -44,6 +51,12 @@ export function getAbsoluteAnchorPosition(
 export default function InfiniteCanvas() {
   const { scale, canvasRef, position, setPosition, setScale } =
     useCanvasTransform();
+
+  const undo = useUndo();
+  const redo = useRedo();
+  const canUndo = useCanUndo();
+  const canRedo = useCanRedo();
+  const { pause, resume } = useHistory();
 
   const [connecting, setConnecting] = useState<{
     fromShapeId: string;
@@ -174,6 +187,26 @@ export default function InfiniteCanvas() {
       // }
       if (isTypingIntoField(e.target)) return;
 
+      const meta = e.metaKey || e.ctrlKey;
+
+      if (meta && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          // Redo: Shift+Cmd/Ctrl+Z
+          redo();
+        } else {
+          // Undo: Cmd/Ctrl+Z
+          undo();
+        }
+        return;
+      }
+      // Windows-style redo: Ctrl+Y
+      if (meta && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        redo();
+        return;
+      }
+
       const isDelete = e.key === "Backspace" || e.key === "Delete";
 
       if (isDelete) {
@@ -199,7 +232,13 @@ export default function InfiniteCanvas() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedConnectionId, removeSelectedConnection, selectConnection]);
+  }, [
+    selectedConnectionId,
+    removeSelectedConnection,
+    selectConnection,
+    undo,
+    redo,
+  ]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
