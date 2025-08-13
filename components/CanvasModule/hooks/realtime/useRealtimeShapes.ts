@@ -106,7 +106,6 @@ export function useRealtimeShapes() {
           // });
           // break;
           const current = lo.toObject() as Shape;
-          console.log("current:", current);
 
           const ns = updater(current);
 

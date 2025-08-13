@@ -305,15 +305,112 @@ export default function InfiniteCanvas() {
 
   const groupBounds = getGroupBounds();
 
+  // helper: load a File as data URL
+  function readFileAsDataURL(file: File): Promise<string> {
+    return new Promise((res, rej) => {
+      const fr = new FileReader();
+      fr.onload = () => res(String(fr.result));
+      fr.onerror = rej;
+      fr.readAsDataURL(file);
+    });
+  }
+
+  // helper: probe natural size from URL/dataURL
+  function getImageSize(src: string): Promise<{ w: number; h: number }> {
+    return new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => res({ w: img.naturalWidth, h: img.naturalHeight });
+      img.onerror = rej;
+      img.src = src;
+    });
+  }
+
   // --- Shape creation ---
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const type = e.dataTransfer.getData("shape-type") as ShapeType;
-    if (!type || !canvasRef.current) return;
+    if (!canvasRef.current) return;
 
+    const dt = e.dataTransfer;
     const { x, y } = clientToWorld(e, canvasRef.current, position, scale);
 
+    const files = Array.from(dt.files || []);
+    const imageFile = files.find((f) => f.type && f.type.startsWith("image/"));
+    console.log("Dropped image file:", imageFile);
+
+    if (imageFile) {
+      const id = uuidv4();
+      // place a provisional image block at the drop point
+      addShape("image", x, y, id);
+
+      try {
+        const dataURL = await readFileAsDataURL(imageFile);
+        const { w: natW, h: natH } = await getImageSize(dataURL);
+
+        // scale down large images for initial placement (optional)
+        const maxW = 480;
+        const scaleFactor = natW > maxW ? maxW / natW : 1;
+        const width = Math.max(40, Math.round(natW * scaleFactor));
+        const height = Math.max(40, Math.round(natH * scaleFactor));
+
+        // center under cursor and set src
+        updateShape(id, (s) => ({
+          ...s,
+          src: dataURL,
+          keepAspect: true,
+          x: x - width / 2,
+          y: y - height / 2,
+          width,
+          height,
+        }));
+      } catch (err) {
+        // If reading fails, remove provisional block
+        removeShapes([id]);
+        console.error("Failed to load dropped image", err);
+      }
+      return;
+    }
+
+    // 2) Dragged IMAGE URL (e.g., from another tab)
+    const urlFromUriList = dt.getData("text/uri-list");
+    let imageUrl = urlFromUriList || "";
+    if (!imageUrl) {
+      const text = dt.getData("text/plain");
+      if (
+        text &&
+        /^https?:\/\/.+\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(text)
+      ) {
+        imageUrl = text.trim();
+      }
+    }
+    if (imageUrl) {
+      const id = uuidv4();
+      addShape("image", x, y, id);
+      try {
+        const { w: natW, h: natH } = await getImageSize(imageUrl);
+        const maxW = 480;
+        const scaleFactor = natW > maxW ? maxW / natW : 1;
+        const width = Math.max(40, Math.round(natW * scaleFactor));
+        const height = Math.max(40, Math.round(natH * scaleFactor));
+
+        updateShape(id, (s) => ({
+          ...s,
+          src: imageUrl,
+          keepAspect: true,
+          x: x - width / 2,
+          y: y - height / 2,
+          width,
+          height,
+        }));
+      } catch (err) {
+        removeShapes([id]);
+        console.error("Failed to load dropped image URL", err);
+      }
+      return;
+    }
+
+    if (!type) return;
     //addShape(type, e.clientX, e.clientY, uuidv4());
     addShape(type, x, y, uuidv4());
   };
