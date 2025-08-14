@@ -28,6 +28,10 @@ export interface Shape {
   tableRows?: number;
   tableCols?: number;
   tableData?: string[][];
+  tableBg?: string[][];
+  tableFont?: ("normal" | "bold" | "italic")[][];
+  tableFontColor?: string[][];
+  tableFontSize?: number[][];
 }
 
 export type ShapeComponentProps = {
