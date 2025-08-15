@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Shape as IShape } from "../types";
+import { TagPicker } from "../tags/TagPicker";
 
 type Dir = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 type Connector = "top" | "right" | "bottom" | "left";
@@ -32,6 +33,8 @@ export interface ShapeFrameProps {
   showConnectors?: boolean; // default true
   resizable?: boolean; // default true
   selectable?: boolean; // default true
+
+  onChangeTags?: (id: string, tagIds: string[]) => void;
 }
 
 export const ShapeFrame: React.FC<ShapeFrameProps> = ({
@@ -45,6 +48,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   showConnectors = true,
   resizable = true,
   selectable = true,
+  onChangeTags,
 }) => {
   const showSingleSelectionUI = selectable && isSelected && selectedCount === 1;
 
@@ -185,6 +189,22 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
         zIndex: isSelected ? 20 : 1,
       }}
     >
+      {/* Floating toolbar (single select): Tag picker */}
+      {showSingleSelectionUI && (
+        <div
+          className="absolute -top-9 left-0 z-50"
+          data-nodrag="true"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center gap-2 px-2 py-1 rounded-lg border bg-white/90 backdrop-blur shadow">
+            <TagPicker
+              value={shape.tags ?? []}
+              onChange={(ids) => onChangeTags?.(shape.id, ids)}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Selection outline (single select) */}
       {renderSelectionOutline()}
 

@@ -32,6 +32,9 @@ export interface Shape {
   tableFont?: ("normal" | "bold" | "italic")[][];
   tableFontColor?: string[][];
   tableFontSize?: number[][];
+
+  // tags
+  tags?: string[];
 }
 
 export type ShapeComponentProps = {

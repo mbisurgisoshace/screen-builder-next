@@ -750,6 +750,10 @@ export default function InfiniteCanvas() {
                 onCommitTable={(id, patch) =>
                   updateShape(id, (s) => ({ ...s, ...patch }))
                 }
+                //@ts-ignore
+                onChangeTags={(id, names) => {
+                  updateShape(id, (s) => ({ ...s, tags: names }));
+                }}
               />
             );
           })}

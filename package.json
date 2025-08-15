@@ -11,6 +11,7 @@
   "dependencies": {
     "@liveblocks/client": "^3.3.0",
     "@liveblocks/react": "^3.3.0",
+    "@prisma/client": "^6.14.0",
     "@supabase/supabase-js": "^2.55.0",
     "@types/draft-js": "^0.11.18",
     "@types/react-draft-wysiwyg": "^1.13.8",
@@ -34,6 +35,7 @@
     "@types/react-dom": "^19",
     "eslint": "9.33.0",
     "eslint-config-next": "15.4.6",
+    "prisma": "^6.14.0",
     "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5"
