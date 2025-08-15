@@ -25,6 +25,7 @@ import { useConnectionManager } from "./CanvasModule/hooks/useConnectionManager"
 import { SelectableConnectionArrow } from "./CanvasModule/SelectableConnectionArrow";
 import { useRealtimeShapes } from "./CanvasModule/hooks/realtime/useRealtimeShapes";
 import { useRealtimeConnections } from "./CanvasModule/hooks/realtime/useRealtimeConnections";
+import { uploadToSupabase } from "@/lib/uploadToSupabase";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -398,40 +399,82 @@ export default function InfiniteCanvas() {
     const files = Array.from(dt.files || []);
     const imageFile = files.find((f) => f.type && f.type.startsWith("image/"));
 
+    // 1) Local image file dropped
     if (imageFile) {
       const id = uuidv4();
-      // place a provisional image block at the drop point
-      addShape("image", x, y, id);
+      addShape("image", x, y, id); // provisional
+
+      // quick local preview + base64 thumb
+      const localUrl = URL.createObjectURL(imageFile);
+      let natW = 320,
+        natH = 240;
+      try {
+        const size = await getImageSize(localUrl); // your helper works with blob URLs too
+        natW = size.w;
+        natH = size.h;
+      } catch {}
+
+      const maxW = 480;
+      const scaleFactor = natW > maxW ? maxW / natW : 1;
+      const width = Math.max(40, Math.round(natW * scaleFactor));
+      const height = Math.max(40, Math.round(natH * scaleFactor));
+
+      // small base64 thumbnail for collaborators
+      let preview: string | undefined;
+      try {
+        preview = await makeBase64Thumb(imageFile, 384);
+      } catch {}
+
+      // optimistic state
+      pause();
+      updateShape(id, (s) => ({
+        ...s,
+        src: localUrl, // visible immediately to you
+        preview, // others see this while upload runs
+        uploading: true,
+        uploadProgress: 0,
+        keepAspect: true,
+        naturalWidth: natW,
+        naturalHeight: natH,
+        x: x - width / 2,
+        y: y - height / 2,
+        width,
+        height,
+        uploadError: undefined,
+      }));
+      resume();
 
       try {
-        const dataURL = await readFileAsDataURL(imageFile);
-        const { w: natW, h: natH } = await getImageSize(dataURL);
+        // real upload with progress
+        const { url } = await uploadToSupabase(imageFile, (p) => {
+          updateShape(id, (s) => ({ ...s, uploadProgress: p }));
+        });
 
-        // scale down large images for initial placement (optional)
-        const maxW = 480;
-        const scaleFactor = natW > maxW ? maxW / natW : 1;
-        const width = Math.max(40, Math.round(natW * scaleFactor));
-        const height = Math.max(40, Math.round(natH * scaleFactor));
-
-        // center under cursor and set src
+        // swap to canonical URL
+        pause();
         updateShape(id, (s) => ({
           ...s,
-          src: dataURL,
-          keepAspect: true,
-          x: x - width / 2,
-          y: y - height / 2,
-          width,
-          height,
+          src: url,
+          uploading: false,
+          uploadProgress: 1,
         }));
-      } catch (err) {
-        // If reading fails, remove provisional block
-        removeShapes([id]);
-        console.error("Failed to load dropped image", err);
+        resume();
+      } catch (err: any) {
+        updateShape(id, (s) => ({
+          ...s,
+          uploading: false,
+          uploadError: String(err?.message || err),
+        }));
+      } finally {
+        // free the local object URL
+        try {
+          URL.revokeObjectURL(localUrl);
+        } catch {}
       }
       return;
     }
 
-    // 2) Dragged IMAGE URL (e.g., from another tab)
+    // 2) Dragged IMAGE URL (from web)
     const urlFromUriList = dt.getData("text/uri-list");
     let imageUrl = urlFromUriList || "";
     if (!imageUrl) {
@@ -455,8 +498,10 @@ export default function InfiniteCanvas() {
 
         updateShape(id, (s) => ({
           ...s,
-          src: imageUrl,
+          src: imageUrl, // already a URL; you can optionally “import” to your storage later
           keepAspect: true,
+          naturalWidth: natW,
+          naturalHeight: natH,
           x: x - width / 2,
           y: y - height / 2,
           width,
@@ -470,9 +515,62 @@ export default function InfiniteCanvas() {
     }
 
     if (!type) return;
-    //addShape(type, e.clientX, e.clientY, uuidv4());
     addShape(type, x, y, uuidv4());
   };
+
+  // tiny base64 preview (fast to sync via Liveblocks)
+  async function makeBase64Thumb(file: File, max = 384): Promise<string> {
+    const img = document.createElement("img");
+    const blobUrl = URL.createObjectURL(file);
+    await new Promise((res, rej) => {
+      img.onload = () => res(null);
+      img.onerror = rej;
+      img.src = blobUrl;
+    });
+    const ratio = Math.min(1, max / Math.max(img.width, img.height));
+    const w = Math.max(1, Math.round(img.width * ratio));
+    const h = Math.max(1, Math.round(img.height * ratio));
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(blobUrl);
+    return canvas.toDataURL("image/jpeg", 0.7);
+  }
+
+  // plug your real uploader here (S3/Supabase/UploadThing/etc.)
+  async function uploadToStorage(
+    file: File,
+    onProgress: (p: number) => void
+  ): Promise<{ url: string }> {
+    // Example pattern using an API route that returns { uploadUrl, fileUrl }
+    const resp = await fetch(
+      `/api/upload-url?filename=${encodeURIComponent(file.name)}`
+    );
+    if (!resp.ok) throw new Error("Failed to get upload URL");
+    const { uploadUrl, fileUrl } = await resp.json();
+
+    await new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", uploadUrl);
+      xhr.upload.onprogress = (evt) => {
+        if (evt.lengthComputable) onProgress(evt.loaded / evt.total);
+      };
+      xhr.onload = () =>
+        xhr.status >= 200 && xhr.status < 300
+          ? resolve()
+          : reject(new Error("Upload failed"));
+      xhr.onerror = () => reject(new Error("Network error"));
+      xhr.setRequestHeader(
+        "Content-Type",
+        file.type || "application/octet-stream"
+      );
+      xhr.send(file);
+    });
+
+    return { url: fileUrl };
+  }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
