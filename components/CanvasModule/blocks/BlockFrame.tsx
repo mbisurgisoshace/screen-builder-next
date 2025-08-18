@@ -2,6 +2,8 @@
 import React from "react";
 import { Shape as IShape } from "../types";
 import { TagPicker } from "../tags/TagPicker";
+import { useExtrasNode } from "./toolbar/toolbarExtrasStore";
+import { BlockToolbar } from "./toolbar/BlockToolbar";
 
 type Dir = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 type Connector = "top" | "right" | "bottom" | "left";
@@ -51,6 +53,9 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   onChangeTags,
 }) => {
   const showSingleSelectionUI = selectable && isSelected && selectedCount === 1;
+
+  const flipBelow = shape.y < 72;
+  const extras = useExtrasNode(shape.id);
 
   const renderHandles = () => {
     if (!resizable || !showSingleSelectionUI) return null;
@@ -191,6 +196,18 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
     >
       {/* Floating toolbar (single select): Tag picker */}
       {showSingleSelectionUI && (
+        <BlockToolbar
+          shape={shape}
+          flipBelow={flipBelow}
+          extras={extras}
+          onChangeTags={onChangeTags}
+          //onDuplicate={onDuplicateShape}
+          //onDelete={onDeleteShape}
+          //onLockToggle={onLockToggle}
+          locked={Boolean((shape as any).locked)}
+        />
+      )}
+      {/* {showSingleSelectionUI && (
         <div
           className="absolute -top-9 left-0 z-50"
           data-nodrag="true"
@@ -203,7 +220,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
             />
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Selection outline (single select) */}
       {renderSelectionOutline()}

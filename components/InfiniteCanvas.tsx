@@ -754,6 +754,10 @@ export default function InfiniteCanvas() {
                 onChangeTags={(id, names) => {
                   updateShape(id, (s) => ({ ...s, tags: names }));
                 }}
+                //@ts-ignore
+                onCommitStyle={(id, patch) => {
+                  updateShape(id, (s) => ({ ...s, ...patch })); // your existing immutable updater
+                }}
               />
             );
           })}

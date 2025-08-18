@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Shape as IShape } from "../../types";
 import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
+import { useRegisterToolbarExtras } from "../toolbar/toolbarExtrasStore";
 
 type Props = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -108,6 +109,186 @@ export const Table: React.FC<Props> = (props) => {
     null
   );
   const toolbarRef = useRef<HTMLDivElement>(null);
+
+  useRegisterToolbarExtras(
+    shape.id,
+    () => (
+      <>
+        {/* Rows */}
+        <div className="flex items-center gap-1">
+          <span className="text-gray-500">Row</span>
+          <button
+            className="px-2 py-1 rounded bg-gray-200"
+            title="Add above"
+            onClick={(e) => {
+              e.stopPropagation();
+              addRowAbove();
+            }}
+          >
+            + ↑
+          </button>
+          <button
+            className="px-2 py-1 rounded bg-gray-200"
+            title="Add below"
+            onClick={(e) => {
+              e.stopPropagation();
+              addRowBelow();
+            }}
+          >
+            + ↓
+          </button>
+          <button
+            className="px-2 py-1 rounded bg-gray-200 disabled:opacity-40"
+            disabled={rows <= 1}
+            title="Remove row"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeRow();
+            }}
+          >
+            −
+          </button>
+        </div>
+
+        {/* Columns */}
+        <div className="flex items-center gap-1">
+          <span className="text-gray-500">Col</span>
+          <button
+            className="px-2 py-1 rounded bg-gray-200"
+            title="Add left"
+            onClick={(e) => {
+              e.stopPropagation();
+              addColLeft();
+            }}
+          >
+            + ←
+          </button>
+          <button
+            className="px-2 py-1 rounded bg-gray-200"
+            title="Add right"
+            onClick={(e) => {
+              e.stopPropagation();
+              addColRight();
+            }}
+          >
+            + →
+          </button>
+          <button
+            className="px-2 py-1 rounded bg-gray-200 disabled:opacity-40"
+            disabled={cols <= 1}
+            title="Remove column"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeCol();
+            }}
+          >
+            −
+          </button>
+        </div>
+
+        {/* Scope */}
+        <div className="flex items-center gap-1">
+          <span className="text-gray-500">Apply to</span>
+          <div className="inline-flex rounded-lg overflow-hidden border">
+            {(["cell", "row", "col"] as Scope[]).map((s) => (
+              <button
+                key={s}
+                className={`px-2 py-1 ${
+                  scope === s ? "bg-blue-200" : "bg-gray-100"
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setScope(s);
+                }}
+              >
+                {s === "cell" ? "Cell" : s === "row" ? "Row" : "Col"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Color pickers (popover) */}
+        <div className="flex items-center gap-2">
+          {/* BG */}
+          <div className="relative">
+            <button
+              className="px-2 py-1 rounded bg-gray-100 border flex items-center gap-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenPicker(openPicker === "bg" ? null : "bg");
+              }}
+            >
+              <span className="text-gray-500">BG</span>
+              <span
+                className="w-4 h-4 rounded border"
+                style={{
+                  backgroundColor: active ? bg[active.r][active.c] : "#ffffff",
+                }}
+              />
+            </button>
+            {openPicker === "bg" && (
+              <PalettePopover onPick={(c) => applyBg(c)} />
+            )}
+          </div>
+
+          {/* Text */}
+          <div className="relative">
+            <button
+              className="px-2 py-1 rounded bg-gray-100 border flex items-center gap-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenPicker(openPicker === "fg" ? null : "fg");
+              }}
+            >
+              <span className="text-gray-500">Text</span>
+              <span
+                className="w-4 h-4 rounded border grid place-items-center"
+                style={{ color: active ? fg[active.r][active.c] : "#0f172a" }}
+              >
+                A
+              </span>
+            </button>
+            {openPicker === "fg" && (
+              <PalettePopover onPick={(c) => applyFg(c)} />
+            )}
+          </div>
+        </div>
+
+        {/* Font style */}
+        <div className="flex items-center gap-1">
+          <span className="text-gray-500">Style</span>
+          <button
+            className="px-2 py-1 rounded bg-gray-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              applyFontStyle("normal");
+            }}
+          >
+            N
+          </button>
+          <button
+            className="px-2 py-1 rounded bg-gray-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              applyFontStyle("bold");
+            }}
+          >
+            <span className="font-bold">B</span>
+          </button>
+          <button
+            className="px-2 py-1 rounded bg-gray-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              applyFontStyle("italic");
+            }}
+          >
+            <span className="italic">I</span>
+          </button>
+        </div>
+      </>
+    ),
+    [shape.id, scope, font, bg, fg, fs, openPicker, rows, cols]
+  );
 
   // Close popover on outside click
   useEffect(() => {
@@ -438,233 +619,6 @@ export const Table: React.FC<Props> = (props) => {
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div className="w-full h-full bg-white rounded-xl shadow flex flex-col overflow-hidden">
-        {/* Toolbar */}
-        <div
-          ref={toolbarRef}
-          className="px-2 py-1 border-b bg-gray-50 flex flex-wrap items-center gap-3 text-xs relative"
-          data-nodrag="true"
-        >
-          {/* Rows */}
-          <div className="flex items-center gap-1">
-            <span className="text-gray-500">Row</span>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              title="Add above"
-              onClick={(e) => {
-                e.stopPropagation();
-                addRowAbove();
-              }}
-            >
-              + ↑
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              title="Add below"
-              onClick={(e) => {
-                e.stopPropagation();
-                addRowBelow();
-              }}
-            >
-              + ↓
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200 disabled:opacity-40"
-              disabled={rows <= 1}
-              title="Remove row"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeRow();
-              }}
-            >
-              −
-            </button>
-          </div>
-
-          {/* Columns */}
-          <div className="flex items-center gap-1">
-            <span className="text-gray-500">Col</span>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              title="Add left"
-              onClick={(e) => {
-                e.stopPropagation();
-                addColLeft();
-              }}
-            >
-              + ←
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              title="Add right"
-              onClick={(e) => {
-                e.stopPropagation();
-                addColRight();
-              }}
-            >
-              + →
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200 disabled:opacity-40"
-              disabled={cols <= 1}
-              title="Remove column"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeCol();
-              }}
-            >
-              −
-            </button>
-          </div>
-
-          {/* Scope */}
-          <div className="flex items-center gap-1">
-            <span className="text-gray-500">Apply to</span>
-            <div className="inline-flex rounded-lg overflow-hidden border">
-              {(["cell", "row", "col"] as Scope[]).map((s) => (
-                <button
-                  key={s}
-                  className={`px-2 py-1 ${
-                    scope === s ? "bg-blue-200" : "bg-gray-100"
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setScope(s);
-                  }}
-                >
-                  {s === "cell" ? "Cell" : s === "row" ? "Row" : "Col"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Color pickers (popover) */}
-          <div className="flex items-center gap-2">
-            {/* BG */}
-            <div className="relative">
-              <button
-                className="px-2 py-1 rounded bg-gray-100 border flex items-center gap-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenPicker(openPicker === "bg" ? null : "bg");
-                }}
-              >
-                <span className="text-gray-500">BG</span>
-                <span
-                  className="w-4 h-4 rounded border"
-                  style={{
-                    backgroundColor: active
-                      ? bg[active.r][active.c]
-                      : "#ffffff",
-                  }}
-                />
-              </button>
-              {openPicker === "bg" && (
-                <PalettePopover onPick={(c) => applyBg(c)} />
-              )}
-            </div>
-
-            {/* Text */}
-            <div className="relative">
-              <button
-                className="px-2 py-1 rounded bg-gray-100 border flex items-center gap-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenPicker(openPicker === "fg" ? null : "fg");
-                }}
-              >
-                <span className="text-gray-500">Text</span>
-                <span
-                  className="w-4 h-4 rounded border grid place-items-center"
-                  style={{ color: active ? fg[active.r][active.c] : "#0f172a" }}
-                >
-                  A
-                </span>
-              </button>
-              {openPicker === "fg" && (
-                <PalettePopover onPick={(c) => applyFg(c)} />
-              )}
-            </div>
-          </div>
-
-          {/* Font style */}
-          <div className="flex items-center gap-1">
-            <span className="text-gray-500">Style</span>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                applyFontStyle("normal");
-              }}
-            >
-              N
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                applyFontStyle("bold");
-              }}
-            >
-              <span className="font-bold">B</span>
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                applyFontStyle("italic");
-              }}
-            >
-              <span className="italic">I</span>
-            </button>
-          </div>
-
-          {/* Font size
-          <div className="flex items-center gap-2">
-            <span className="text-gray-500">Size</span>
-            <div className="inline-flex rounded-lg overflow-hidden border">
-              {FONT_SIZES.map((s) => (
-                <button
-                  key={s}
-                  className="px-2 py-1 bg-gray-100 hover:bg-gray-200"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    applyFontSize(s);
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div> */}
-          {/* Font size (popover) */}
-          <div className="flex items-center gap-2">
-            <span className="text-gray-500">Size</span>
-            <div className="relative">
-              <button
-                className="px-2 py-1 rounded bg-gray-100 border flex items-center gap-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenPicker(openPicker === "size" ? null : "size");
-                }}
-              >
-                <span>{active ? fs[active.r][active.c] : 14}</span>
-                <span className="text-gray-400">px ▾</span>
-              </button>
-              {openPicker === "size" && (
-                <SizePopover
-                  sizes={FONT_SIZES}
-                  onPick={(s) => applyFontSize(s)}
-                />
-              )}
-            </div>
-          </div>
-
-          <span className="ml-1 text-gray-500">
-            {rows}×{cols}
-            {active ? ` — r${active.r + 1}·c${active.c + 1}` : ""}
-          </span>
-        </div>
-
         {/* Grid */}
         <div className="flex-1 p-2 overflow-hidden">
           <div

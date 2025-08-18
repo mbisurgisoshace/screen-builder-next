@@ -59,7 +59,7 @@ export const TagPicker: React.FC<Props> = ({ value, onChange }) => {
   return (
     <div className="relative" data-nodrag="true">
       <button
-        className="px-2 py-1 rounded bg-gray-100 border text-xs"
+        className="px-2 py-1 rounded bg-gray-100 border text-xs w-20"
         onClick={(e) => {
           e.stopPropagation();
           setOpenSafely(!open);
