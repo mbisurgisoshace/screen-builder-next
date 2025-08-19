@@ -75,6 +75,37 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
     return () => window.removeEventListener("mousedown", onDown);
   }, [open]);
 
+  // ---------- Text: textarea editor on double-click ----------
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [text, setText] = React.useState<string>(shape.text ?? "");
+  const taRef = React.useRef<HTMLTextAreaElement>(null);
+
+  // sync external text when not editing (undo/redo, remote)
+  React.useEffect(() => {
+    if (!isEditing) setText(shape.text ?? "");
+  }, [shape.text, isEditing]);
+
+  // close editor if deselected
+  React.useEffect(() => {
+    if (!(props.isSelected && props.selectedCount === 1)) setIsEditing(false);
+  }, [props.isSelected, props.selectedCount]);
+
+  const beginEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditing(true);
+    requestAnimationFrame(() => {
+      taRef.current?.focus();
+      // put caret at end
+      const el = taRef.current!;
+      const len = el.value.length;
+      el.setSelectionRange(len, len);
+    });
+  };
+
+  const commitText = () => {
+    if ((shape.text ?? "") !== text) onCommitStyle?.(shape.id, { text });
+  };
+
   return (
     <ShapeFrame
       {...props}
@@ -82,9 +113,45 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div
+        onDoubleClick={beginEdit}
         className={` w-full h-full rounded shadow`}
         style={{ borderRadius: 6, backgroundColor: shape.color || "#dcfce7" }}
-      />
+      >
+        {/* View mode: centered display (no caret) */}
+        {!isEditing && (
+          <div
+            className="absolute inset-0 flex items-center justify-center p-2 text-center pointer-events-none whitespace-pre-wrap break-words"
+            style={{ color: "#0f172a", lineHeight: 1.25 }}
+          >
+            {text || ""}
+          </div>
+        )}
+
+        {/* Edit mode: textarea overlay (you can tweak centering) */}
+        {isEditing && (
+          <textarea
+            ref={taRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onBlur={() => {
+              commitText();
+              setIsEditing(false);
+            }}
+            data-nodrag="true"
+            onMouseDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            placeholder="Add text…"
+            className="absolute inset-0 w-full h-full bg-transparent outline-none resize-none p-2 text-sm"
+            style={{
+              // You can start centering here:
+              textAlign: "center",
+              lineHeight: 1.25,
+              color: "#0f172a",
+              // For vertical centering with textarea, consider measuring content height and setting paddingTop.
+            }}
+          />
+        )}
+      </div>
     </ShapeFrame>
   );
 };
