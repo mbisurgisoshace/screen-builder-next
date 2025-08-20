@@ -1,5 +1,7 @@
 import { Room } from "@/components/Room";
 import InfiniteCanvas from "@/components/InfiniteCanvas";
+import WorkspaceTabsView from "./_components/WorkspaceTabs";
+import { prisma } from "@/lib/prisma";
 
 export default async function RoomPage({
   params,
@@ -8,12 +10,10 @@ export default async function RoomPage({
 }) {
   const { workspaceId } = await params;
 
-  const res = await fetch(
-    `http://localhost:3000/api/workspaces/${workspaceId}`
-  );
-  const workspace = await res.json();
-
-  console.log("workspace:", workspace);
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: workspaceId },
+    include: { WorkspaceRoom: { orderBy: { index: "asc" } } },
+  });
 
   // const board = await fetchQuery(api.boards.getBoard, {
   //   id: roomId as Id<"boards">,
@@ -23,11 +23,13 @@ export default async function RoomPage({
     // <Room roomId={roomId}>
     //   <InfiniteCanvas />
     // </Room>
-    <div>
+    <div className="flex flex-col h-full">
       <div className="flex items-center px-4 h-[46px] bg-white border-b-[0.5px] border-b-[#E4E5ED]">
-        <h3>{workspace.name}</h3>
+        <h3>{workspace?.name}</h3>
       </div>
-      <div></div>
+      <div className="h-full">
+        <WorkspaceTabsView rooms={workspace?.WorkspaceRoom || []} />
+      </div>
     </div>
   );
 }

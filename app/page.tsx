@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { redirect } from "next/navigation";
 
-import { Room } from "@/components/Room";
-import InfiniteCanvas from "@/components/InfiniteCanvas";
+import { prisma } from "@/lib/prisma";
 
 export default async function Home({
   params,
@@ -12,12 +11,18 @@ export default async function Home({
   const { id } = await params;
 
   if (!id) {
-    const res = await fetch("http://localhost:3000/api/workspaces", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "My Workspace" }),
+    const workspace = await prisma.workspace.create({
+      data: {
+        name: "Untitled Workspace",
+        WorkspaceRoom: {
+          create: {
+            index: 0,
+            roomId: uuidv4(),
+            title: "Untitled",
+          },
+        },
+      },
     });
-    const workspace = await res.json();
 
     redirect(`/${workspace.id}`);
   }

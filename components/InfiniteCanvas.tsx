@@ -615,7 +615,7 @@ export default function InfiniteCanvas() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-gray-100 relative flex">
+    <div className="w-full h-full overflow-hidden bg-[#F9F9F9] relative flex">
       {/* Toolbar */}
       <div className="absolute top-4 left-4 z-20 bg-white p-2 rounded shadow flex flex-col gap-2">
         <button

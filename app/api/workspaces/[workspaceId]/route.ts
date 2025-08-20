@@ -7,7 +7,8 @@ export async function GET(
   { params }: { params: { workspaceId: string } }
 ) {
   try {
-    const { workspaceId } = params;
+    const { workspaceId } = await params;
+
     if (!workspaceId) {
       return NextResponse.json(
         { error: "workspaceId is required." },
