@@ -3,9 +3,11 @@ import { ShapeComponent } from "../types";
 import { Rect } from "./core/Rect";
 import { Text } from "./core/Text";
 import { Image } from "./core/Image";
-import { Ellipse } from "./core/Ellipse";
-import { Interview } from "./custom/Interview";
 import { Table } from "./core/Table";
+import { Ellipse } from "./core/Ellipse";
+import { Question } from "./custom/Question";
+import { Interview } from "./custom/Interview";
+import { QuestionAnswer } from "./custom/QuestionAnswer";
 
 // Registry maps type to corresponding component
 export const shapeRegistry: Record<string, ShapeComponent> = {
@@ -14,5 +16,7 @@ export const shapeRegistry: Record<string, ShapeComponent> = {
   image: Image,
   table: Table,
   ellipse: Ellipse,
+  question: Question,
   interview: Interview,
+  question_answer: QuestionAnswer,
 };

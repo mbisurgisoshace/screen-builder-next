@@ -623,7 +623,7 @@ export default function InfiniteCanvas() {
           onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "rect");
           }}
-          className="w-10 h-10 bg-blue-400 rounded"
+          className="w-10 h-10 bg-blue-300 rounded"
           title="Rectangle"
         />
         <button
@@ -631,7 +631,7 @@ export default function InfiniteCanvas() {
           onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "ellipse");
           }}
-          className="w-10 h-10 bg-green-400 rounded-full"
+          className="w-10 h-10 bg-green-300 rounded-full"
           title="Ellipse"
         />
         <button
@@ -658,9 +658,31 @@ export default function InfiniteCanvas() {
         <button
           draggable
           onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "question");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-red-300 rounded text-black font-bold"
+          title="Question"
+        >
+          Qs
+        </button>
+
+        <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "question_answer");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-amber-300 rounded text-black font-bold"
+          title="Answer"
+        >
+          An
+        </button>
+
+        <button
+          draggable
+          onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "table");
           }}
-          className="w-10 h-10 flex items-center justify-center bg-purple-200 rounded text-black font-bold"
+          className="w-10 h-10 flex items-center justify-center bg-pink-300 rounded text-black font-bold"
           title="Table"
         >
           Tb

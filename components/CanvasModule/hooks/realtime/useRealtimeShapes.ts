@@ -77,8 +77,26 @@ export function useRealtimeShapes() {
         type,
         x,
         y,
-        width: type === "text" ? 120 : type === "interview" ? 580 : 160,
-        height: type === "text" ? 40 : type === "interview" ? 228 : 112,
+        width:
+          type === "text"
+            ? 120
+            : type === "interview"
+            ? 580
+            : type === "question"
+            ? 440
+            : type === "question_answer"
+            ? 880
+            : 160,
+        height:
+          type === "text"
+            ? 40
+            : type === "interview"
+            ? 228
+            : type === "question"
+            ? 320
+            : type === "question_answer"
+            ? 320
+            : 112,
         color: "bg-blue-500",
         text: type === "text" ? "New text" : undefined,
       };

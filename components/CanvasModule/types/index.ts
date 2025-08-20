@@ -1,10 +1,12 @@
 export type ShapeType =
   | "rect"
-  | "ellipse"
   | "text"
-  | "interview"
   | "image"
-  | "table";
+  | "table"
+  | "ellipse"
+  | "question"
+  | "interview"
+  | "question_answer";
 
 export interface Shape {
   x: number;
