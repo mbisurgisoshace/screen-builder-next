@@ -24,3 +24,29 @@ model Tag {
   @@index([name])
   @@map("tags")
 }
+
+model Workspace {
+  id            String          @id @default(cuid())
+  name          String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  WorkspaceRoom WorkspaceRoom[]
+
+  @@map("workspaces")
+}
+
+model WorkspaceRoom {
+  id          String   @id @default(cuid())
+  workspaceId String
+  // Liveblocks room id (kept as-is; you can re-use existing rooms)
+  roomId      String   @unique
+  title       String   @default("Untitled")
+  index       Int      @default(0) // ordering in tabs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, index])
+  @@map("workspace_rooms")
+}
