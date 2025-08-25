@@ -1,17 +1,35 @@
 // components/workspace/SimpleTabs.tsx
 "use client";
-import InfiniteCanvas from "@/components/InfiniteCanvas";
+
+import { toast } from "sonner";
+import React, { useState } from "react";
+
 import { Room } from "@/components/Room";
-import React from "react";
+import InfiniteCanvas from "@/components/InfiniteCanvas";
+import { createWorkspaceRoom } from "@/services/workspaces";
 
 export type SimpleTab = { id: string; title: string; roomId: string };
 
-export default function WorkspaceTabsView({ rooms }: { rooms: any[] }) {
-  const [activeRoomId, setActiveRoom] = React.useState<string | null>(
+export default function WorkspaceTabsView({
+  rooms,
+  workspaceId,
+}: {
+  rooms: any[];
+  workspaceId: string;
+}) {
+  const [activeRoomId, setActiveRoom] = useState<string | null>(
     rooms[0].roomId
   );
 
-  const handleAdd = () => {};
+  const handleAdd = async () => {
+    try {
+      const newRoom = await createWorkspaceRoom(workspaceId, rooms.length);
+      setActiveRoom(newRoom.roomId);
+      toast.success("New room created");
+    } catch (err) {
+      console.log("err");
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col bg-gray-50">
@@ -48,7 +66,7 @@ export default function WorkspaceTabsView({ rooms }: { rooms: any[] }) {
           <button
             title="New tab"
             onClick={handleAdd}
-            className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+            className="ml-1 cursor-pointer inline-flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path

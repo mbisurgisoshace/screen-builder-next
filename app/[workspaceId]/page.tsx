@@ -28,7 +28,10 @@ export default async function RoomPage({
         <h3>{workspace?.name}</h3>
       </div>
       <div className="h-full">
-        <WorkspaceTabsView rooms={workspace?.WorkspaceRoom || []} />
+        <WorkspaceTabsView
+          workspaceId={workspaceId}
+          rooms={workspace?.WorkspaceRoom || []}
+        />
       </div>
     </div>
   );
