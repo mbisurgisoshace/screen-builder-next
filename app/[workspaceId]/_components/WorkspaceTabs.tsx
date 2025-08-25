@@ -76,6 +76,7 @@ export default function WorkspaceTabsView({
                   return (
                     <input
                       autoFocus
+                      key={t.id}
                       className="text-[10px] px-1 py-0.5 bg-white border rounded outline-none"
                       value={draft}
                       onChange={(e) => setDraft(e.target.value)}
