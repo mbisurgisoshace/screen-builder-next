@@ -134,8 +134,9 @@ export default function InfiniteCanvas() {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (connecting) {
-        const x = (e.clientX - position.x) / scale;
-        const y = (e.clientY - position.y) / scale;
+        const rect = canvasRef.current!.getBoundingClientRect();
+        const x = (e.clientX - rect.left - position.x) / scale;
+        const y = (e.clientY - rect.top - position.y) / scale;
         setConnectingMousePos({ x, y });
 
         if (!isDraggingConnector) setIsDraggingConnector(true);

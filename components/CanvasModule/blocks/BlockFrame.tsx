@@ -164,7 +164,11 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
       <div key={p.id} className="group absolute z-40" style={p.style}>
         <div
           className="w-2 h-2 rounded-full bg-blue-500 transition-all duration-150 group-hover:scale-150 group-hover:bg-blue-600 relative flex items-center justify-center"
-          onMouseDown={(e) => onConnectorMouseDown?.(e, shape.id, p.id)}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onConnectorMouseDown?.(e, shape.id, p.id);
+          }}
           // make the dot capture pointer events without interfering with drag on body
           style={{ cursor: "crosshair" }}
         >
