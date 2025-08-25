@@ -23,3 +23,16 @@ export async function createWorkspaceRoom(
 
   return newRoom;
 }
+
+export async function renameWorkspaceRoom(
+  workspaceId: string,
+  roomId: string,
+  title: string
+) {
+  await prisma.workspaceRoom.update({
+    where: { roomId },
+    data: { title },
+  });
+
+  revalidatePath(`/${workspaceId}`);
+}

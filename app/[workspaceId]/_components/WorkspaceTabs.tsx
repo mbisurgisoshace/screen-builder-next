@@ -6,7 +6,10 @@ import React, { useState } from "react";
 
 import { Room } from "@/components/Room";
 import InfiniteCanvas from "@/components/InfiniteCanvas";
-import { createWorkspaceRoom } from "@/services/workspaces";
+import {
+  createWorkspaceRoom,
+  renameWorkspaceRoom,
+} from "@/services/workspaces";
 
 export type SimpleTab = { id: string; title: string; roomId: string };
 
@@ -17,9 +20,36 @@ export default function WorkspaceTabsView({
   rooms: any[];
   workspaceId: string;
 }) {
+  const [tabs, setTabs] = useState(rooms);
   const [activeRoomId, setActiveRoom] = useState<string | null>(
     rooms[0].roomId
   );
+
+  const [draft, setDraft] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const beginRename = (id: string, current: string) => {
+    setEditingId(id);
+    setDraft(current);
+  };
+
+  const commitRename = async (id: string, value: string) => {
+    const title = (value || "").trim() || "Untitled";
+    const prev = tabs.find((t) => t.id === id)?.title ?? "";
+
+    // optimistic update
+    setTabs((ts) => ts.map((t) => (t.id === id ? { ...t, title } : t)));
+    setEditingId(null);
+
+    try {
+      await renameWorkspaceRoom(workspaceId, id, title);
+      toast.success("Tab renamed");
+    } catch (err) {
+      // revert on error
+      setTabs((ts) => ts.map((t) => (t.id === id ? { ...t, title: prev } : t)));
+      toast.error("Could not rename tab");
+    }
+  };
 
   const handleAdd = async () => {
     try {
@@ -38,18 +68,46 @@ export default function WorkspaceTabsView({
         <div className="flex gap-2 box-border items-center h-full">
           <div className="flex h-full items-end gap-2 overflow-x-auto px-1">
             {rooms.map((t) => {
+              const isEditing = editingId === t.id;
               const active = t.roomId === activeRoomId;
 
-              if (active)
+              if (active) {
+                if (isEditing) {
+                  return (
+                    <input
+                      autoFocus
+                      className="text-[10px] px-1 py-0.5 bg-white border rounded outline-none"
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => {
+                        e.stopPropagation();
+                        if (e.key === "Enter")
+                          (e.target as HTMLInputElement).blur();
+                        if (e.key === "Escape") {
+                          setEditingId(null);
+                          setDraft("");
+                        }
+                      }}
+                      onBlur={() => commitRename(t.roomId, draft)}
+                    />
+                  );
+                }
+
                 return (
                   <button
                     key={t.id}
                     onClick={() => setActiveRoom(t.roomId)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      beginRename(t.id, t.title);
+                    }}
                     className="font-semibold cursor-pointer text-[10px] bg-[#F9F9F9] px-3.5 h-6 rounded-t-sm flex items-center"
                   >
                     {t.title}
                   </button>
                 );
+              }
 
               return (
                 <button
