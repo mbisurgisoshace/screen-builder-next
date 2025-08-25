@@ -195,7 +195,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
         top: shape.y,
         width: shape.width,
         height: shape.height,
-        zIndex: isSelected ? 20 : 1,
+        zIndex: isSelected ? 50 : 45,
       }}
     >
       {/* Floating toolbar (single select): Tag picker */}
