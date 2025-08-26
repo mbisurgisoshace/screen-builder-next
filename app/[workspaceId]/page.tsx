@@ -2,6 +2,7 @@ import { Room } from "@/components/Room";
 import InfiniteCanvas from "@/components/InfiniteCanvas";
 import WorkspaceTabsView from "./_components/WorkspaceTabs";
 import { prisma } from "@/lib/prisma";
+import { QuestionsProvider } from "@/components/CanvasModule/questions/QuestionsProvider";
 
 export default async function RoomPage({
   params,
@@ -14,6 +15,8 @@ export default async function RoomPage({
     where: { id: workspaceId },
     include: { WorkspaceRoom: { orderBy: { index: "asc" } } },
   });
+
+  const questions = await prisma.cardQuestions.findMany({});
 
   // const board = await fetchQuery(api.boards.getBoard, {
   //   id: roomId as Id<"boards">,
@@ -28,10 +31,12 @@ export default async function RoomPage({
         <h3>{workspace?.name}</h3>
       </div>
       <div className="h-full">
-        <WorkspaceTabsView
-          workspaceId={workspaceId}
-          rooms={workspace?.WorkspaceRoom || []}
-        />
+        <QuestionsProvider questions={questions}>
+          <WorkspaceTabsView
+            workspaceId={workspaceId}
+            rooms={workspace?.WorkspaceRoom || []}
+          />
+        </QuestionsProvider>
       </div>
     </div>
   );

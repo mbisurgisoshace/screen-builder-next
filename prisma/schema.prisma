@@ -50,3 +50,17 @@ model WorkspaceRoom {
   @@index([workspaceId, index])
   @@map("workspace_rooms")
 }
+
+model CardQuestions {
+  id               String   @id @default(cuid())
+  card_type        CardType
+  question         String
+  question_options String[]
+
+  @@map("card_questions")
+}
+
+enum CardType {
+  interview
+  feature_idea
+}

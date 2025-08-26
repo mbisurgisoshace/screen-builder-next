@@ -38,6 +38,9 @@ export interface Shape {
 
   // tags
   tags?: string[];
+
+  // feature idea
+  featureIdeaTags?: string[];
 }
 
 export type ShapeComponentProps = {
