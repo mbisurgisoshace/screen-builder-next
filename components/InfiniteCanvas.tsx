@@ -516,6 +516,10 @@ export default function InfiniteCanvas() {
     }
 
     if (!type) return;
+
+    if (type === "feature_idea") {
+    }
+
     addShape(type, x, y, uuidv4());
   };
 
@@ -687,6 +691,17 @@ export default function InfiniteCanvas() {
           title="Table"
         >
           Tb
+        </button>
+
+        <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "feature_idea");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-indigo-300 rounded text-black font-bold"
+          title="Feature Idea"
+        >
+          Fi
         </button>
       </div>
 

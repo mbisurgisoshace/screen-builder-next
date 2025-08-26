@@ -6,6 +6,7 @@ export type ShapeType =
   | "ellipse"
   | "question"
   | "interview"
+  | "feature_idea"
   | "question_answer";
 
 export interface Shape {

@@ -7,6 +7,7 @@ import { Table } from "./core/Table";
 import { Ellipse } from "./core/Ellipse";
 import { Question } from "./custom/Question";
 import { Interview } from "./custom/Interview";
+import { FeatureIdea } from "./custom/FeatureIdea";
 import { QuestionAnswer } from "./custom/QuestionAnswer";
 
 // Registry maps type to corresponding component
@@ -18,5 +19,6 @@ export const shapeRegistry: Record<string, ShapeComponent> = {
   ellipse: Ellipse,
   question: Question,
   interview: Interview,
+  feature_idea: FeatureIdea,
   question_answer: QuestionAnswer,
 };
