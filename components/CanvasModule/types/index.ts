@@ -39,9 +39,23 @@ export interface Shape {
   // tags
   tags?: string[];
 
+  // attachments
+  attachments?: Attachment[];
+
   // feature idea
   featureIdeaTags?: string[];
 }
+
+export type Attachment = {
+  id: string;
+  name: string;
+  mime: string;
+  url?: string; // final CDN URL
+  preview?: string; // small base64 preview for collaborators
+  uploading?: boolean;
+  progress?: number; // 0..1
+  createdAt: number;
+};
 
 export type ShapeComponentProps = {
   shape: Shape;

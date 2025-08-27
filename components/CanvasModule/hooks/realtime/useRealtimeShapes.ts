@@ -124,6 +124,7 @@ export function useRealtimeShapes() {
   const updateShape = useMutation(
     ({ storage }, id: string, updater: (s: Shape) => Shape) => {
       const list = storage.get("shapes") as LiveList<LiveObject<any>>;
+
       for (let i = 0; i < list.length; i++) {
         const lo = list.get(i)!;
         const s = fromLiveShape(lo);
@@ -141,7 +142,6 @@ export function useRealtimeShapes() {
           // });
           // break;
           const current = lo.toObject() as Shape;
-
           const ns = updater(current);
 
           // Build a shallow patch for any changed flat key
