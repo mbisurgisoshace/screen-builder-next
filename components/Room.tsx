@@ -17,7 +17,8 @@ export function Room({ roomId, children }: RoomProps) {
   return (
     <LiveblocksProvider
       throttle={16}
-      publicApiKey={process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY!}
+      // publicApiKey={process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY!}
+      authEndpoint={"/api/liveblocks-auth"}
     >
       <RoomProvider
         id={`${roomId}`}
