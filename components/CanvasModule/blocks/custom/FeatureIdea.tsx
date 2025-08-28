@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import { EllipsisIcon, MicIcon } from "lucide-react";
+import { ChevronDown, EllipsisIcon, MicIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 
@@ -41,6 +41,35 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
     commit({ featureIdeaTags: next });
   }
 
+  const fiQuestions = useMemo(
+    () => questions.filter((q) => q.card_type === "feature_idea"),
+    [questions]
+  );
+
+  // Count “answered” by checking each question index has a non-empty tag
+  const answeredCount = fiQuestions.reduce(
+    (n, _q, i) => n + (tags[i] ? 1 : 0),
+    0
+  );
+  const allAnswered =
+    fiQuestions.length > 0 && answeredCount === fiQuestions.length;
+
+  // Collapsed state: default closed only if already complete;
+  // afterwards, user can toggle freely (no auto-collapse).
+  const [collapsed, setCollapsed] = useState<boolean>(allAnswered);
+
+  const userToggledRef = useRef(false);
+  useEffect(() => {
+    // If data loads after mount and user hasn't toggled yet,
+    // sync the initial state once.
+    if (!userToggledRef.current) setCollapsed(allAnswered);
+  }, [allAnswered]);
+
+  function toggleCollapsed() {
+    userToggledRef.current = true;
+    setCollapsed((c) => !c);
+  }
+
   const body = (
     <div>
       <div className="px-8 py-5">
@@ -78,12 +107,36 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
           ))}
         </div>
       </div>
-      <div className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6">
-        {questions
-          .filter((q) => q.card_type === "feature_idea")
+
+      <div className="px-8 flex items-center justify-center">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleCollapsed();
+          }}
+          data-nodrag="true"
+          className="inline-flex items-center gap-2 text-[12px] text-gray-700 bg-white border rounded-md px-2 py-1 hover:bg-gray-50"
+        >
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${
+              collapsed ? "-rotate-90" : "rotate-0"
+            }`}
+          />
+          {collapsed ? "Show questions" : "Hide questions"}
+          <span className="ml-2 text-gray-400">
+            ({answeredCount}/{fiQuestions.length})
+          </span>
+        </button>
+      </div>
+
+      {/* <div className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6">
+      
+        {fiQuestions
+          //.filter((q) => q.card_type === "feature_idea")
           .map((q, idx) => (
             <div className="flex flex-col gap-3" key={q.id}>
-              <h3 className="font-bold text-[14px] text-[#111827]">
+              <h3 className="font-bold text-[14.,px] text-[#111827]">
                 {q.question}
               </h3>
 
@@ -101,7 +154,39 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
               </Select>
             </div>
           ))}
-      </div>
+      </div> */}
+
+      {/* Questions (collapsible) */}
+      {!collapsed && (
+        <div className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md">
+          {fiQuestions.map((q, idx) => (
+            <div className="flex flex-col gap-3" key={q.id}>
+              <h3 className="font-bold text-[14px] text-[#111827]">
+                {q.question}
+              </h3>
+
+              <div
+                data-nodrag="true"
+                onMouseDown={(e) => e.stopPropagation()}
+                className="w-full"
+              >
+                <Select value={tags[idx] ?? ""} onValueChange={addTag}>
+                  <SelectTrigger className="w-full bg-white">
+                    <SelectValue placeholder="Select an option" />
+                  </SelectTrigger>
+                  <SelectContent onMouseDown={(e) => e.stopPropagation()}>
+                    {q.question_options.map((option) => (
+                      <SelectItem value={option} key={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 
