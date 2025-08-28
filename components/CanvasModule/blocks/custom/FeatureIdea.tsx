@@ -65,9 +65,45 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
     if (!userToggledRef.current) setCollapsed(allAnswered);
   }, [allAnswered]);
 
+  const questionsRef = useRef<HTMLDivElement | null>(null);
+
+  function outerHeight(el: HTMLElement | null) {
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
+    const cs = window.getComputedStyle(el);
+    const mt = parseFloat(cs.marginTop || "0");
+    const mb = parseFloat(cs.marginBottom || "0");
+    return rect.height + mt + mb;
+  }
+
+  const MIN_HEIGHT = 160;
+
+  function adjustHeight(delta: number) {
+    // Only adjust if there is a visible change
+    const current = shape.height ?? 200;
+    const next = Math.max(MIN_HEIGHT, Math.round(current + delta));
+    if (Math.abs(next - current) > 1) {
+      commit({ height: next });
+    }
+  }
+
   function toggleCollapsed() {
     userToggledRef.current = true;
-    setCollapsed((c) => !c);
+    // setCollapsed((c) => !c);
+    if (!collapsed) {
+      // Going to collapse: measure BEFORE hiding and shrink now
+      const dh = -outerHeight(questionsRef.current);
+      adjustHeight(dh);
+      setCollapsed(true);
+    } else {
+      // Going to expand: first show, then measure and grow
+      setCollapsed(false);
+      // wait for layout to flush
+      requestAnimationFrame(() => {
+        const dh = outerHeight(questionsRef.current);
+        adjustHeight(dh);
+      });
+    }
   }
 
   const body = (
@@ -158,7 +194,10 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
 
       {/* Questions (collapsible) */}
       {!collapsed && (
-        <div className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md">
+        <div
+          ref={questionsRef}
+          className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md"
+        >
           {fiQuestions.map((q, idx) => (
             <div className="flex flex-col gap-3" key={q.id}>
               <h3 className="font-bold text-[14px] text-[#111827]">
