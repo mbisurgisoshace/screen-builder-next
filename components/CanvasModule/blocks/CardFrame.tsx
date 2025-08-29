@@ -243,6 +243,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
         <AttachmentPreviewModal
           open={previewOpen}
           onClose={() => setPreviewOpen(false)}
+          //@ts-ignore
           items={attachments.map((a) => ({
             id: a.id,
             name: a.name,
