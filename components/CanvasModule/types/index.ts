@@ -9,6 +9,8 @@ export type ShapeType =
   | "feature_idea"
   | "question_answer";
 
+export type Kind = "image" | "video" | "pdf" | "file";
+
 export interface Shape {
   x: number;
   y: number;
@@ -48,13 +50,16 @@ export interface Shape {
 
 export type Attachment = {
   id: string;
+  kind: Kind;
   name: string;
   mime: string;
-  url?: string; // final CDN URL
+  url?: string;
   preview?: string; // small base64 preview for collaborators
   uploading?: boolean;
   progress?: number; // 0..1
   createdAt: number;
+  size?: number;
+  ext?: string;
 };
 
 export type ShapeComponentProps = {
