@@ -9,6 +9,11 @@ import {
 } from "@liveblocks/react";
 import { useRef, useState, useEffect } from "react";
 
+import {
+  writeClipboard,
+  readClipboard,
+  ClipboardPayload,
+} from "./CanvasModule/clipboard";
 import SelectionGroup from "./CanvasModule/SelectionBox";
 import { Shape as IShape, Position, ShapeType } from "./CanvasModule/types";
 
@@ -209,6 +214,28 @@ export default function InfiniteCanvas() {
         return;
       }
 
+      if (meta && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        copySelection();
+        return;
+      }
+      if (meta && e.key.toLowerCase() === "x") {
+        e.preventDefault();
+        cutSelection();
+        return;
+      }
+      if (meta && e.key.toLowerCase() === "v") {
+        e.preventDefault();
+        pasteFromClipboard();
+        return;
+      }
+      // Duplicate: Cmd/Ctrl + D  (optional but handy)
+      if (meta && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        duplicateSelection();
+        return;
+      }
+
       const isDelete = e.key === "Backspace" || e.key === "Delete";
 
       if (isDelete) {
@@ -385,6 +412,34 @@ export default function InfiniteCanvas() {
       img.onerror = rej;
       img.src = src;
     });
+  }
+
+  function bbox(of: IShape[]) {
+    const xs = of.map((s) => s.x);
+    const ys = of.map((s) => s.y);
+    const xe = of.map((s) => s.x + s.width);
+    const ye = of.map((s) => s.y + s.height);
+    const left = Math.min(...xs);
+    const top = Math.min(...ys);
+    const right = Math.max(...xe);
+    const bottom = Math.max(...ye);
+    return { left, top, width: right - left, height: bottom - top };
+  }
+
+  function toTemplate(s: IShape) {
+    const { id, ...rest } = s as any;
+    return rest as Omit<IShape, "id">;
+  }
+
+  // Where should pasted shapes land? At mouse if we have it; otherwise viewport center.
+  function pasteAnchor() {
+    if (canvasMousePos) return { x: canvasMousePos.x, y: canvasMousePos.y };
+    const vw = canvasRef.current?.clientWidth ?? 0;
+    const vh = canvasRef.current?.clientHeight ?? 0;
+    return {
+      x: (-position.x + vw / 2) / scale,
+      y: (-position.y + vh / 2) / scale,
+    };
   }
 
   // --- Shape creation ---
@@ -664,6 +719,87 @@ export default function InfiniteCanvas() {
     setConnectingMousePos?.(null);
     setIsDraggingConnector?.(false);
   };
+
+  async function copySelection() {
+    if (!selectedShapeIds.length) return;
+    const sel = shapes.filter((s) => selectedShapeIds.includes(s.id));
+    if (!sel.length) return;
+
+    const box = bbox(sel);
+    const payload: ClipboardPayload<IShape> = {
+      kind: "shapes-v1",
+      createdAt: Date.now(),
+      anchor: { x: box.left, y: box.top },
+      shapes: sel,
+    };
+    await writeClipboard(payload);
+  }
+
+  async function cutSelection() {
+    if (!selectedShapeIds.length) return;
+    await copySelection();
+    deleteSelectedShapes(); // you already have this
+  }
+
+  async function pasteFromClipboard() {
+    const data = await readClipboard<ClipboardPayload<IShape>>();
+    if (!data?.shapes?.length) return;
+
+    const anchorTarget = pasteAnchor();
+    const { left, top, width, height } = bbox(data.shapes);
+    // center the pasted group under anchor
+    const dx = anchorTarget.x - (left + width / 2);
+    const dy = anchorTarget.y - (top + height / 2);
+
+    const newIds: string[] = [];
+    pause();
+    try {
+      for (const s of data.shapes) {
+        const newId = uuidv4();
+        newIds.push(newId);
+
+        // create minimal shell at new position
+        addShape(s.type as ShapeType, s.x + dx, s.y + dy, newId);
+        // then patch full shape (keeps your Liveblocks adapter happy)
+        updateShape(newId, () => ({
+          ...toTemplate(s),
+          id: newId,
+          x: s.x + dx,
+          y: s.y + dy,
+        }));
+      }
+      setSelectedShapeIds(newIds);
+    } finally {
+      resume();
+    }
+  }
+
+  async function duplicateSelection() {
+    if (!selectedShapeIds.length) return;
+    const sel = shapes.filter((s) => selectedShapeIds.includes(s.id));
+    if (!sel.length) return;
+
+    const ox = 24,
+      oy = 24; // visible nudge
+    const newIds: string[] = [];
+    pause();
+    try {
+      for (const s of sel) {
+        const newId = uuidv4();
+        newIds.push(newId);
+        addShape(s.type as ShapeType, s.x + ox, s.y + oy, newId);
+        updateShape(newId, () => ({
+          ...toTemplate(s),
+          id: newId,
+          x: s.x + ox,
+          y: s.y + oy,
+        }));
+      }
+      setSelectedShapeIds(newIds);
+    } finally {
+      resume();
+    }
+  }
 
   return (
     <div className="w-full h-full overflow-hidden bg-[#F9F9F9] relative flex">
