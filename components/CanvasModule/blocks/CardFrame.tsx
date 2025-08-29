@@ -1,11 +1,21 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 import { Attachment, Kind, Shape, ShapeComponent } from "../types";
 import { ShapeFrame, ShapeFrameProps } from "./BlockFrame";
-import { FileTextIcon, PlayIcon, PlusIcon, XIcon } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  FileTextIcon,
+  Play,
+  PlayIcon,
+  PlusIcon,
+  X,
+  XIcon,
+} from "lucide-react";
 import { uploadToSupabase } from "@/lib/uploadToSupabase";
 
 type CardFrame = Omit<ShapeFrameProps, "children" | "shape"> & {
@@ -155,6 +165,17 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
     handleFiles(e.dataTransfer.files);
   }
 
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewIndex, setPreviewIndex] = useState(0);
+
+  function openPreviewById(id: string) {
+    const i = attachments.findIndex((a) => a.id === id);
+    if (i >= 0) {
+      setPreviewIndex(i);
+      setPreviewOpen(true);
+    }
+  }
+
   return (
     <ShapeFrame
       {...props}
@@ -213,11 +234,25 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
               <AttachmentTile
                 key={att.id}
                 att={att}
+                onOpen={openPreviewById}
                 onRemove={() => removeAttachment(att.id)}
               />
             ))}
           </div>
         </div>
+        <AttachmentPreviewModal
+          open={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          items={attachments.map((a) => ({
+            id: a.id,
+            name: a.name,
+            url: a.preview || a.url, // show local preview if still uploading
+            mime: a.mime,
+            size: a.size,
+          }))}
+          index={previewIndex}
+          setIndex={setPreviewIndex}
+        />
       </div>
     </ShapeFrame>
   );
@@ -454,16 +489,29 @@ async function makeLabelThumb(
 
 function AttachmentTile({
   att,
+  onOpen,
   onRemove,
 }: {
   att: Attachment;
   onRemove: () => void;
+  onOpen: (id: string) => void;
 }) {
   const src = att.url || att.preview;
+
+  const open = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onOpen(att.id);
+  };
+
   return (
-    <div className="relative w-[125px] h-[130px] rounded-md overflow-hidden border bg-white group">
+    <div
+      className="relative w-[125px] h-[130px] rounded-md overflow-hidden border bg-white group"
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={open}
+    >
       {/* Click-through link */}
-      <a
+      {/* <a
         href={src}
         target="_blank"
         rel="noreferrer"
@@ -471,6 +519,40 @@ function AttachmentTile({
         onClick={(e) => e.stopPropagation()}
       >
         {renderThumb(att)}
+      </a> */}
+      {/* Thumbnail / label (no anchors here) */}
+      {isImage(att.mime) ? (
+        <img
+          src={att.preview || att.url}
+          alt={att.name}
+          className="object-cover w-full h-full"
+          draggable={false}
+        />
+      ) : isVideo(att.mime) ? (
+        <div className="w-full h-full grid place-items-center bg-black/5">
+          <Play className="w-7 h-7 opacity-70" />
+        </div>
+      ) : isPdf(att.mime) ? (
+        <div className="w-full h-full grid place-items-center text-xs p-2 text-center">
+          📄 {att.name}
+        </div>
+      ) : (
+        <div className="w-full h-full grid place-items-center text-xs p-2 text-center">
+          ⬇︎ {att.name}
+        </div>
+      )}
+
+      {/* Tiny Download button that DOESN'T open the modal */}
+      <a
+        href={att.url}
+        target="_blank"
+        rel="noreferrer"
+        download
+        title="Download"
+        className="absolute bottom-1 right-1 p-1 rounded bg-black/40 hover:bg-black/60 text-white"
+        onClick={(e) => e.stopPropagation()} // <- prevent modal open
+      >
+        <Download className="w-4 h-4" />
       </a>
 
       {/* Remove */}
@@ -517,18 +599,204 @@ async function makeBase64Thumb(file: File, max = 320): Promise<string> {
   return dataUrl;
 }
 
-// function fileToImageBitmap(file: File): Promise<ImageBitmap> {
-//   return new Promise((resolve, reject) => {
-//     const fr = new FileReader();
-//     fr.onload = () => {
-//       const img = new Image();
-//       img.onload = () => {
-//         createImageBitmap(img).then(resolve).catch(reject);
-//       };
-//       img.onerror = reject;
-//       img.src = String(fr.result);
-//     };
-//     fr.onerror = reject;
-//     fr.readAsDataURL(file);
-//   });
-// }
+function formatBytes(bytes?: number) {
+  if (!bytes && bytes !== 0) return "";
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    sizes.length - 1
+  );
+  const val = bytes / Math.pow(1024, i);
+  return `${val.toFixed(val >= 10 || i === 0 ? 0 : 1)} ${sizes[i]}`;
+}
+
+function isImage(mime = "", url = "") {
+  return (
+    mime.startsWith("image/") ||
+    /\.(png|jpe?g|gif|webp|avif|svg)(\?|#|$)/i.test(url)
+  );
+}
+function isVideo(mime = "", url = "") {
+  return mime.startsWith("video/") || /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(url);
+}
+function isPdf(mime = "", url = "") {
+  return mime === "application/pdf" || /\.pdf(\?|#|$)/i.test(url);
+}
+
+export function AttachmentPreviewModal({
+  open,
+  onClose,
+  items,
+  index,
+  setIndex,
+}: {
+  open: boolean;
+  onClose: () => void;
+  items: Attachment[];
+  index: number;
+  setIndex: (i: number) => void;
+}) {
+  const att = items[index];
+
+  // Keyboard nav
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft")
+        setIndex((index - 1 + items.length) % items.length);
+      if (e.key === "ArrowRight") setIndex((index + 1) % items.length);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, index, items.length]);
+
+  if (!open || !att) return null;
+
+  const showImage = isImage(att.mime, att.url);
+  const showVideo = isVideo(att.mime, att.url);
+  const showPdf = isPdf(att.mime, att.url);
+
+  return (
+    <div
+      className="fixed inset-0 z-[1000] bg-black/70 flex items-center justify-center"
+      data-nodrag="true"
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        // close if clicking backdrop (not the content)
+        if (e.currentTarget === e.target) onClose();
+      }}
+    >
+      {/* Toolbar */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-sm px-3 py-1.5 rounded bg-black/50">
+        {att.name} {att.size ? `• ${formatBytes(att.size)}` : ""}
+      </div>
+      <button
+        className="absolute top-3 right-3 p-2 rounded hover:bg-white/10 text-white"
+        title="Close"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      {items.length > 1 && (
+        <>
+          <button
+            className="absolute left-3 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white"
+            title="Previous"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIndex((index - 1 + items.length) % items.length);
+            }}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            className="absolute right-3 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white"
+            title="Next"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIndex((index + 1) % items.length);
+            }}
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </>
+      )}
+
+      {/* Content */}
+      <div
+        className="max-w-[90vw] max-h-[85vh] w-auto h-auto bg-transparent rounded shadow-lg overflow-hidden"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        {showImage && (
+          <img
+            src={att.url}
+            alt={att.name}
+            className="max-w-[90vw] max-h-[85vh] object-contain select-none"
+            draggable={false}
+          />
+        )}
+
+        {showVideo && (
+          <video
+            src={att.url}
+            className="max-w-[90vw] max-h-[85vh]"
+            controls
+            autoPlay
+            preload="metadata"
+          />
+        )}
+
+        {showPdf && (
+          // <div className="bg-white max-w-[90vw] max-h-[85vh] w-[80vw] h-[80vh]">
+          //   {/* Try to embed; some hosts may set headers that prevent inline PDF */}
+          //   <iframe src={att.url} className="w-full h-full" title={att.name} />
+          // </div>
+          <div className="w-[80vw] max-w-[640px] h-[40vh] max-h-[360px] flex items-center justify-center">
+            <a
+              href={att.url}
+              download
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="group inline-flex flex-col items-center justify-center gap-3 px-6 py-6 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20"
+              title={`Download ${att.name}`}
+              aria-label={`Download ${att.name}`}
+            >
+              {/* Big download icon */}
+              <svg
+                className="w-14 h-14 text-white/90 group-hover:scale-110 transition-transform"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="M7 10l5 5 5-5" />
+                <path d="M12 15V3" />
+              </svg>
+              <span className="text-white/90 text-sm">Download PDF</span>
+            </a>
+          </div>
+        )}
+
+        {!showImage && !showVideo && !showPdf && (
+          <div className="bg-white max-w-[90vw] max-h-[85vh] w-[420px] p-6 flex flex-col items-center gap-4">
+            <div className="text-sm text-gray-700 break-all text-center">
+              {att.name}
+            </div>
+            <div className="text-xs text-gray-500">
+              {att.mime || "application/octet-stream"}
+            </div>
+            <div className="flex gap-2">
+              <a
+                href={att.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-gray-800"
+              >
+                <Download className="w-4 h-4" />
+                Download
+              </a>
+              <a
+                href={att.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50"
+              >
+                Open in new tab
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
