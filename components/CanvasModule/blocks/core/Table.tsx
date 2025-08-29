@@ -83,6 +83,109 @@ export const Table: React.FC<Props> = (props) => {
     normalizeGrid<number>(shape.tableFontSize, rows, cols, 14)
   );
 
+  // --- Reorder drag state ---
+  const [drag, setDrag] = useState<null | {
+    kind: "col" | "row";
+    from: number;
+  }>(null);
+  const [over, setOver] = useState<number | null>(null);
+  // Pointer position for the floating chip
+  const [pointer, setPointer] = useState<{ x: number; y: number } | null>(null);
+
+  // bars we measure to compute hovered index
+  const colBarRef = useRef<HTMLDivElement>(null);
+  const rowBarRef = useRef<HTMLDivElement>(null);
+
+  function clamp(n: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function colIndexFromClientX(clientX: number) {
+    const bar = colBarRef.current;
+    if (!bar) return null;
+    const rect = bar.getBoundingClientRect();
+    if (rect.width <= 0) return null;
+    const ratio = (clientX - rect.left) / rect.width;
+    return clamp(Math.floor(ratio * cols), 0, cols - 1);
+  }
+
+  function rowIndexFromClientY(clientY: number) {
+    const bar = rowBarRef.current;
+    if (!bar) return null;
+    const rect = bar.getBoundingClientRect();
+    if (rect.height <= 0) return null;
+    const ratio = (clientY - rect.top) / rect.height;
+    return clamp(Math.floor(ratio * rows), 0, rows - 1);
+  }
+
+  function moveIndex<T>(arr: T[], from: number, to: number) {
+    const copy = arr.slice();
+    const [item] = copy.splice(from, 1);
+    copy.splice(to, 0, item);
+    return copy;
+  }
+  function remapIndex(idx: number, from: number, to: number) {
+    if (from === to) return idx;
+    if (idx === from) return to;
+    if (from < to && idx > from && idx <= to) return idx - 1;
+    if (from > to && idx >= to && idx < from) return idx + 1;
+    return idx;
+  }
+
+  function reorderCols(from: number, to: number) {
+    if (from === to) return;
+    const remapRow = (row: any[]) => moveIndex(row, from, to);
+
+    const nextData = data.map(remapRow);
+    const nextBg = bg.map(remapRow);
+    const nextFont = font.map(remapRow);
+    const nextFg = fg.map(remapRow);
+    const nextFs = fs.map(remapRow);
+
+    setData(nextData);
+    setBg(nextBg);
+    setFont(nextFont);
+    setFg(nextFg);
+    setFs(nextFs);
+
+    setActive((a) => (a ? { r: a.r, c: remapIndex(a.c, from, to) } : a));
+
+    commit({
+      tableData: nextData,
+      tableBg: nextBg,
+      tableFont: nextFont,
+      tableFontColor: nextFg,
+      tableFontSize: nextFs,
+    });
+  }
+
+  function reorderRows(from: number, to: number) {
+    if (from === to) return;
+
+    const move = <T,>(grid: T[][]) => moveIndex(grid, from, to);
+    const nextData = move(data);
+    const nextBg = move(bg);
+    const nextFont = move(font);
+    const nextFg = move(fg);
+    const nextFs = move(fs);
+
+    setData(nextData);
+    setBg(nextBg);
+    setFont(nextFont);
+    setFg(nextFg);
+    setFs(nextFs);
+
+    setActive((a) => (a ? { r: remapIndex(a.r, from, to), c: a.c } : a));
+
+    commit({
+      tableData: nextData,
+      tableBg: nextBg,
+      tableFont: nextFont,
+      tableFontColor: nextFg,
+      tableFontSize: nextFs,
+    });
+  }
+
   useEffect(() => {
     setData(normalizeData(shape.tableData, rows, cols));
     setBg(normalizeGrid<string>(shape.tableBg, rows, cols, "#ffffff"));
@@ -99,6 +202,44 @@ export const Table: React.FC<Props> = (props) => {
     rows,
     cols,
   ]);
+
+  useEffect(() => {
+    if (!drag) return;
+
+    const onMove = (e: MouseEvent) => {
+      setPointer({ x: e.clientX, y: e.clientY });
+
+      if (drag.kind === "col") {
+        const idx = colIndexFromClientX(e.clientX);
+        // fall back to original column if we can't compute (outside bar)
+        setOver(idx ?? drag.from);
+      } else {
+        const idx = rowIndexFromClientY(e.clientY);
+        setOver(idx ?? drag.from);
+      }
+    };
+
+    const onUp = (e: MouseEvent) => {
+      let dropIdx: number | null = null;
+      if (drag.kind === "col") dropIdx = colIndexFromClientX(e.clientX);
+      else dropIdx = rowIndexFromClientY(e.clientY);
+
+      if (dropIdx !== null) {
+        if (drag.kind === "col") reorderCols(drag.from, dropIdx);
+        else reorderRows(drag.from, dropIdx);
+      }
+      setDrag(null);
+      setOver(null);
+      setPointer(null);
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [drag]);
 
   // Active & scope
   const [active, setActive] = useState<{ r: number; c: number } | null>(null);
@@ -589,28 +730,28 @@ export const Table: React.FC<Props> = (props) => {
     focusCell(nr, nc);
   }
 
-  // // Keyboard nav (same as before)
-  // const moveTo = (r: number, c: number) => {
-  //   const nr = Math.max(0, Math.min(r, rows - 1));
-  //   const nc = Math.max(0, Math.min(c, cols - 1));
-  //   setActive({ r: nr, c: nc });
-  //   focusCell(nr, nc);
-  // };
-  // const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, r: number, c: number) => {
-  //   if (e.key === "Enter" && e.altKey) return;
-  //   if (e.key === "Tab") {
-  //     e.preventDefault();
-  //     if (e.shiftKey) { if (c > 0) moveTo(r, c - 1); else if (r > 0) moveTo(r - 1, cols - 1); }
-  //     else { if (c < cols - 1) moveTo(r, c + 1); else if (r < rows - 1) moveTo(r + 1, 0); else { insertRowAt(rows); setTimeout(() => moveTo(rows, 0), 0); } }
-  //     return;
-  //   }
-  //   if (e.key === "Enter") {
-  //     e.preventDefault();
-  //     if (e.shiftKey) { if (r > 0) moveTo(r - 1, c); }
-  //     else { if (r < rows - 1) moveTo(r + 1, c); else { insertRowAt(rows); setTimeout(() => moveTo(rows, c), 0); } }
-  //     return;
-  //   }
-  // };
+  // Tiny arrow SVG
+  function Arrow({ dir }: { dir: "left" | "right" | "up" | "down" }) {
+    const d =
+      dir === "left"
+        ? "M15 6l-6 6 6 6"
+        : dir === "right"
+        ? "M9 6l6 6-6 6"
+        : dir === "up"
+        ? "M6 15l6-6 6 6"
+        : "M6 9l6 6 6-6";
+    return (
+      <svg width="12" height="12" viewBox="0 0 24 24" className="text-blue-600">
+        <path
+          d={d}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
 
   return (
     <ShapeFrame
@@ -618,9 +759,9 @@ export const Table: React.FC<Props> = (props) => {
       resizable={true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
-      <div className="w-full h-full bg-white rounded-xl shadow flex flex-col overflow-hidden">
+      <div className="w-full h-full bg-white rounded-xl shadow flex flex-col overflow-visible">
         {/* Grid */}
-        <div className="flex-1 p-2 overflow-hidden">
+        {/* <div className="flex-1 p-2 overflow-hidden">
           <div
             className="grid w-full h-full bg-gray-300 gap-[1px]"
             style={{ gridTemplateColumns, gridAutoRows: "1fr" }}
@@ -672,6 +813,259 @@ export const Table: React.FC<Props> = (props) => {
                   </div>
                 );
               })
+            )}
+          </div>
+        </div> */}
+        <div className="flex-1 p-2 overflow-visible">
+          <div className="relative w-full h-full">
+            {/* The grid itself */}
+            <div
+              className="absolute inset-0 grid w-full h-full bg-gray-300 gap-[1px]"
+              style={{ gridTemplateColumns, gridAutoRows: "1fr" }}
+            >
+              {data.map((row, r) =>
+                row.map((val, c) => {
+                  const cellBg = bg[r][c] || "#ffffff";
+                  const cellFont = font[r][c] || "normal";
+                  const cellFg = fg[r][c] || "#0f172a";
+                  const cellFs = fs[r][c] || 14;
+                  const fontWeight = cellFont === "bold" ? 700 : 400;
+                  const fontStyle = cellFont === "italic" ? "italic" : "normal";
+                  const ring = active
+                    ? scope === "cell"
+                      ? active.r === r && active.c === c
+                      : scope === "row"
+                      ? active.r === r
+                      : active.c === c
+                    : false;
+
+                  return (
+                    <div
+                      key={`${r}-${c}`}
+                      className={`min-w-0 min-h-0 ${
+                        ring ? "ring-1 ring-blue-300" : ""
+                      }`}
+                      style={{ backgroundColor: cellBg }}
+                    >
+                      <textarea
+                        ref={setCellRef(r, c)}
+                        value={val}
+                        onChange={(e) => setCell(r, c, e.target.value)}
+                        onBlur={commitCell}
+                        onFocus={() => setActive({ r, c })}
+                        onClick={() => setActive({ r, c })}
+                        data-nodrag="true"
+                        onKeyDown={(e) => {
+                          e.stopPropagation();
+                          handleKeyDown(e, r, c);
+                        }}
+                        className="w-full h-full p-2 text-sm resize-none bg-transparent outline-none"
+                        style={{
+                          color: cellFg,
+                          fontWeight,
+                          fontStyle,
+                          fontSize: `${cellFs}px`,
+                        }}
+                        placeholder=""
+                      />
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* === Drag overlay (visual feedback) === */}
+            {drag && over !== null && (
+              <div
+                className="absolute inset-0 pointer-events-none"
+                // mirror the real grid so our highlights align perfectly
+                style={{
+                  display: "grid",
+                  gridTemplateColumns,
+                  gridAutoRows: "1fr",
+                  gap: "1px",
+                  // sit above cells
+                  zIndex: 5,
+                }}
+              >
+                {/* Column highlight */}
+                {drag.kind === "col" &&
+                  Array.from({ length: cols }).map((_, c) => (
+                    <div
+                      key={`col-overlay-${c}`}
+                      className={
+                        c === over ? "bg-blue-200/25" : "bg-transparent"
+                      }
+                    />
+                  ))}
+
+                {/* Row highlight */}
+                {drag.kind === "row" &&
+                  Array.from({ length: rows * cols }).map((_, i) => {
+                    const r = Math.floor(i / cols);
+                    return (
+                      <div
+                        key={`row-overlay-${i}`}
+                        className={
+                          r === over ? "bg-blue-200/25" : "bg-transparent"
+                        }
+                      />
+                    );
+                  })}
+
+                {/* Insertion guide line */}
+                <div
+                  className="pointer-events-none absolute"
+                  style={
+                    drag.kind === "col"
+                      ? {
+                          top: 0,
+                          bottom: 0,
+                          width: "2px",
+                          background: "#3B82F6",
+                          // Position at the LEFT edge of target column
+                          left: `calc((100% / ${cols}) * ${over})`,
+                        }
+                      : {
+                          left: 0,
+                          right: 0,
+                          height: "2px",
+                          background: "#3B82F6",
+                          // Position at the TOP edge of target row
+                          top: `calc((100% / ${rows}) * ${over})`,
+                        }
+                  }
+                />
+              </div>
+            )}
+
+            {/* DRAG HANDLES — only when singly selected */}
+            {props.isSelected && props.selectedCount === 1 && (
+              <>
+                {/* Columns: pill bar above the grid */}
+                <div
+                  ref={colBarRef}
+                  className="absolute left-0 right-0 -bottom-10 h-5 pointer-events-none grid overflow-visible"
+                  style={{ gridTemplateColumns }}
+                >
+                  {Array.from({ length: cols }).map((_, c) => {
+                    const isDragging = drag?.kind === "col" && drag.from === c;
+                    const isActiveSlot =
+                      drag?.kind === "col" && (over ?? drag.from) === c;
+
+                    return (
+                      <div
+                        key={`col-pill-${c}`}
+                        className="relative flex items-center justify-center overflow-visible"
+                        style={{ pointerEvents: "auto" }}
+                      >
+                        <button
+                          data-nodrag="true"
+                          aria-label={`Drag column ${c + 1}`}
+                          title="Drag to reorder column"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setDrag({ kind: "col", from: c });
+                            setOver(c);
+                            setPointer({ x: e.clientX, y: e.clientY });
+                          }}
+                          className={[
+                            "h-5 px-2 rounded-full border shadow-sm transition",
+                            "flex items-center gap-1 leading-none text-[10px]",
+                            isDragging
+                              ? "bg-blue-600 text-white border-blue-600 shadow-lg scale-105 cursor-grabbing"
+                              : isActiveSlot
+                              ? "bg-blue-100 text-blue-700 border-blue-300 cursor-grab"
+                              : "bg-white/95 text-gray-700 border-gray-300 hover:bg-gray-50 cursor-grab",
+                          ].join(" ")}
+                        >
+                          {/* 3 dots */}
+                          <span className="inline-flex gap-[3px]">
+                            <span className="w-1 h-1 rounded-full bg-current" />
+                            <span className="w-1 h-1 rounded-full bg-current" />
+                            <span className="w-1 h-1 rounded-full bg-current" />
+                          </span>
+                        </button>
+
+                        {/* ↔ arrows when dragging this column */}
+                        {isDragging && (
+                          <>
+                            <span className="absolute left-[-14px] top-1/2 -translate-y-1/2">
+                              <Arrow dir="left" />
+                            </span>
+                            <span className="absolute right-[-14px] top-1/2 -translate-y-1/2">
+                              <Arrow dir="right" />
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Rows: pill bar on the left of the grid */}
+                <div
+                  ref={rowBarRef}
+                  className="absolute top-0 bottom-0 -left-13 w-5 pointer-events-none grid overflow-visible"
+                  style={{ gridTemplateRows: `repeat(${rows}, 1fr)` }}
+                >
+                  {Array.from({ length: rows }).map((_, r) => {
+                    const isDragging = drag?.kind === "row" && drag.from === r;
+                    const isActiveSlot =
+                      drag?.kind === "row" && (over ?? drag.from) === r;
+
+                    return (
+                      <div
+                        key={`row-pill-${r}`}
+                        className="relative flex items-center justify-center overflow-visible"
+                        style={{ pointerEvents: "auto" }}
+                      >
+                        <button
+                          data-nodrag="true"
+                          aria-label={`Drag row ${r + 1}`}
+                          title="Drag to reorder row"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setDrag({ kind: "row", from: r });
+                            setOver(r);
+                            setPointer({ x: e.clientX, y: e.clientY });
+                          }}
+                          className={[
+                            "w-5 h-5 rounded-full border shadow-sm transition",
+                            "grid place-items-center text-[10px] leading-none",
+                            isDragging
+                              ? "bg-blue-600 text-white border-blue-600 shadow-lg scale-105 cursor-grabbing"
+                              : isActiveSlot
+                              ? "bg-blue-100 text-blue-700 border-blue-300 cursor-grab"
+                              : "bg-white/95 text-gray-700 border-gray-300 hover:bg-gray-50 cursor-grab",
+                          ].join(" ")}
+                        >
+                          {/* 3 dots vertical (still looks good) */}
+                          <span className="inline-flex flex-col gap-[3px]">
+                            <span className="w-1 h-1 rounded-full bg-current" />
+                            <span className="w-1 h-1 rounded-full bg-current" />
+                            <span className="w-1 h-1 rounded-full bg-current" />
+                          </span>
+                        </button>
+
+                        {/* ↕ arrows when dragging this row */}
+                        {isDragging && (
+                          <>
+                            <span className="absolute top-[-14px] left-1/2 -translate-x-1/2">
+                              <Arrow dir="up" />
+                            </span>
+                            <span className="absolute bottom-[-14px] left-1/2 -translate-x-1/2">
+                              <Arrow dir="down" />
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
         </div>
