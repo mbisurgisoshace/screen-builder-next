@@ -24,6 +24,7 @@ export function Room({ roomId, children }: RoomProps) {
         id={`${roomId}`}
         initialStorage={{
           shapes: new LiveList([]),
+          comments: new LiveList([]),
           connections: new LiveList([]),
         }}
       >

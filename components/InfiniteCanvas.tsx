@@ -31,6 +31,7 @@ import { SelectableConnectionArrow } from "./CanvasModule/SelectableConnectionAr
 import { useRealtimeShapes } from "./CanvasModule/hooks/realtime/useRealtimeShapes";
 import { useRealtimeConnections } from "./CanvasModule/hooks/realtime/useRealtimeConnections";
 import { uploadToSupabase } from "@/lib/uploadToSupabase";
+import { Comments } from "./CanvasModule/Comments";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -803,6 +804,10 @@ export default function InfiniteCanvas() {
 
   return (
     <div className="w-full h-full overflow-hidden bg-[#F9F9F9] relative flex">
+      <div className="absolute top-4 right-4 z-20">
+        <Comments />
+      </div>
+
       {/* Toolbar */}
       <div className="absolute top-4 left-4 z-20 bg-white p-2 rounded shadow flex flex-col gap-2">
         <button

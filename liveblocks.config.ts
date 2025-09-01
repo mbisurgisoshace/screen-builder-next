@@ -16,6 +16,7 @@ declare global {
       // Example, a conflict-free list
       // animals: LiveList<string>;
       shapes: LiveList<LiveObject<any>>;
+      comments: LiveList<LiveObject<any>>;
       connections: LiveList<LiveObject<any>>;
     };
 
