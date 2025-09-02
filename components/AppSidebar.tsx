@@ -1,5 +1,13 @@
+"use client";
+
+import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight, DotIcon } from "lucide-react";
+import {
+  ChevronRight,
+  DotIcon,
+  FolderClosedIcon,
+  FolderIcon,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -18,7 +26,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { UserButton } from "@clerk/nextjs";
+import { useOrganization, UserButton, useUser } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
 
 // This is sample data.
 const data = {
@@ -33,8 +42,8 @@ const data = {
           isActive: true,
         },
         {
-          title: "People",
-          url: "#",
+          title: "Participants",
+          url: "/participants",
         },
         {
           title: "Interviews",
@@ -70,15 +79,26 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useUser();
+  const pathname = usePathname();
+  const { organization } = useOrganization();
+
   return (
     <Sidebar className="bg-white" {...props}>
-      <SidebarHeader className="bg-white">
+      <SidebarHeader className="bg-white p-5 flex gap-6">
         <Image
           width={230}
           height={50}
           src={"/logo.jpg"}
           alt="Nutech Ventures"
         />
+
+        <div className="h-8 border-1 border-[#EBECF4] rounded-[8px] flex flex-row gap-2.5 items-center px-2">
+          <FolderClosedIcon className="h-4 w-4" />
+          <span className="text-xs font-bold text-[#111827]">
+            {organization?.name}
+          </span>
+        </div>
       </SidebarHeader>
       <SidebarContent className="p-4 bg-white border-t flex justify-between">
         {/* We create a collapsible SidebarGroup for each parent. */}
@@ -103,23 +123,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <CollapsibleContent>
                   <SidebarGroupContent>
                     <SidebarMenu>
-                      {item.items.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild isActive={item.isActive}>
-                            <div
-                              className={`text-[12px] font-bold`}
-                              style={{
-                                opacity: item.isActive ? 1 : 0.6,
-                                color: item.isActive ? "#6A35FF" : "#111827",
-                                backgroundColor: item.isActive ? "#F4F0FF" : "",
-                              }}
-                            >
-                              <DotIcon height={4} width={4} />
-                              <a href={item.url}>{item.title}</a>
-                            </div>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
+                      {item.items.map((item) => {
+                        const isActive = pathname.includes(item.url);
+                        return (
+                          <SidebarMenuItem key={item.title}>
+                            <SidebarMenuButton asChild isActive={isActive}>
+                              <div
+                                className={`text-[12px] font-bold`}
+                                style={{
+                                  opacity: isActive ? 1 : 0.6,
+                                  color: isActive ? "#6A35FF" : "#111827",
+                                  backgroundColor: isActive ? "#F4F0FF" : "",
+                                }}
+                              >
+                                <DotIcon height={4} width={4} />
+                                <Link href={item.url}>{item.title}</Link>
+                              </div>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </CollapsibleContent>
@@ -128,7 +151,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           ))}
         </div>
 
-        <UserButton />
+        <div className="flex items-center flex-row gap-2.5">
+          <UserButton />
+          <span className="text-xs font-bold text-[#111827]">
+            {user?.fullName}
+          </span>
+        </div>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

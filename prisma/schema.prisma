@@ -25,6 +25,40 @@ model Tag {
   @@map("tags")
 }
 
+enum ParticipantStatus {
+  complete
+  incomplete
+}
+
+model Participant {
+  id              String            @id @default(uuid())
+  name            String
+  org_id          String
+  role            String?
+  contact_info    String?
+  rationale       String?
+  blocking_issues String?
+  status          ParticipantStatus @default(incomplete)
+  scheduled_date  DateTime
+  created_at      DateTime          @default(now())
+  ParticipantRoom ParticipantRoom?
+
+  @@map("participants")
+}
+
+model ParticipantRoom {
+  id            String   @id @default(cuid())
+  participantId String   @unique
+  roomId        String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  participant Participant @relation(fields: [participantId], references: [id])
+
+  @@index([participantId])
+  @@map("participant_rooms")
+}
+
 model Workspace {
   id            String          @id @default(cuid())
   name          String
