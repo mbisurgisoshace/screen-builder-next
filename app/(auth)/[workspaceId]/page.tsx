@@ -28,10 +28,10 @@ export default async function RoomPage({
     //   <InfiniteCanvas />
     // </Room>
     <div className="flex flex-col h-full">
-      <div className="flex items-center px-4 h-[46px] bg-white border-b-[0.5px] border-b-[#E4E5ED] justify-between">
+      {/* <div className="flex items-center px-4 h-[46px] bg-white border-b-[0.5px] border-b-[#E4E5ED] justify-between">
         <h3>{workspace?.name}</h3>
         <UserButton />
-      </div>
+      </div> */}
       <div className="h-full">
         <QuestionsProvider questions={questions}>
           <WorkspaceTabsView
