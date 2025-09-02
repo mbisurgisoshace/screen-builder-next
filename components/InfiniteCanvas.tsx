@@ -65,6 +65,7 @@ export default function InfiniteCanvas() {
   const canRedo = useCanRedo();
   const { pause, resume } = useHistory();
 
+  const [showGrid, setShowGrid] = useState(true);
   const [connecting, setConnecting] = useState<{
     fromShapeId: string;
     fromDirection: "top" | "right" | "bottom" | "left";
@@ -194,6 +195,12 @@ export default function InfiniteCanvas() {
       //   removeSelectedConnection();
       // }
       if (isTypingIntoField(e.target)) return;
+
+      if (!isTypingIntoField(e.target) && (e.key === "g" || e.key === "G")) {
+        e.preventDefault();
+        setShowGrid((s) => !s);
+        return;
+      }
 
       const meta = e.metaKey || e.ctrlKey;
 
@@ -802,6 +809,47 @@ export default function InfiniteCanvas() {
     }
   }
 
+  const GRID = 24;
+  const MAJOR = GRID * 5;
+  function getGridStyle(): React.CSSProperties | undefined {
+    if (!showGrid) return undefined;
+
+    // Convert world spacing -> screen pixels
+    // Clamp to avoid subpixel/flicker at tiny zoom
+    const minorPx = Math.max(8, Math.round(GRID * scale));
+    const majorPx = Math.max(minorPx * 5, Math.round(MAJOR * scale));
+
+    // Shift the repeating pattern with world pan so dots/lines stay “glued” to content
+    const offset = `${Math.round(position.x)}px ${Math.round(position.y)}px`;
+
+    // DOT grid (swap for line grid below if you prefer)
+    // return {
+    //   backgroundImage: `
+    //     radial-gradient(circle at 1px 1px, rgba(17,24,39,0.12) 1px, transparent 1.5px),
+    //     radial-gradient(circle at 1px 1px, rgba(17,24,39,0.18) 1px, transparent 1.5px)
+    //   `,
+    //   backgroundSize: `${minorPx}px ${minorPx}px, ${majorPx}px ${majorPx}px`,
+    //   backgroundPosition: `${offset}, ${offset}`,
+    // };
+
+    // LINE grid alternative:
+    return {
+      backgroundImage: `
+      linear-gradient(to right, rgba(17,24,39,0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(17,24,39,0.06) 1px, transparent 1px),
+      linear-gradient(to right, rgba(17,24,39,0.10) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(17,24,39,0.10) 1px, transparent 1px)
+    `,
+      backgroundSize: `
+      ${minorPx}px ${minorPx}px,
+      ${minorPx}px ${minorPx}px,
+      ${majorPx}px ${majorPx}px,
+      ${majorPx}px ${majorPx}px
+    `,
+      backgroundPosition: `${offset}, ${offset}, ${offset}, ${offset}`,
+    };
+  }
+
   return (
     <div className="w-full h-full overflow-hidden bg-[#F9F9F9] relative flex">
       <div className="absolute top-4 right-4 z-20">
@@ -900,6 +948,13 @@ export default function InfiniteCanvas() {
         onDragOver={handleDragOver}
         onDragStart={handleDragStart}
       >
+        {showGrid && (
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={getGridStyle()}
+          />
+        )}
+
         <div
           className="absolute top-0 left-0 w-full h-full"
           style={{
