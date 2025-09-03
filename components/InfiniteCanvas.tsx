@@ -16,6 +16,7 @@ import {
 } from "./CanvasModule/clipboard";
 import SelectionGroup from "./CanvasModule/SelectionBox";
 import { Shape as IShape, Position, ShapeType } from "./CanvasModule/types";
+import { useSmartGuidesStore } from "./CanvasModule/hooks/useSmartGuidesStore";
 
 import { shapeRegistry } from "./CanvasModule/blocks/blockRegistry";
 import { useShapeManager } from "./CanvasModule/hooks/useShapeManager";
@@ -85,6 +86,8 @@ export default function InfiniteCanvas() {
   const [connectingMousePos, setConnectingMousePos] = useState<Position | null>(
     null
   );
+
+  const guides = useSmartGuidesStore((s) => s.guides);
 
   const [isDraggingConnector, setIsDraggingConnector] = useState(false);
 
@@ -1041,6 +1044,37 @@ export default function InfiniteCanvas() {
               />
             );
           })}
+
+          {/* Smart Guides */}
+          {guides.map((g, i) =>
+            g.type === "v" ? (
+              <div
+                key={`vg-${i}`}
+                className="absolute pointer-events-none"
+                style={{
+                  left: `${g.x}px`,
+                  top: `${Math.min(g.fromY, g.toY)}px`,
+                  width: "0px",
+                  height: `${Math.abs(g.toY - g.fromY)}px`,
+                  borderLeft: "1px dashed #60A5FA",
+                  zIndex: 250, // above shapes, below handles if you want
+                }}
+              />
+            ) : (
+              <div
+                key={`hg-${i}`}
+                className="absolute pointer-events-none"
+                style={{
+                  top: `${g.y}px`,
+                  left: `${Math.min(g.fromX, g.toX)}px`,
+                  height: "0px",
+                  width: `${Math.abs(g.toX - g.fromX)}px`,
+                  borderTop: "1px dashed #60A5FA",
+                  zIndex: 250,
+                }}
+              />
+            )
+          )}
         </div>
       </div>
     </div>
