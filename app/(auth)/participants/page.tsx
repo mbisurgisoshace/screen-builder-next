@@ -6,8 +6,6 @@ import { getParticipants } from "@/services/participants";
 export default async function ParticipantsPage() {
   const participants = await getParticipants();
 
-  console.log("participants:", participants);
-
   return (
     <div className="p-8 h-full">
       <div className="border-2 rounded-2xl bg-white p-8">

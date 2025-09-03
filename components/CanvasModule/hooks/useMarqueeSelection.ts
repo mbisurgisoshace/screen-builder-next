@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 import { Marquee, Position, Shape } from "../types";
 
@@ -6,6 +6,7 @@ interface UseMarqueeSelectionParams {
   scale: number;
   position: Position;
   shapes: Shape[];
+  canvasRef: RefObject<HTMLDivElement | null>;
   setSelectedShapeIds: (ids: string[]) => void;
   setMarquee?: (marquee: Marquee | null) => void;
 }
@@ -14,6 +15,7 @@ export function useMarqueeSelection({
   scale,
   shapes,
   position,
+  canvasRef,
   setSelectedShapeIds,
   setMarquee: externalSetMarquee,
 }: UseMarqueeSelectionParams) {
@@ -22,20 +24,41 @@ export function useMarqueeSelection({
 
   const setMarquee = externalSetMarquee || internalSetMarquee;
 
+  const clientToWorld = (clientX: number, clientY: number) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    const offX = rect ? clientX - rect.left : clientX;
+    const offY = rect ? clientY - rect.top : clientY;
+    return {
+      x: (offX - position.x) / scale,
+      y: (offY - position.y) / scale,
+    };
+  };
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (marquee) {
-        const startX = (lastMousePos.x - position.x) / scale;
-        const startY = (lastMousePos.y - position.y) / scale;
-        const currentX = (e.clientX - position.x) / scale;
-        const currentY = (e.clientY - position.y) / scale;
+        // world start (from stored client pos)
+        const start = clientToWorld(lastMousePos.x, lastMousePos.y);
+        // world current
+        const curr = clientToWorld(e.clientX, e.clientY);
 
         setMarquee({
-          x: Math.min(startX, currentX),
-          y: Math.min(startY, currentY),
-          w: Math.abs(currentX - startX),
-          h: Math.abs(currentY - startY),
+          x: Math.min(start.x, curr.x),
+          y: Math.min(start.y, curr.y),
+          w: Math.abs(curr.x - start.x),
+          h: Math.abs(curr.y - start.y),
         });
+        // const startX = (lastMousePos.x - position.x) / scale;
+        // const startY = (lastMousePos.y - position.y) / scale;
+        // const currentX = (e.clientX - position.x) / scale;
+        // const currentY = (e.clientY - position.y) / scale;
+
+        // setMarquee({
+        //   x: Math.min(startX, currentX),
+        //   y: Math.min(startY, currentY),
+        //   w: Math.abs(currentX - startX),
+        //   h: Math.abs(currentY - startY),
+        // });
       }
     };
 

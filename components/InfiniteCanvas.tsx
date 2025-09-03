@@ -309,6 +309,7 @@ export default function InfiniteCanvas() {
   } = useMarqueeSelection({
     scale,
     position,
+    canvasRef,
     shapes,
     setSelectedShapeIds,
   });
@@ -866,23 +867,15 @@ export default function InfiniteCanvas() {
         <button
           draggable
           onDragStart={(e) => {
+            console.log("e", e);
+
             e.dataTransfer.setData("shape-type", "rect");
           }}
           className="w-10 h-10  flex flex-col items-center "
           title="Rectangle"
         >
-          <SquarePlus
-            className="text-[#111827]"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "rect");
-            }}
-          />
-          <span
-            className="text-[10px] font-bold text-[#111827] opacity-60"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "rect");
-            }}
-          >
+          <SquarePlus className="text-[#111827] pointer-events-none" />
+          <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
             Rectangle
           </span>
         </button>
@@ -895,19 +888,8 @@ export default function InfiniteCanvas() {
           className="w-10 h-10  flex flex-col items-center "
           title="Ellipse"
         >
-          <SquarePlus
-            className="text-[#111827]"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "ellipse");
-            }}
-          />
-          <span
-            className="text-[10px] font-bold text-[#111827] opacity-60"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "ellipse");
-            }}
-          >
+          <SquarePlus className="text-[#111827] pointer-events-none" />
+          <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
             Ellipse
           </span>
         </button>
@@ -931,19 +913,8 @@ export default function InfiniteCanvas() {
           className="w-10 h-10  flex flex-col items-center "
           title="Text"
         >
-          <SquarePlus
-            className="text-[#111827]"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "text");
-            }}
-          />
-          <span
-            className="text-[10px] font-bold text-[#111827] opacity-60"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "text");
-            }}
-          >
+          <SquarePlus className="text-[#111827] pointer-events-none" />
+          <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
             Text
           </span>
         </button>
@@ -967,19 +938,8 @@ export default function InfiniteCanvas() {
           className="w-10 h-10  flex flex-col items-center "
           title="Interview"
         >
-          <SquarePlus
-            className="text-[#111827]"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "interview");
-            }}
-          />
-          <span
-            className="text-[10px] font-bold text-[#111827] opacity-60"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "interview");
-            }}
-          >
+          <SquarePlus className="text-[#111827] pointer-events-none" />
+          <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
             Interview
           </span>
         </button>
@@ -1003,19 +963,8 @@ export default function InfiniteCanvas() {
           className="w-10 h-10  flex flex-col items-center "
           title="Question"
         >
-          <SquarePlus
-            className="text-[#111827]"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "question");
-            }}
-          />
-          <span
-            className="text-[10px] font-bold text-[#111827] opacity-60"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "question");
-            }}
-          >
+          <SquarePlus className="text-[#111827] pointer-events-none" />
+          <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
             Question
           </span>
         </button>
@@ -1039,19 +988,8 @@ export default function InfiniteCanvas() {
           className="w-10 h-10  flex flex-col items-center "
           title="Answer"
         >
-          <SquarePlus
-            className="text-[#111827]"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "question_answer");
-            }}
-          />
-          <span
-            className="text-[10px] font-bold text-[#111827] opacity-60"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "question_answer");
-            }}
-          >
+          <SquarePlus className="text-[#111827] pointer-events-none" />
+          <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
             Answer
           </span>
         </button>
@@ -1074,19 +1012,8 @@ export default function InfiniteCanvas() {
           className="w-10 h-10  flex flex-col items-center "
           title="Table"
         >
-          <SquarePlus
-            className="text-[#111827]"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "table");
-            }}
-          />
-          <span
-            className="text-[10px] font-bold text-[#111827] opacity-60"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "table");
-            }}
-          >
+          <SquarePlus className="text-[#111827] pointer-events-none" />
+          <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
             Table
           </span>
         </button>
@@ -1109,19 +1036,8 @@ export default function InfiniteCanvas() {
           className="w-10 h-10  flex flex-col items-center "
           title="Feature Idea"
         >
-          <SquarePlus
-            className="text-[#111827]"
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "feature_idea");
-            }}
-          />
-          <span
-            className="text-[10px] font-bold text-[#111827] opacity-60"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "feature_idea");
-            }}
-          >
+          <SquarePlus className="text-[#111827] pointer-events-none" />
+          <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
             Feature
           </span>
         </button>

@@ -34,11 +34,10 @@ const data = {
   navMain: [
     {
       title: "Discovery",
-      url: "#",
       items: [
         {
           title: "Questions",
-          url: "#",
+          url: "/questions",
           isActive: true,
         },
         {
@@ -47,32 +46,31 @@ const data = {
         },
         {
           title: "Interviews",
-          url: "#",
+          url: "/interviews",
         },
         {
           title: "Analysis",
-          url: "#",
+          url: "/analysis",
         },
       ],
     },
     {
       title: "Needs",
-      url: "#",
+      url: "/needs",
       items: [],
     },
     {
       title: "Solutions",
-      url: "#",
       items: [],
     },
     {
       title: "Traction",
-      url: "#",
+      url: "/",
       items: [],
     },
     {
       title: "Features",
-      url: "#",
+      url: "/",
       items: [],
     },
   ],
@@ -103,6 +101,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent className="p-4 bg-white border-t flex justify-between">
         {/* We create a collapsible SidebarGroup for each parent. */}
         <div>
+          <div className="px-2">
+            <Link
+              href="/progress"
+              className="text-[#111827] opacity-60 text-[12px] font-medium block px-2"
+            >
+              Progress
+            </Link>
+          </div>
+
           {data.navMain.map((item) => (
             <Collapsible
               key={item.title}
@@ -124,7 +131,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarGroupContent>
                     <SidebarMenu>
                       {item.items.map((item) => {
-                        const isActive = pathname.includes(item.url);
+                        const isActive =
+                          pathname.includes(item.url) && pathname !== "/";
                         return (
                           <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton asChild isActive={isActive}>
