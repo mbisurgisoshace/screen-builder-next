@@ -1,7 +1,14 @@
 import { MicIcon } from "lucide-react";
 import ProgressCard from "./_components/ProgressCard";
+import { getQuestions } from "@/services/questions";
+import QuestionsCard from "./_components/QuestionsCard";
 
-export default function ProgressPage() {
+export default async function ProgressPage() {
+  const questions = await getQuestions();
+  const totalQuestions = questions?.data?.shapes?.data.length || 0;
+
+  console.log("questions:", totalQuestions);
+
   return (
     <div className="p-8 h-full">
       <div className="border-2 rounded-2xl bg-white p-8 flex flex-col gap-6">
@@ -22,6 +29,7 @@ export default function ProgressPage() {
             amount={19}
             title={"of people scheduled to interview"}
           />
+          <QuestionsCard totalQuestions={totalQuestions} />
         </div>
       </div>
     </div>

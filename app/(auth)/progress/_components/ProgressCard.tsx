@@ -5,7 +5,7 @@ interface ProgressCardProps {
 
 export default function ProgressCard({ title, amount }: ProgressCardProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm w-[238px]">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm w-[238px] min-w-[238px]">
       {/* Arco visible y dentro de la tarjeta */}
       <div className="absolute -top-[435px] -left-[135px] h-[506px] w-[506px] rounded-full z-0 pointer-events-none bg-[#6376F1] opacity-[18%]" />
       {/* Contenido */}
