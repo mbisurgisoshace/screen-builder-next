@@ -85,9 +85,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar className="bg-white" {...props}>
       <SidebarHeader className="bg-white p-5 flex gap-6">
         <Image
-          width={230}
+          width={200}
           height={50}
-          src={"/logo.jpg"}
+          src={"/logo.svg"}
           alt="Nutech Ventures"
         />
 
