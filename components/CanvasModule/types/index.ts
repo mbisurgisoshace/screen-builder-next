@@ -46,6 +46,9 @@ export interface Shape {
 
   // feature idea
   featureIdeaTags?: string[];
+
+  // question
+  questionTitle?: string;
 }
 
 export type Attachment = {
