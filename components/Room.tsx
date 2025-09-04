@@ -10,6 +10,7 @@ import { LiveList } from "@liveblocks/client";
 
 interface RoomProps {
   roomId: string;
+  initialStorage?: any;
   children: ReactNode;
 }
 

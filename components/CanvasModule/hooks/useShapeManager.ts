@@ -21,6 +21,8 @@ export function useShapeManager(
     // },
   ]);
 
+  console.log("shapes", shapes);
+
   const [selectedShapeIds, setSelectedShapeIds] = useState<string[]>([]);
   const [resizing, setResizing] = useState<ResizeState>(null);
   const [dragging, setDragging] = useState(false);
