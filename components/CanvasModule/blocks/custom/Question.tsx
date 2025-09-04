@@ -23,8 +23,32 @@ const RteEditor = dynamic(
 export const Question: React.FC<QuestionProps> = (props) => {
   const { shape, onCommitInterview } = props;
 
+  const fallbackTitle = "Double click to edit the question.";
+  const title = (shape as any).questionTitle ?? fallbackTitle;
+
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [draftTitle, setDraftTitle] = useState(title);
+
   const commit = (patch: Partial<IShape>) => {
     onCommitInterview?.(shape.id, patch);
+  };
+
+  useEffect(() => {
+    if (!editingTitle) setDraftTitle(title);
+  }, [title, editingTitle]);
+
+  const startTitleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingTitle(true);
+  };
+  const commitTitle = () => {
+    const next = draftTitle.trim() || fallbackTitle;
+    setEditingTitle(false);
+    commit({ questionTitle: next });
+  };
+  const cancelTitle = () => {
+    setEditingTitle(false);
+    setDraftTitle(title);
   };
 
   // --- DraftJS editor state ---
@@ -86,9 +110,39 @@ export const Question: React.FC<QuestionProps> = (props) => {
     >
       <div className="w-full h-full bg-white border-1 border-[#E9E6F0] rounded-xl shadow flex flex-col overflow-hidden px-8 py-6 gap-4">
         <h3 className="text-[11px] font-medium text-[#8B93A1]">Question</h3>
-        <h2 className="font-extrabold text-[14px] text-[#111827]">
+        {/* <h2 className="font-extrabold text-[14px] text-[#111827]">
           <span className="text-[#8B93A1] mr-1">1.</span>
           How much time does your team spend on project research?
+        </h2> */}
+        <h2
+          className="font-extrabold text-[14px] text-[#111827]"
+          onDoubleClick={startTitleEdit}
+        >
+          {/* <span className="text-[#8B93A1] mr-1">1.</span> */}
+          {!editingTitle ? (
+            <span>{title}</span>
+          ) : (
+            <input
+              data-nodrag="true"
+              autoFocus
+              value={draftTitle}
+              onChange={(e) => setDraftTitle(e.target.value)}
+              onBlur={commitTitle}
+              onMouseDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  commitTitle();
+                } else if (e.key === "Escape") {
+                  e.preventDefault();
+                  cancelTitle();
+                }
+              }}
+              className="w-[calc(100%-1.25rem)] bg-transparent outline-none border-b border-indigo-200"
+              // ^ small underline to hint edit mode; tweak styles as you wish
+            />
+          )}
         </h2>
         {/* Body */}
         <div className="flex-1 overflow-auto">

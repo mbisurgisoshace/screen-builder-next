@@ -57,8 +57,6 @@ export default function AddParticipant() {
     form.reset();
   }
 
-  console.log("form:", form.formState.errors);
-
   return (
     <Sheet>
       <SheetTrigger asChild>

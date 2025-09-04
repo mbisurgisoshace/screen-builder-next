@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Room } from "@/components/Room";
-import InfiniteCanvas from "@/components/InfiniteCanvas";
 import { redirect } from "next/navigation";
+import InfiniteCanvas from "@/components/InfiniteCanvas";
 
 export default async function RoomPage({
   params,
