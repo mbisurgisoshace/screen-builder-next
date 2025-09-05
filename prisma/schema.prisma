@@ -98,3 +98,19 @@ enum CardType {
   interview
   feature_idea
 }
+
+model Todo {
+  id            String   @id @default(cuid())
+  org_id        String
+  week          Int
+  weekday       String
+  weekday_order Int
+  task          String
+  task_order    Int      @default(0)
+  task_todo     String
+  completed     Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("todos")
+}

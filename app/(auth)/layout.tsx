@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <div className="bg-[#EFF0F4] h-full">{children}</div>
+        <div className="bg-[#EFF0F4] h-full w-full">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
