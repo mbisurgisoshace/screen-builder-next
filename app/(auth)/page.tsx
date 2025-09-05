@@ -26,7 +26,7 @@ export type Task = {
   }>;
 };
 
-export async function formatTodos(todos: ITodo[]): Promise<StructuredTodos> {
+async function formatTodos(todos: ITodo[]): Promise<StructuredTodos> {
   const norm = (s: string) =>
     (s ?? "")
       .normalize("NFKC")
