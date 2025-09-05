@@ -84,12 +84,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="bg-white" {...props}>
       <SidebarHeader className="bg-white p-5 flex gap-6">
-        <Image
-          width={200}
-          height={50}
-          src={"/logo.svg"}
-          alt="Nutech Ventures"
-        />
+        <Link href={"/"}>
+          <Image
+            width={200}
+            height={50}
+            src={"/logo.svg"}
+            alt="Nutech Ventures"
+          />
+        </Link>
 
         <div className="h-8 border-1 border-[#EBECF4] rounded-[8px] flex flex-row gap-2.5 items-center px-2">
           <FolderClosedIcon className="h-4 w-4" />
