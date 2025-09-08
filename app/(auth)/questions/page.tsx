@@ -19,6 +19,7 @@ export default async function QuestionsPage() {
               question: true,
               rectangle: false,
               interview: false,
+              card: false,
             }}
           />
         </Room>

@@ -108,13 +108,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className="bg-white" {...props}>
       <SidebarHeader className="bg-white p-5 flex gap-6">
-        <Link href={"/"}>
+        <Link href={"/"} className="flex flex-col gap-2 items-center">
           <Image
             width={200}
             height={50}
-            src={"/logo.svg"}
+            src={"/nutech_logo.jpg"}
             alt="Nutech Ventures"
           />
+
+          <div className="h-[0.5px] bg-gray-300 w-full" />
+
+          <Image width={200} height={50} src={"/nsf_logo.jpg"} alt="NSF" />
         </Link>
 
         <div className="h-8 border-1 border-[#EBECF4] rounded-[8px] flex flex-row gap-2.5 items-center px-2">
