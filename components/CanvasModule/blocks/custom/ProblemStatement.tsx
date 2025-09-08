@@ -20,12 +20,12 @@ import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useQuestions } from "../../questions/QuestionsProvider";
 import { CardFrame } from "../CardFrame";
 
-type FeatureIdeaProps = Omit<ShapeFrameProps, "children" | "shape"> & {
+type ProblemStatementProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
   onCommitStyle?: (id: string, patch: Partial<IShape>) => void;
 };
 
-export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
+export const ProblemStatement: React.FC<ProblemStatementProps> = (props) => {
   const { questions } = useQuestions();
   const { shape, onCommitStyle } = props;
 
@@ -106,7 +106,9 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
     }
   }
 
-  const body = (
+  //const body = ;
+
+  return (
     <div>
       <div className="px-8 py-5">
         <h2 className="font-extrabold text-[16px] text-[#111827]">
@@ -166,32 +168,6 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
         </button>
       </div>
 
-      {/* <div className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6">
-      
-        {fiQuestions
-          //.filter((q) => q.card_type === "feature_idea")
-          .map((q, idx) => (
-            <div className="flex flex-col gap-3" key={q.id}>
-              <h3 className="font-bold text-[14.,px] text-[#111827]">
-                {q.question}
-              </h3>
-
-              <Select onValueChange={addTag} value={tags[idx]}>
-                <SelectTrigger className="w-full bg-white">
-                  <SelectValue placeholder="Select an option" />
-                </SelectTrigger>
-                <SelectContent>
-                  {q.question_options.map((option) => (
-                    <SelectItem value={option} key={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          ))}
-      </div> */}
-
       {/* Questions (collapsible) */}
       {!collapsed && (
         <div
@@ -229,7 +205,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
     </div>
   );
 
-  return (
-    <CardFrame {...props} header={<span>Problem Statement</span>} body={body} />
-  );
+  // return (
+  //   <CardFrame {...props} header={<span>Problem Statement</span>} body={body} />
+  // );
 };

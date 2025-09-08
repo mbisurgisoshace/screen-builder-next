@@ -1,4 +1,5 @@
 export type ShapeType =
+  | "card"
   | "rect"
   | "text"
   | "image"
@@ -8,6 +9,12 @@ export type ShapeType =
   | "interview"
   | "feature_idea"
   | "question_answer";
+
+export type CardType =
+  | "assumption_card"
+  | "interview_card"
+  | "solution_card"
+  | "problem_statement_card";
 
 export type Kind = "image" | "video" | "pdf" | "file";
 
@@ -20,6 +27,7 @@ export interface Shape {
   text?: string;
   height: number;
   type: ShapeType;
+  subtype?: CardType;
 
   // interview block
   draftRaw?: string;

@@ -60,6 +60,7 @@ export function getAbsoluteAnchorPosition(
 
 interface InfiniteCanvasProps {
   toolbarOptions?: {
+    card: boolean;
     text: boolean;
     table: boolean;
     answer: boolean;
@@ -73,6 +74,7 @@ interface InfiniteCanvasProps {
 
 export default function InfiniteCanvas({
   toolbarOptions = {
+    card: true,
     text: true,
     table: true,
     answer: true,
@@ -1078,6 +1080,22 @@ export default function InfiniteCanvas({
             <SquarePlus className="text-[#111827] pointer-events-none" />
             <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
               Feature
+            </span>
+          </button>
+        )}
+
+        {toolbarOptions.card && (
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "card");
+            }}
+            className="w-10 h-10  flex flex-col items-center "
+            title="Card"
+          >
+            <SquarePlus className="text-[#111827] pointer-events-none" />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Card
             </span>
           </button>
         )}

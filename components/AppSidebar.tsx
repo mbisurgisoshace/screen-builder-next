@@ -28,9 +28,33 @@ import {
 } from "@/components/ui/collapsible";
 import { useOrganization, UserButton, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
+import SecondarySidebar from "./SecondarySidebar";
+import CollapsibleSidebar from "./MainSidebar";
 
 // This is sample data.
 const data = {
+  subMain: [
+    {
+      name: "Todo's",
+      url: "/",
+      //icon: Frame,
+    },
+    {
+      name: "Progress",
+      url: "/progress",
+      //icon: Frame,
+    },
+    {
+      name: "Idea Brainstorm",
+      url: "/idea-brainstorm",
+      //icon: PieChart,
+    },
+    {
+      name: "Value Proposition",
+      url: "/value-proposition",
+      //icon: Map,
+    },
+  ],
   navMain: [
     {
       title: "Discovery",
@@ -54,25 +78,25 @@ const data = {
         },
       ],
     },
-    {
-      title: "Needs",
-      url: "/needs",
-      items: [],
-    },
-    {
-      title: "Solutions",
-      items: [],
-    },
-    {
-      title: "Traction",
-      url: "/",
-      items: [],
-    },
-    {
-      title: "Features",
-      url: "/",
-      items: [],
-    },
+    // {
+    //   title: "Needs",
+    //   url: "/needs",
+    //   items: [],
+    // },
+    // {
+    //   title: "Solutions",
+    //   items: [],
+    // },
+    // {
+    //   title: "Traction",
+    //   url: "/",
+    //   items: [],
+    // },
+    // {
+    //   title: "Features",
+    //   url: "/",
+    //   items: [],
+    // },
   ],
 };
 
@@ -101,14 +125,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
       <SidebarContent className="p-4 bg-white border-t flex justify-between">
-        {/* We create a collapsible SidebarGroup for each parent. */}
         <div>
+          <SecondarySidebar items={data.subMain} />
+          <CollapsibleSidebar items={data.navMain} />
+        </div>
+        {/* We create a collapsible SidebarGroup for each parent. */}
+        {/* <div>
           <div className="px-2">
             <Link
               href="/progress"
-              className="text-[#111827] opacity-60 text-[12px] font-medium block px-2"
+              className="text-[#111827] opacity-60 text-[12px] font-medium block p-2 cursor-pointer"
             >
               Progress
+            </Link>
+          </div>
+
+          <div className="px-2">
+            <Link
+              href="/value-proposition"
+              className="text-[#111827] opacity-60 text-[12px] font-medium block p-2 cursor-pointer"
+            >
+              Value Proposition
             </Link>
           </div>
 
@@ -159,7 +196,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </SidebarGroup>
             </Collapsible>
           ))}
-        </div>
+        </div> */}
 
         <div className="flex items-center flex-row gap-2.5">
           <UserButton />

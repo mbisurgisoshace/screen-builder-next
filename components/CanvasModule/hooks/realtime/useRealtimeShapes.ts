@@ -17,6 +17,7 @@ function toLiveShape(shape: Shape) {
     height: shape.height,
     color: shape.color,
     text: shape.text ?? null,
+    subtype: shape.subtype ?? null,
   });
 }
 
@@ -115,6 +116,17 @@ export function useRealtimeShapes() {
           ),
         };
       }
+
+      if (type === "card") {
+        shape = {
+          ...shape,
+          width: 440,
+          height: 320,
+          subtype: "problem_statement_card",
+        };
+      }
+
+      console.log("shape", shape);
 
       list.push(toLiveShape(shape));
     },

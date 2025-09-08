@@ -22,11 +22,12 @@ type CardFrame = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: Shape;
   body: React.ReactNode;
   header: React.ReactNode;
+  useAttachments?: boolean;
   onCommitStyle?: (id: string, patch: Partial<Shape>) => void;
 };
 
 export const CardFrame: React.FC<CardFrame> = (props) => {
-  const { shape, body, header, onCommitStyle } = props;
+  const { shape, body, header, onCommitStyle, useAttachments = true } = props;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -192,68 +193,72 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
         {/* <Component {...props} /> */}
 
         {/* Attachments */}
-        <div className="bg-white h-full px-10 mt-6">
-          <span className="opacity-50 text-[#2B2B2C] text-xs font-semibold">
-            Attachments
-          </span>
-          {/* <div className="mt-4 flex flex-row gap-3">
+        {useAttachments && (
+          <>
+            <div className="bg-white h-full px-10 mt-6">
+              <span className="opacity-50 text-[#2B2B2C] text-xs font-semibold">
+                Attachments
+              </span>
+              {/* <div className="mt-4 flex flex-row gap-3">
             <div className="bg-[#EEF4FB] w-[125px] h-[130px] flex items-center justify-center">
               <PlusIcon />
             </div>
             <div></div>
           </div> */}
-          <div className="mt-4 flex flex-wrap gap-3 items-start">
-            {/* Add tile */}
-            <button
-              type="button"
-              onClick={onPickClick}
-              className="bg-[#EEF4FB] w-[125px] h-[130px] rounded-md flex items-center justify-center hover:opacity-90 transition cursor-pointer"
-              title="Add attachment"
-            >
-              <PlusIcon />
-            </button>
+              <div className="mt-4 flex flex-wrap gap-3 items-start">
+                {/* Add tile */}
+                <button
+                  type="button"
+                  onClick={onPickClick}
+                  className="bg-[#EEF4FB] w-[125px] h-[130px] rounded-md flex items-center justify-center hover:opacity-90 transition cursor-pointer"
+                  title="Add attachment"
+                >
+                  <PlusIcon />
+                </button>
 
-            {/* Hidden input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              //accept="image/*"
-              accept="image/*,video/*,application/pdf,*/*"
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                const files = e.target.files;
-                if (files && files.length) handleFiles(files);
-                // reset so picking the same file again still fires change
-                e.currentTarget.value = "";
-              }}
+                {/* Hidden input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  //accept="image/*"
+                  accept="image/*,video/*,application/pdf,*/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files && files.length) handleFiles(files);
+                    // reset so picking the same file again still fires change
+                    e.currentTarget.value = "";
+                  }}
+                />
+
+                {/* Thumbnails */}
+                {(attachments ?? []).map((att) => (
+                  <AttachmentTile
+                    key={att.id}
+                    att={att}
+                    onOpen={openPreviewById}
+                    onRemove={() => removeAttachment(att.id)}
+                  />
+                ))}
+              </div>
+            </div>
+            <AttachmentPreviewModal
+              open={previewOpen}
+              onClose={() => setPreviewOpen(false)}
+              //@ts-ignore
+              items={attachments.map((a) => ({
+                id: a.id,
+                name: a.name,
+                url: a.preview || a.url, // show local preview if still uploading
+                mime: a.mime,
+                size: a.size,
+              }))}
+              index={previewIndex}
+              setIndex={setPreviewIndex}
             />
-
-            {/* Thumbnails */}
-            {(attachments ?? []).map((att) => (
-              <AttachmentTile
-                key={att.id}
-                att={att}
-                onOpen={openPreviewById}
-                onRemove={() => removeAttachment(att.id)}
-              />
-            ))}
-          </div>
-        </div>
-        <AttachmentPreviewModal
-          open={previewOpen}
-          onClose={() => setPreviewOpen(false)}
-          //@ts-ignore
-          items={attachments.map((a) => ({
-            id: a.id,
-            name: a.name,
-            url: a.preview || a.url, // show local preview if still uploading
-            mime: a.mime,
-            size: a.size,
-          }))}
-          index={previewIndex}
-          setIndex={setPreviewIndex}
-        />
+          </>
+        )}
       </div>
     </ShapeFrame>
   );
