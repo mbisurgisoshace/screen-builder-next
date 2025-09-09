@@ -35,6 +35,9 @@ import { uploadToSupabase } from "@/lib/uploadToSupabase";
 import { Comments } from "./CanvasModule/Comments";
 import { Button } from "./ui/button";
 import { SquarePlus } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Checkbox } from "./ui/checkbox";
+import { Label } from "./ui/label";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -85,8 +88,14 @@ export default function InfiniteCanvas({
     interview: true,
   },
 }: InfiniteCanvasProps) {
+  const pathname = usePathname();
   const { scale, canvasRef, position, setPosition, setScale } =
     useCanvasTransform();
+
+  const isValuePropCanvas = pathname.includes("/value-proposition");
+
+  const [problems, setProblems] = useState(true);
+  const [solutions, setSolutions] = useState(false);
 
   const undo = useUndo();
   const redo = useRedo();
@@ -884,6 +893,34 @@ export default function InfiniteCanvas({
 
   return (
     <div className="w-full h-full overflow-hidden bg-[#F9F9F9] relative flex">
+      {isValuePropCanvas && (
+        <div className="absolute top-4 left-4 z-20 flex flex-row gap-6 bg-black p-2 rounded-md text-white">
+          <div className="flex items-center gap-3 ">
+            <Checkbox
+              id="problems"
+              checked={problems}
+              onCheckedChange={() => setProblems(!problems)}
+              className={
+                "data-[state=checked]:bg-white data-[state=checked]:text-black"
+              }
+            />
+            <Label htmlFor="problems">Problems</Label>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="solutions"
+              checked={solutions}
+              onCheckedChange={() => setSolutions(!solutions)}
+              className={
+                "data-[state=checked]:bg-white data-[state=checked]:text-black"
+              }
+            />
+            <Label htmlFor="solutions">Solutions</Label>
+          </div>
+        </div>
+      )}
+
       <div className="absolute top-4 right-4 z-20">
         <Comments />
       </div>
@@ -1161,47 +1198,81 @@ export default function InfiniteCanvas({
             />
           ))}
 
-          {shapes.map((shape) => {
-            const Component = shapeRegistry[shape.type];
-            if (!Component) return null;
+          {shapes
+            .filter((shape) => {
+              if (isValuePropCanvas) {
+                if (
+                  shape.type === "text" ||
+                  shape.type === "rect" ||
+                  shape.type === "ellipse"
+                ) {
+                  return true;
+                }
 
-            return (
-              <Component
-                key={shape.id}
-                shape={shape}
-                //renderHandles={renderHandles}
-                onResizeStart={startResizing}
-                selectedCount={selectedShapeIds.length}
-                isSelected={selectedShapeIds.includes(shape.id)}
-                onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
-                onConnectorMouseDown={handleConnectorMouseDown}
-                //@ts-ignore
-                onCommitText={(id, text) =>
-                  updateShape(id, (s) => ({
-                    ...s,
-                    // keep empty strings if user clears the text; Liveblocks adapter already null-coalesces
-                    text,
-                  }))
+                if (!problems) {
+                  if (
+                    shape.type === "card" &&
+                    (shape.subtype === "problem_statement_card" ||
+                      shape.subtype === "assumption_card")
+                  ) {
+                    return false;
+                  }
                 }
-                //@ts-ignore
-                onCommitInterview={(id, patch) =>
-                  updateShape(id, (s) => ({ ...s, ...patch }))
+
+                if (!solutions) {
+                  if (
+                    shape.type === "card" &&
+                    (shape.subtype === "interview_card" ||
+                      shape.subtype === "solution_card")
+                  ) {
+                    return false;
+                  }
                 }
-                //@ts-ignore
-                onCommitTable={(id, patch) =>
-                  updateShape(id, (s) => ({ ...s, ...patch }))
-                }
-                //@ts-ignore
-                onChangeTags={(id, names) => {
-                  updateShape(id, (s) => ({ ...s, tags: names }));
-                }}
-                //@ts-ignore
-                onCommitStyle={(id, patch) => {
-                  updateShape(id, (s) => ({ ...s, ...patch })); // your existing immutable updater
-                }}
-              />
-            );
-          })}
+              }
+
+              return true;
+            })
+            .map((shape) => {
+              const Component = shapeRegistry[shape.type];
+              if (!Component) return null;
+
+              return (
+                <Component
+                  key={shape.id}
+                  shape={shape}
+                  //renderHandles={renderHandles}
+                  onResizeStart={startResizing}
+                  selectedCount={selectedShapeIds.length}
+                  isSelected={selectedShapeIds.includes(shape.id)}
+                  onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
+                  onConnectorMouseDown={handleConnectorMouseDown}
+                  //@ts-ignore
+                  onCommitText={(id, text) =>
+                    updateShape(id, (s) => ({
+                      ...s,
+                      // keep empty strings if user clears the text; Liveblocks adapter already null-coalesces
+                      text,
+                    }))
+                  }
+                  //@ts-ignore
+                  onCommitInterview={(id, patch) =>
+                    updateShape(id, (s) => ({ ...s, ...patch }))
+                  }
+                  //@ts-ignore
+                  onCommitTable={(id, patch) =>
+                    updateShape(id, (s) => ({ ...s, ...patch }))
+                  }
+                  //@ts-ignore
+                  onChangeTags={(id, names) => {
+                    updateShape(id, (s) => ({ ...s, tags: names }));
+                  }}
+                  //@ts-ignore
+                  onCommitStyle={(id, patch) => {
+                    updateShape(id, (s) => ({ ...s, ...patch })); // your existing immutable updater
+                  }}
+                />
+              );
+            })}
 
           {/* Smart Guides */}
           {guides.map((g, i) =>
