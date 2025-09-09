@@ -1187,16 +1187,51 @@ export default function InfiniteCanvas({
             />
           )}
 
-          {connectionEndpoints.map(({ id, from, to }) => (
-            <SelectableConnectionArrow
-              key={id}
-              id={id}
-              from={from}
-              to={to}
-              selected={selectedConnectionId === id}
-              onSelect={selectConnection}
-            />
-          ))}
+          {connectionEndpoints
+            .filter((endpoint) => {
+              if (isValuePropCanvas) {
+                if (!problems) {
+                  const toShape = shapes.find(
+                    (s) => s.id === endpoint.connection.toShapeId
+                  );
+
+                  if (
+                    toShape?.type === "card" &&
+                    (toShape.subtype === "problem_statement_card" ||
+                      toShape.subtype === "assumption_card")
+                  ) {
+                    return false;
+                  }
+                }
+
+                if (!solutions) {
+                  const toShape = shapes.find(
+                    (s) => s.id === endpoint.connection.toShapeId
+                  );
+
+                  if (
+                    toShape?.type === "card" &&
+                    (toShape.subtype === "interview_card" ||
+                      toShape.subtype === "solution_card")
+                  ) {
+                    return false;
+                  }
+                }
+              }
+              console.log("endpoint", endpoint);
+
+              return true;
+            })
+            .map(({ id, from, to }) => (
+              <SelectableConnectionArrow
+                key={id}
+                id={id}
+                from={from}
+                to={to}
+                selected={selectedConnectionId === id}
+                onSelect={selectConnection}
+              />
+            ))}
 
           {shapes
             .filter((shape) => {
