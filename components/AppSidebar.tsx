@@ -100,9 +100,11 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  isAdminOrMentor,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { isAdminOrMentor: boolean }) {
   const { user } = useUser();
-  const pathname = usePathname();
   const { organization } = useOrganization();
 
   return (
@@ -122,15 +124,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Link>
 
         <div className="h-8 border-1 border-[#EBECF4] rounded-[8px] flex flex-row gap-2.5 items-center px-2">
-          <FolderClosedIcon className="h-4 w-4" />
-          <span className="text-xs font-bold text-[#111827]">
-            {organization?.name}
-          </span>
+          {isAdminOrMentor ? (
+            <Link
+              href={"/startups"}
+              className="flex flex-row gap-2.5 items-center w-full"
+            >
+              <FolderClosedIcon className="h-4 w-4" />
+              <span className="text-xs font-bold text-[#111827]">
+                {organization?.name}
+              </span>
+            </Link>
+          ) : (
+            <>
+              <FolderClosedIcon className="h-4 w-4" />
+              <span className="text-xs font-bold text-[#111827]">
+                {organization?.name}
+              </span>
+            </>
+          )}
         </div>
       </SidebarHeader>
       <SidebarContent className="p-4 bg-white border-t flex justify-between">
         <div>
-          <SecondarySidebar items={data.subMain} />
+          <SecondarySidebar
+            items={data.subMain}
+            isAdminOrMentor={isAdminOrMentor}
+          />
           <CollapsibleSidebar items={data.navMain} />
         </div>
         {/* We create a collapsible SidebarGroup for each parent. */}

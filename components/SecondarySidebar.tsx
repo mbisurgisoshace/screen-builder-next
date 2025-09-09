@@ -9,16 +9,35 @@ import {
 import { usePathname } from "next/navigation";
 
 interface SecondarySidebarProps {
+  isAdminOrMentor: boolean;
   items: { name: string; url: string }[];
 }
 
-export default function SecondarySidebar({ items }: SecondarySidebarProps) {
+export default function SecondarySidebar({
+  items,
+  isAdminOrMentor,
+}: SecondarySidebarProps) {
   const pathname = usePathname();
-  console.log("pathname", pathname);
 
   return (
     <SidebarGroup>
       <SidebarMenu>
+        {isAdminOrMentor && (
+          <SidebarMenuItem key={"startups"}>
+            <SidebarMenuButton
+              asChild
+              style={{
+                opacity: pathname === "/startups" ? 1 : 0.6,
+                color: pathname === "/startups" ? "#6A35FF" : "#111827",
+                backgroundColor: pathname === "/startups" ? "#F4F0FF" : "",
+              }}
+            >
+              <Link href={"/startups"}>
+                <span>{`Startups`}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )}
         {items.map((item) => {
           const isActive = pathname === item.url;
           return (

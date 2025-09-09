@@ -8,6 +8,7 @@ export default function AppHeader() {
   let title = "";
 
   if (pathname === "/") title = "To-do’s";
+  if (pathname === "/startups") title = "Startups";
   if (pathname.includes("/participants")) title = "Interviews";
   if (pathname.includes("/progress")) title = "Progress snapshot";
   if (pathname.includes("/value-proposition")) title = "Value proposition";
