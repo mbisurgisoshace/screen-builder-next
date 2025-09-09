@@ -78,6 +78,19 @@ const data = {
         },
       ],
     },
+    {
+      title: "Examples",
+      items: [
+        {
+          title: "Pickup Truck",
+          url: "/examples/pickup-truck",
+        },
+        {
+          title: "Laptop",
+          url: "/examples/laptop",
+        },
+      ],
+    },
     // {
     //   title: "Needs",
     //   url: "/needs",

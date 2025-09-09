@@ -12,6 +12,9 @@ export default function AppHeader() {
   if (pathname.includes("/participants")) title = "Interviews";
   if (pathname.includes("/progress")) title = "Progress snapshot";
   if (pathname.includes("/value-proposition")) title = "Value proposition";
+  if (pathname.includes("/examples/laptop")) title = "Laptop Example";
+  if (pathname.includes("/examples/pickup-truck"))
+    title = "Pickup Truck Example";
 
   return (
     <header className="flex items-center px-4 h-[46px] bg-white border-b-[0.5px] border-b-[#E4E5ED] justify-between font-semibold text-lg text-[#111827]">

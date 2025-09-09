@@ -62,6 +62,7 @@ export function getAbsoluteAnchorPosition(
 }
 
 interface InfiniteCanvasProps {
+  editable?: boolean;
   toolbarOptions?: {
     card: boolean;
     text: boolean;
@@ -76,6 +77,7 @@ interface InfiniteCanvasProps {
 }
 
 export default function InfiniteCanvas({
+  editable = true,
   toolbarOptions = {
     card: true,
     text: true,
@@ -180,6 +182,8 @@ export default function InfiniteCanvas({
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      if (!editable) return;
+
       if (connecting) {
         const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX - rect.left - position.x) / scale;
@@ -191,6 +195,8 @@ export default function InfiniteCanvas({
     };
 
     const handleMouseUp = () => {
+      if (!editable) return;
+
       if (isDraggingConnector && connecting && snapResult?.shapeId) {
         const fromShape = shapes.find((s) => s.id === connecting.fromShapeId);
         const toShape = shapes.find((s) => s.id === snapResult.shapeId);
@@ -223,10 +229,11 @@ export default function InfiniteCanvas({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [connecting, position, scale, isDraggingConnector, snapResult]);
+  }, [connecting, position, scale, isDraggingConnector, snapResult, editable]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      if (!editable) return;
       // if (
       //   (e.key === "Backspace" || e.key === "Delete") &&
       //   selectedConnectionId
@@ -315,10 +322,13 @@ export default function InfiniteCanvas({
     selectConnection,
     undo,
     redo,
+    editable,
   ]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!editable) return;
+
       if (e.key === "Escape") {
         setConnecting(null);
         setConnectingMousePos(null);
@@ -328,7 +338,7 @@ export default function InfiniteCanvas({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [editable]);
 
   // Panning & marquee selection
   const [isPanning, setIsPanning] = useState(false);
@@ -348,6 +358,8 @@ export default function InfiniteCanvas({
     shapes,
     setSelectedShapeIds,
   });
+
+  const startMarqueeSafe = editable ? startMarquee : () => {};
 
   useShapeDragging({
     selectedShapeIds,
@@ -381,7 +393,8 @@ export default function InfiniteCanvas({
     setIsPanning,
     setResizing,
     setDragging,
-    startMarquee,
+    // startMarquee,
+    startMarquee: startMarqueeSafe,
     setMarqueeMousePos,
   });
 
@@ -402,7 +415,7 @@ export default function InfiniteCanvas({
     direction: "top" | "right" | "bottom" | "left"
   ) => {
     e.preventDefault();
-
+    if (!editable) return;
     const shape = shapes.find((s) => s.id === shapeId);
     if (!shape) return;
 
@@ -495,6 +508,7 @@ export default function InfiniteCanvas({
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!editable) return;
     const type = e.dataTransfer.getData("shape-type") as ShapeType;
     if (!canvasRef.current) return;
 
@@ -921,47 +935,50 @@ export default function InfiniteCanvas({
         </div>
       )}
 
-      <div className="absolute top-4 right-4 z-20">
-        <Comments />
-      </div>
+      {editable && (
+        <div className="absolute top-4 right-4 z-20">
+          <Comments />
+        </div>
+      )}
 
       {/* Toolbar */}
-      <div className="absolute top-1/2 -translate-y-1/2 left-4 z-20 py-4 px-3 bg-white  rounded-2xl shadow flex flex-col gap-6 items-center">
-        {toolbarOptions.rectangle && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              console.log("e", e);
+      {editable && (
+        <div className="absolute top-1/2 -translate-y-1/2 left-4 z-20 py-4 px-3 bg-white  rounded-2xl shadow flex flex-col gap-6 items-center">
+          {toolbarOptions.rectangle && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                console.log("e", e);
 
-              e.dataTransfer.setData("shape-type", "rect");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Rectangle"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Rectangle
-            </span>
-          </button>
-        )}
+                e.dataTransfer.setData("shape-type", "rect");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Rectangle"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Rectangle
+              </span>
+            </button>
+          )}
 
-        {toolbarOptions.ellipse && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "ellipse");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Ellipse"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Ellipse
-            </span>
-          </button>
-        )}
+          {toolbarOptions.ellipse && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "ellipse");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Ellipse"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Ellipse
+              </span>
+            </button>
+          )}
 
-        {/* <button
+          {/* <button
           draggable
           onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "text");
@@ -972,23 +989,23 @@ export default function InfiniteCanvas({
           Tx
         </button> */}
 
-        {toolbarOptions.text && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "text");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Text"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Text
-            </span>
-          </button>
-        )}
+          {toolbarOptions.text && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "text");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Text"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Text
+              </span>
+            </button>
+          )}
 
-        {/* <button
+          {/* <button
           draggable
           onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "interview");
@@ -999,23 +1016,23 @@ export default function InfiniteCanvas({
           In
         </button> */}
 
-        {toolbarOptions.interview && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "interview");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Interview"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Interview
-            </span>
-          </button>
-        )}
+          {toolbarOptions.interview && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "interview");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Interview"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Interview
+              </span>
+            </button>
+          )}
 
-        {/* <button
+          {/* <button
           draggable
           onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "question");
@@ -1026,23 +1043,23 @@ export default function InfiniteCanvas({
           Qs
         </button> */}
 
-        {toolbarOptions.question && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "question");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Question"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Question
-            </span>
-          </button>
-        )}
+          {toolbarOptions.question && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "question");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Question"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Question
+              </span>
+            </button>
+          )}
 
-        {/* <button
+          {/* <button
           draggable
           onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "question_answer");
@@ -1053,23 +1070,23 @@ export default function InfiniteCanvas({
           An
         </button> */}
 
-        {toolbarOptions.answer && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "question_answer");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Answer"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Answer
-            </span>
-          </button>
-        )}
+          {toolbarOptions.answer && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "question_answer");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Answer"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Answer
+              </span>
+            </button>
+          )}
 
-        {/* <button
+          {/* <button
           draggable
           onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "table");
@@ -1079,23 +1096,23 @@ export default function InfiniteCanvas({
         >
           Tb
         </button> */}
-        {toolbarOptions.table && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "table");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Table"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Table
-            </span>
-          </button>
-        )}
+          {toolbarOptions.table && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "table");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Table"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Table
+              </span>
+            </button>
+          )}
 
-        {/* <button
+          {/* <button
           draggable
           onDragStart={(e) => {
             e.dataTransfer.setData("shape-type", "feature_idea");
@@ -1105,38 +1122,39 @@ export default function InfiniteCanvas({
         >
           Fi
         </button> */}
-        {toolbarOptions.feature && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "feature_idea");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Feature Idea"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Feature
-            </span>
-          </button>
-        )}
+          {toolbarOptions.feature && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "feature_idea");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Feature Idea"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Feature
+              </span>
+            </button>
+          )}
 
-        {toolbarOptions.card && (
-          <button
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("shape-type", "card");
-            }}
-            className="w-10 h-10  flex flex-col items-center "
-            title="Card"
-          >
-            <SquarePlus className="text-[#111827] pointer-events-none" />
-            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
-              Card
-            </span>
-          </button>
-        )}
-      </div>
+          {toolbarOptions.card && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "card");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Card"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Card
+              </span>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Canvas */}
       <div
@@ -1161,7 +1179,7 @@ export default function InfiniteCanvas({
           }}
         >
           {/* Marquee selection */}
-          {marquee && (
+          {editable && marquee && (
             <div
               style={{
                 position: "absolute",
@@ -1178,7 +1196,7 @@ export default function InfiniteCanvas({
           )}
 
           {/* Group bounding box */}
-          {groupBounds && <SelectionGroup bounds={groupBounds} />}
+          {editable && groupBounds && <SelectionGroup bounds={groupBounds} />}
 
           {connecting && connectingMousePos && (
             <CurvedArrow
@@ -1228,8 +1246,10 @@ export default function InfiniteCanvas({
                 id={id}
                 from={from}
                 to={to}
-                selected={selectedConnectionId === id}
-                onSelect={selectConnection}
+                // selected={selectedConnectionId === id}
+                // onSelect={selectConnection}
+                selected={editable && selectedConnectionId === id}
+                onSelect={editable ? selectConnection : undefined}
               />
             ))}
 
@@ -1275,6 +1295,7 @@ export default function InfiniteCanvas({
                 <Component
                   key={shape.id}
                   shape={shape}
+                  interactive={editable}
                   //renderHandles={renderHandles}
                   onResizeStart={startResizing}
                   selectedCount={selectedShapeIds.length}

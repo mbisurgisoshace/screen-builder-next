@@ -53,10 +53,17 @@ export default function CollapsibleSidebar({ items }: CollapsibleSidebarProps) {
                       pathname.includes(subItem.url) && pathname !== "/";
                     return (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild>
-                          <a href={subItem.url}>
+                        <SidebarMenuSubButton
+                          asChild
+                          style={{
+                            opacity: isActive ? 1 : 0.6,
+                            color: isActive ? "#6A35FF" : "#111827",
+                            backgroundColor: isActive ? "#F4F0FF" : "",
+                          }}
+                        >
+                          <Link href={subItem.url}>
                             <span>{subItem.title}</span>
-                          </a>
+                          </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     );

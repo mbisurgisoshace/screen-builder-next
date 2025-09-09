@@ -35,6 +35,7 @@ export interface ShapeFrameProps {
   showConnectors?: boolean; // default true
   resizable?: boolean; // default true
   selectable?: boolean; // default true
+  interactive?: boolean;
 
   onChangeTags?: (id: string, tagIds: string[]) => void;
 }
@@ -51,8 +52,11 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   resizable = true,
   selectable = true,
   onChangeTags,
+  interactive = true,
 }) => {
-  const showSingleSelectionUI = selectable && isSelected && selectedCount === 1;
+  const canInteract = interactive;
+  const showSingleSelectionUI =
+    canInteract && selectable && isSelected && selectedCount === 1;
 
   const flipBelow = shape.y < 72;
   const extras = useExtrasNode(shape.id);
@@ -113,7 +117,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   };
 
   const renderConnectorPoints = () => {
-    if (!showConnectors) return null;
+    if (!showConnectors || !canInteract) return null;
 
     const offset = 12; // spacing from the outer edge
     const points: { id: Connector; style: React.CSSProperties }[] = [
@@ -196,6 +200,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
         width: shape.width,
         height: shape.height,
         zIndex: isSelected ? 50 : 45,
+        pointerEvents: canInteract ? "auto" : "none",
       }}
     >
       {/* Floating toolbar (single select): Tag picker */}

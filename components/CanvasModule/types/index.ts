@@ -83,6 +83,7 @@ export type ShapeComponentProps = {
     id: string,
     handle: string
   ) => void;
+  interactive?: boolean;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   onConnectorMouseDown?: (
     e: React.MouseEvent,

@@ -181,6 +181,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
     <ShapeFrame
       {...props}
       resizable={true}
+      interactive={props.interactive ?? true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div className="w-full h-full bg-white border-2 border-white rounded-xl shadow flex flex-col overflow-hidden">
