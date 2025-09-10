@@ -234,12 +234,12 @@ export function AppSidebar({
           ))}
         </div> */}
 
-        <div className="flex items-center flex-row gap-2.5">
+        {/* <div className="flex items-center flex-row gap-2.5">
           <UserButton />
           <span className="text-xs font-bold text-[#111827]">
             {user?.fullName}
           </span>
-        </div>
+        </div> */}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
