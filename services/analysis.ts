@@ -108,7 +108,9 @@ export async function generateAnalysisRoom(roomId: string) {
           (a) => a.questionId === question.id
         );
 
+        //@ts-ignore
         const doesExist = analysisQuestions.find((q) => {
+          //@ts-ignore
           const analysisQuestion = q.toObject();
           return analysisQuestion.id === question.id;
         });
