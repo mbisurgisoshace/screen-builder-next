@@ -1,3 +1,4 @@
+//@ts-check
 import { v4 as uuidv4 } from "uuid";
 import liveblocks from "@/lib/liveblocks";
 import { redirect } from "next/navigation";
@@ -86,6 +87,7 @@ export async function generateAnalysisRoom(roomId: string) {
   await liveblocks.mutateStorage(roomId, ({ root }) => {
     //@ts-ignore
     const analysisQuestions = root.get("shapes");
+    //@ts-ignore
     if (analysisQuestions.length === 0) {
       questions.forEach((question: any) => {
         const answersForQuestion = answers.filter(
