@@ -28,6 +28,10 @@ const RteEditor = dynamic(
 export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
   const { shape, onCommitInterview } = props;
 
+  const question_answers = shape.question_answers || [];
+
+  const [currentAnswer, setCurrentAnswer] = useState<number>(0);
+
   const commit = (patch: Partial<IShape>) => {
     onCommitInterview?.(shape.id, patch);
   };
@@ -43,9 +47,23 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
     return EditorState.createEmpty();
   }, []);
 
+  const initialAnswerEditorState = useMemo(() => {
+    try {
+      if (shape.question_answers?.length) {
+        const raw = JSON.parse(shape.question_answers[0].draftRaw);
+        return EditorState.createWithContent(convertFromRaw(raw));
+      }
+    } catch {}
+    return EditorState.createEmpty();
+  }, []);
+
   const [editorState, setEditorState] =
     useState<EditorState>(initialEditorState);
   const [editingBody, setEditingBody] = useState(true);
+
+  const [answerEditorState, setAnswerEditorState] = useState<EditorState>(
+    initialAnswerEditorState
+  );
 
   useEffect(() => {
     if (editingBody) return;
@@ -60,6 +78,19 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
       // ignore bad JSON
     }
   }, [shape.draftRaw, editingBody]);
+
+  useEffect(() => {
+    try {
+      if (question_answers[currentAnswer]?.draftRaw) {
+        const raw = JSON.parse(question_answers[currentAnswer]?.draftRaw);
+        setAnswerEditorState(
+          EditorState.createWithContent(convertFromRaw(raw))
+        );
+      } else {
+        setAnswerEditorState(EditorState.createEmpty());
+      }
+    } catch {}
+  }, [currentAnswer]);
 
   useEffect(() => {
     if (!editingBody) return;
@@ -83,6 +114,22 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
     return text.length ? text : "Write interview notes here…";
   }, [editorState]);
 
+  const getNextAnswer = () => {
+    setCurrentAnswer((prev) => {
+      if (prev === undefined) return 0;
+      return Math.min(prev + 1, question_answers.length - 1);
+    });
+  };
+
+  const getPreviousAnswer = () => {
+    setCurrentAnswer((prev) => {
+      if (prev === undefined) return 0;
+      return Math.max(prev - 1, 0);
+    });
+  };
+
+  console.log("currentAnswer", currentAnswer, question_answers);
+
   return (
     <ShapeFrame
       {...props}
@@ -94,7 +141,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
           <h3 className="text-[11px] font-medium text-[#8B93A1]">Question</h3>
           <h2 className="font-extrabold text-[14px] text-[#111827]">
             <span className="text-[#8B93A1] mr-1">1.</span>
-            How much time does your team spend on project research?
+            {shape.questionTitle}
           </h2>
           {/* Body */}
           <div className="flex-1 overflow-auto">
@@ -130,7 +177,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
             {/* Interviewer */}
             <div className="flex flex-col ml-5">
               <span className="text-[#111827] text-[14px] font-medium">
-                Anastasia Wellington
+                {question_answers[currentAnswer]?.name || "Interviewee"}
               </span>
               <span className="text-[#111827] opacity-50 text-[11px] font-medium">
                 UX/UI designer
@@ -144,8 +191,8 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
               onMouseDown={(e) => e.stopPropagation()}
             >
               <RteEditor
-                editorState={editorState}
-                onEditorStateChange={setEditorState}
+                editorState={answerEditorState}
+                //onEditorStateChange={setAnswerEditorState}
                 toolbar={{
                   options: ["inline", "list", "link", "history"],
                   inline: {
@@ -162,18 +209,37 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
 
           <div className="flex flex-row justify-between items-center">
             <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#E9E6F0]">
-              <ChevronLeftIcon className="h-4 w-4 text-[#8B92A1]" />
+              <ChevronLeftIcon
+                className="h-4 w-4 text-[#8B92A1]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  getPreviousAnswer();
+                }}
+              />
             </div>
 
             <div className="text-[11px] font-medium text-[#8B93A1]">
               <span className="mr-[1px]">Answer</span>
-              <span className="text-black font-bold text-[12px]"> 1</span>
+              <span className="text-black font-bold text-[12px]">
+                {" "}
+                {(currentAnswer || 0) + 1}
+              </span>
               <span className="font-semibold text-[12px]"> / </span>
-              <span className="font-bold text-[12px]">8</span>
+              <span className="font-bold text-[12px]">
+                {question_answers.length}
+              </span>
             </div>
 
             <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#E9E6F0]">
-              <ChevronRightIcon className="h-4 w-4 text-[#8B92A1]" />
+              <ChevronRightIcon
+                className="h-4 w-4 text-[#8B92A1]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  getNextAnswer();
+                }}
+              />
             </div>
           </div>
         </div>

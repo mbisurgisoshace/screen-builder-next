@@ -57,6 +57,13 @@ export interface Shape {
 
   // question
   questionTitle?: string;
+
+  question_answers?: {
+    name: string;
+    participantId: string;
+    questionId: string;
+    draftRaw: string;
+  }[];
 }
 
 export type Attachment = {
