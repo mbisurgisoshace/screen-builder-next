@@ -1,4 +1,3 @@
-//@ts-check
 import { v4 as uuidv4 } from "uuid";
 import liveblocks from "@/lib/liveblocks";
 import { redirect } from "next/navigation";
@@ -94,6 +93,7 @@ export async function generateAnalysisRoom(roomId: string) {
           (a) => a.questionId === question.id
         );
 
+        //@ts-ignore
         analysisQuestions.push(
           new LiveObject({
             ...question,
@@ -114,6 +114,7 @@ export async function generateAnalysisRoom(roomId: string) {
         });
 
         if (!doesExist) {
+          //@ts-ignore
           analysisQuestions.push(
             new LiveObject({
               ...question,
