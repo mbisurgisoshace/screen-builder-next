@@ -18,6 +18,10 @@ export async function initializeInterviewRoom(roomId: string) {
 
   if (!userId) redirect("/sign-in");
 
+  await liveblocks.getOrCreateRoom(roomId, {
+    defaultAccesses: [],
+  });
+
   const roomStorage = await liveblocks.getStorageDocument(roomId);
   const questionStorage: any = await liveblocks.getStorageDocument(
     `questions-${orgId}`

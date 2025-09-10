@@ -17,6 +17,7 @@ import {
 import useStartups from "./useStartups";
 import { format } from "date-fns";
 import { useOrganizationList } from "@clerk/nextjs";
+import { Badge } from "@/components/ui/badge";
 
 export default function StartupsTable({
   data,
@@ -92,6 +93,36 @@ const columns: ColumnDef<any>[] = [
     cell: ({ row }) => {
       const participantId = row.original.id;
       return <div className="capitalize">{row.getValue("name")}</div>;
+    },
+  },
+  {
+    header: "Founders",
+    accessorKey: "founders",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col gap-1">
+          {row.original.founders.map((founder: string, index: number) => (
+            <Badge className="bg-[#F4F0FF] text-[#6A35FF]" key={index}>
+              {founder}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
+    header: "Mentors",
+    accessorKey: "mentors",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col gap-1">
+          {row.original.mentors.map((founder: string, index: number) => (
+            <Badge className="bg-[#F4F0FF] text-[#6A35FF]" key={index}>
+              {founder}
+            </Badge>
+          ))}
+        </div>
+      );
     },
   },
   {
