@@ -84,6 +84,7 @@ export async function generateAnalysisRoom(roomId: string) {
   }
 
   await liveblocks.mutateStorage(roomId, ({ root }) => {
+    //@ts-ignore
     const analysisQuestions = root.get("shapes");
     if (analysisQuestions.length === 0) {
       questions.forEach((question: any) => {
