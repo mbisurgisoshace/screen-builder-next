@@ -110,18 +110,28 @@ enum CardType {
   feature_idea
 }
 
+enum TodoType {
+  text
+  link
+  image
+  video
+}
+
 model Todo {
-  id            String   @id @default(cuid())
-  org_id        String
-  week          Int
-  weekday       String
-  weekday_order Int
-  task          String
-  task_order    Int      @default(0)
-  task_todo     String
-  completed     Boolean  @default(false)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  org_id                String
+  week                  Int
+  weekday               String
+  weekday_order         Int
+  task                  String
+  type                  TodoType @default(text)
+  task_order            Int      @default(0)
+  task_todo             String
+  task_todo_description String?
+  task_todo_url         String?
+  completed             Boolean  @default(false)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
 
   @@map("todos")
 }

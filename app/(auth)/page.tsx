@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import Todo from "./_components/Todo";
 import { getStructuredTodosByOrg, getTodos } from "@/services/todos";
-import { Todo as ITodo } from "@/lib/generated/prisma";
+import { Todo as ITodo, TodoType } from "@/lib/generated/prisma";
 
 type StructuredTodos = Array<{
   week: number;
@@ -17,13 +17,18 @@ type StructuredTodos = Array<{
 export type Task = {
   task: string;
   task_order: number;
-  todos: Array<{
-    id: string;
-    text: string; // task_todo
-    completed: boolean;
-    created_at: Date;
-    updated_at: Date;
-  }>;
+  todos: Array<Todo>;
+};
+
+export type Todo = {
+  id: string;
+  text: string; // task_todo
+  description?: string;
+  url?: string;
+  type: TodoType;
+  completed: boolean;
+  created_at: Date;
+  updated_at: Date;
 };
 
 async function formatTodos(todos: ITodo[]): Promise<StructuredTodos> {
@@ -56,6 +61,9 @@ async function formatTodos(todos: ITodo[]): Promise<StructuredTodos> {
               todos: Array<{
                 id: string;
                 text: string;
+                description?: string;
+                url?: string;
+                type: TodoType;
                 completed: boolean;
                 created_at: Date;
                 updated_at: Date;
@@ -109,6 +117,9 @@ async function formatTodos(todos: ITodo[]): Promise<StructuredTodos> {
     t.todos.push({
       id: r.id,
       text: r.task_todo,
+      description: r.task_todo_description || undefined,
+      url: r.task_todo_url || undefined,
+      type: r.type,
       completed: r.completed,
       created_at: r.created_at,
       updated_at: r.updated_at,

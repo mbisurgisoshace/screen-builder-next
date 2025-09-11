@@ -40,6 +40,7 @@ import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { ActiveUsersBar } from "./CanvasModule/live/ActiveUsersBar";
 import { LiveCursors } from "./CanvasModule/live/LiveCursors";
+import { ValueMapOverlay } from "./CanvasModule/ValueMapOverlay";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -100,6 +101,7 @@ export default function InfiniteCanvas({
 
   const [problems, setProblems] = useState(true);
   const [solutions, setSolutions] = useState(false);
+  const [valueArea, setValueArea] = useState(false);
 
   const undo = useUndo();
   const redo = useRedo();
@@ -934,6 +936,18 @@ export default function InfiniteCanvas({
             />
             <Label htmlFor="solutions">Solutions</Label>
           </div>
+
+          {/* <div className="flex items-center gap-3">
+            <Checkbox
+              id="value-areas"
+              checked={valueArea}
+              onCheckedChange={() => setValueArea(!valueArea)}
+              className={
+                "data-[state=checked]:bg-white data-[state=checked]:text-black"
+              }
+            />
+            <Label htmlFor="value-areas">Values Area</Label>
+          </div> */}
         </div>
       )}
 
@@ -1218,6 +1232,14 @@ export default function InfiniteCanvas({
               to={snapResult?.snappedPosition ?? connectingMousePos}
             />
           )}
+
+          {/* <ValueMapOverlay
+            canvasRef={canvasRef}
+            position={position}
+            scale={scale}
+            visible={valueArea}
+            zIndex={1} // under shapes
+          /> */}
 
           {connectionEndpoints
             .filter((endpoint) => {
