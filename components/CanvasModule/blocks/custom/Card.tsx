@@ -25,7 +25,10 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@radix-ui/react-dropdown-menu";
 import { ProblemStatement } from "./ProblemStatement";
 import { Interview } from "./InterviewCard";
 
@@ -50,6 +53,20 @@ export const Card: React.FC<CardProps> = (props) => {
         return "Assumption";
       case "problem_statement_card":
         return "Problem Statement";
+      case "jobs_to_be_done_card":
+        return "Jobs To Be Done";
+      case "pains_card":
+        return "Pains";
+      case "gains_card":
+        return "Gains";
+      case "products_services_card":
+        return "Products & Services";
+      case "pain_relievers_card":
+        return "Pain Relievers";
+      case "gain_creators_card":
+        return "Gain Creators";
+      case "select_subtype":
+        return "Select Card Type";
       default:
         return "Unknown";
     }
@@ -57,14 +74,20 @@ export const Card: React.FC<CardProps> = (props) => {
 
   const getBody = () => {
     switch (subtype) {
-      case "solution_card":
-        return <span>Solution Card</span>;
-      case "interview_card":
-        return <Interview {...props} />;
-      case "assumption_card":
-        return <span>Assumption Card</span>;
-      case "problem_statement_card":
-        return <ProblemStatement {...props} />;
+      case "jobs_to_be_done_card":
+        return <span>Jobs To Be Done content goes here.</span>;
+      case "pains_card":
+        return <span>Pains content goes here.</span>;
+      case "gains_card":
+        return <span>Gains content goes here.</span>;
+      case "products_services_card":
+        return <span>Products & Services content goes here.</span>;
+      case "pain_relievers_card":
+        return <span>Pain Relievers content goes here.</span>;
+      case "gain_creators_card":
+        return <span>Gain Creators content goes here.</span>;
+      case "select_subtype":
+        return <span>Please select a card type from the menu.</span>;
     }
   };
 
@@ -78,6 +101,20 @@ export const Card: React.FC<CardProps> = (props) => {
         return false;
       case "problem_statement_card":
         return false;
+      case "jobs_to_be_done_card":
+        return false;
+      case "pains_card":
+        return false;
+      case "gains_card":
+        return false;
+      case "products_services_card":
+        return false;
+      case "pain_relievers_card":
+        return false;
+      case "gain_creators_card":
+        return false;
+      case "select_subtype":
+        return false;
       default:
         return true;
     }
@@ -90,7 +127,7 @@ export const Card: React.FC<CardProps> = (props) => {
       header={
         <div className="w-full flex flex-row items-center justify-between">
           <span>{getTitle()}</span>
-          <DropdownMenu>
+          <DropdownMenu defaultOpen={subtype === "select_subtype"}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open</span>
@@ -102,6 +139,75 @@ export const Card: React.FC<CardProps> = (props) => {
               className="absolute -top-11 left-5 p-1.5 w-[216px]"
             >
               <DropdownMenuItem
+                onClick={() => {
+                  onCommitStyle?.(shape.id, {
+                    subtype: "jobs_to_be_done_card",
+                  });
+                }}
+                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+                  subtype === "jobs_to_be_done_card" ? "bg-[#D5F9D7]" : ""
+                }`}
+              >
+                Jobs To Be Done
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  onCommitStyle?.(shape.id, { subtype: "pains_card" });
+                }}
+                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+                  subtype === "pains_card" ? "bg-[#D5F9D7]" : ""
+                }`}
+              >
+                Pains
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  onCommitStyle?.(shape.id, { subtype: "gains_card" });
+                }}
+                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+                  subtype === "gains_card" ? "bg-[#D5F9D7]" : ""
+                }`}
+              >
+                Gains
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="h-[1px] bg-gray-200" />
+              <DropdownMenuItem
+                onClick={() => {
+                  onCommitStyle?.(shape.id, {
+                    subtype: "products_services_card",
+                  });
+                }}
+                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+                  subtype === "products_services_card" ? "bg-[#D5F9D7]" : ""
+                }`}
+              >
+                Products & Services
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  onCommitStyle?.(shape.id, {
+                    subtype: "pain_relievers_card",
+                  });
+                }}
+                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+                  subtype === "pain_relievers_card" ? "bg-[#D5F9D7]" : ""
+                }`}
+              >
+                Pain Relievers
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  onCommitStyle?.(shape.id, {
+                    subtype: "gain_creators_card",
+                  });
+                }}
+                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+                  subtype === "gain_creators_card" ? "bg-[#D5F9D7]" : ""
+                }`}
+              >
+                Gain Creators
+              </DropdownMenuItem>
+              {/* <DropdownMenuItem
                 onClick={() => {
                   onCommitStyle?.(shape.id, { subtype: "assumption_card" });
                 }}
@@ -142,7 +248,7 @@ export const Card: React.FC<CardProps> = (props) => {
                 }`}
               >
                 Solution card
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

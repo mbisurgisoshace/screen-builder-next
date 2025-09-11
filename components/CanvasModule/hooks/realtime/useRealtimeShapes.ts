@@ -122,7 +122,7 @@ export function useRealtimeShapes() {
           ...shape,
           width: 440,
           height: 320,
-          subtype: "problem_statement_card",
+          subtype: "select_subtype",
         };
       }
 

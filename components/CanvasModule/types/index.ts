@@ -14,7 +14,14 @@ export type CardType =
   | "assumption_card"
   | "interview_card"
   | "solution_card"
-  | "problem_statement_card";
+  | "problem_statement_card"
+  | "select_subtype"
+  | "jobs_to_be_done_card"
+  | "pains_card"
+  | "gains_card"
+  | "products_services_card"
+  | "pain_relievers_card"
+  | "gain_creators_card";
 
 export type Kind = "image" | "video" | "pdf" | "file";
 
