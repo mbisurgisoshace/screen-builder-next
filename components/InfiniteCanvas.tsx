@@ -38,6 +38,8 @@ import { SquarePlus } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
+import { ActiveUsersBar } from "./CanvasModule/live/ActiveUsersBar";
+import { LiveCursors } from "./CanvasModule/live/LiveCursors";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -906,7 +908,7 @@ export default function InfiniteCanvas({
   }
 
   return (
-    <div className="w-full h-full overflow-hidden bg-[#F9F9F9] relative flex">
+    <div className="w-full h-full overflow-hidden bg-[#EFF0F4] relative flex">
       {isValuePropCanvas && (
         <div className="absolute top-4 left-4 z-20 flex flex-row gap-6 bg-black p-2 rounded-md text-white">
           <div className="flex items-center gap-3 ">
@@ -936,10 +938,22 @@ export default function InfiniteCanvas({
       )}
 
       {editable && (
-        <div className="absolute top-4 right-4 z-20">
+        <div className="absolute bottom-4 right-4 z-20">
           <Comments />
         </div>
       )}
+
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+        <ActiveUsersBar maxVisible={3} includeSelf={false} />
+      </div>
+
+      <LiveCursors
+        canvasRef={canvasRef}
+        position={position}
+        scale={scale}
+        includeSelf={false}
+        zIndex={550}
+      />
 
       {/* Toolbar */}
       {editable && (
@@ -1236,7 +1250,6 @@ export default function InfiniteCanvas({
                   }
                 }
               }
-              console.log("endpoint", endpoint);
 
               return true;
             })
