@@ -46,7 +46,7 @@ export default function ImageTodo({ todo, markAsComplete }: ImageTodoProps) {
         <img
           src={todo.url!}
           alt={todo.description || ""}
-          className="w-full bg-cover rounded-[10px]"
+          className="w-full bg-contain rounded-[10px]"
         />
     </li>
   );

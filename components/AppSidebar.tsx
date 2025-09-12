@@ -69,10 +69,10 @@ const data = {
           title: "Participants",
           url: "/participants",
         },
-        {
-          title: "Interviews",
-          url: "/interviews",
-        },
+        // {
+        //   title: "Interviews",
+        //   url: "/interviews",
+        // },
         {
           title: "Analysis",
           url: "/analysis",
@@ -137,31 +137,31 @@ export function AppSidebar({
           <Image width={200} height={50} src={"/nsf_logo.jpg"} alt="NSF" />
         </Link>
 
-        <div className="h-8 border-1 border-[#EBECF4] rounded-[8px] flex flex-row gap-2.5 items-center px-2">
+        <div className="h-8 rounded-[8px] flex flex-row gap-2.5 items-center px-2">
           {isAdminOrMentor ? (
             <Link
               href={"/startups"}
               className="flex flex-row gap-2.5 items-center w-full"
             >       
               <Image
-                width={17}
-                height={17}
+                width={24}
+                height={24}
                 src={"/Rocket--Streamline-Lucide.png"}
                 alt="Rocket"
               />
-              <span className="text-xs font-bold text-[#111827]">
+              <span className="text-lg font-bold text-[#111827]">
                 {organization?.name}
               </span>
             </Link>
           ) : (
             <>
                <Image
-                width={17}
-                height={17}
+                width={24}
+                height={24}
                 src={"/Rocket--Streamline-Lucide.png"}
                 alt="Rocket"
               />
-              <span className="text-xs font-bold text-[#111827]">
+              <span className="text-lg font-bold text-[#111827]">
                 {organization?.name}
               </span>
             </>
