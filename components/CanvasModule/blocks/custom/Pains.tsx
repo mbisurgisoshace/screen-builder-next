@@ -166,6 +166,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex flex-row gap-2 p-2">
+          <span>Significance Score:</span>
           {tags.map((t) => (
             <button
               key={t}

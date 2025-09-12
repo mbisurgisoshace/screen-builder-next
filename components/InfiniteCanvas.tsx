@@ -1251,8 +1251,9 @@ export default function InfiniteCanvas({
 
                   if (
                     toShape?.type === "card" &&
-                    (toShape.subtype === "problem_statement_card" ||
-                      toShape.subtype === "assumption_card")
+                    (toShape.subtype === "jobs_to_be_done_card" ||
+                      toShape.subtype === "gains_card" ||
+                      toShape.subtype === "pains_card")
                   ) {
                     return false;
                   }
@@ -1265,8 +1266,9 @@ export default function InfiniteCanvas({
 
                   if (
                     toShape?.type === "card" &&
-                    (toShape.subtype === "interview_card" ||
-                      toShape.subtype === "solution_card")
+                    (toShape.subtype === "products_services_card" ||
+                      toShape.subtype === "gain_creators_card" ||
+                      toShape.subtype === "pain_relievers_card")
                   ) {
                     return false;
                   }
@@ -1302,8 +1304,9 @@ export default function InfiniteCanvas({
                 if (!problems) {
                   if (
                     shape.type === "card" &&
-                    (shape.subtype === "problem_statement_card" ||
-                      shape.subtype === "assumption_card")
+                    (shape.subtype === "jobs_to_be_done_card" ||
+                      shape.subtype === "gains_card" ||
+                      shape.subtype === "pains_card")
                   ) {
                     return false;
                   }
@@ -1312,8 +1315,9 @@ export default function InfiniteCanvas({
                 if (!solutions) {
                   if (
                     shape.type === "card" &&
-                    (shape.subtype === "interview_card" ||
-                      shape.subtype === "solution_card")
+                    (shape.subtype === "products_services_card" ||
+                      shape.subtype === "gain_creators_card" ||
+                      shape.subtype === "pain_relievers_card")
                   ) {
                     return false;
                   }
