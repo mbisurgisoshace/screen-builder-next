@@ -8,6 +8,7 @@ import { Table } from "./core/Table";
 import { Ellipse } from "./core/Ellipse";
 import { Question } from "./custom/Question";
 import { Interview } from "./custom/Interview";
+import { FeatureIdea } from "./custom/FeatureIdea";
 import { ProblemStatement } from "./custom/ProblemStatement";
 import { QuestionAnswer } from "./custom/QuestionAnswer";
 
@@ -21,6 +22,6 @@ export const shapeRegistry: Record<string, ShapeComponent> = {
   ellipse: Ellipse,
   question: Question,
   interview: Interview,
-  feature_idea: ProblemStatement,
+  feature_idea: FeatureIdea,
   question_answer: QuestionAnswer,
 };

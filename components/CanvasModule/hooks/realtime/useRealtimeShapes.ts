@@ -126,6 +126,14 @@ export function useRealtimeShapes() {
         };
       }
 
+      if (type === "feature_idea") {
+        shape = {
+          ...shape,
+          width: 420,
+          height: 220,
+        };
+      }
+
       list.push(toLiveShape(shape));
     },
     []

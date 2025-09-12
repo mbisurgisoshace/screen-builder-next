@@ -12,14 +12,14 @@ export default async function IdeaBrainstormPage() {
           <InfiniteCanvas
             toolbarOptions={{
               text: true,
+              card: false,
               table: false,
               answer: false,
               ellipse: true,
-              feature: false,
+              feature: true,
               question: false,
               rectangle: true,
               interview: false,
-              card: false,
             }}
           />
         </Room>

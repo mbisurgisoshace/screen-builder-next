@@ -639,54 +639,54 @@ export default function InfiniteCanvas({
 
     if (!type) return;
 
-    if (type === "feature_idea") {
-      const SMALL_W = 140,
-        SMALL_H = 64;
-      const MAIN_W = 260,
-        MAIN_H = 140;
-      const GAP = 24;
+    // if (type === "feature_idea") {
+    //   const SMALL_W = 140,
+    //     SMALL_H = 64;
+    //   const MAIN_W = 260,
+    //     MAIN_H = 140;
+    //   const GAP = 24;
 
-      const labelId = uuidv4();
-      const mainId = uuidv4();
+    //   const labelId = uuidv4();
+    //   const mainId = uuidv4();
 
-      const labelX = x - GAP - SMALL_W;
-      const labelY = y - SMALL_H / 2;
+    //   const labelX = x - GAP - SMALL_W;
+    //   const labelY = y - SMALL_H / 2;
 
-      const mainX = x + GAP;
-      const mainY = y - MAIN_H / 2;
+    //   const mainX = x + GAP;
+    //   const mainY = y - MAIN_H / 2;
 
-      pause();
+    //   pause();
 
-      // create label
-      addShape("rect", labelX, labelY, labelId);
-      updateShape(labelId, (s) => ({
-        ...s,
-        width: SMALL_W,
-        height: SMALL_H,
-        text: "Trigger", // editable with your existing Rect text behavior
-        color: "bg-blue-100", // optional default fill
-      }));
-      // create main
-      addShape("feature_idea", mainX, mainY, mainId);
-      updateShape(mainId, (s) => ({
-        ...s,
-        width: MAIN_W,
-        height: MAIN_H,
-      }));
-      resume();
+    //   // create label
+    //   addShape("rect", labelX, labelY, labelId);
+    //   updateShape(labelId, (s) => ({
+    //     ...s,
+    //     width: SMALL_W,
+    //     height: SMALL_H,
+    //     text: "Trigger", // editable with your existing Rect text behavior
+    //     color: "bg-blue-100", // optional default fill
+    //   }));
+    //   // create main
+    //   addShape("feature_idea", mainX, mainY, mainId);
+    //   updateShape(mainId, (s) => ({
+    //     ...s,
+    //     width: MAIN_W,
+    //     height: MAIN_H,
+    //   }));
+    //   resume();
 
-      addConnectionRelative({
-        fromShapeId: labelId,
-        toShapeId: mainId,
-        fromAnchor: { x: 1, y: 0.5 }, // right middle
-        toAnchor: { x: 0, y: 0.5 }, // left middle
-        //fromSide: "right",
-        //toSide: "left",
-        //style: "curve", // or "orthogonal" if you added that toggle
-      });
+    //   addConnectionRelative({
+    //     fromShapeId: labelId,
+    //     toShapeId: mainId,
+    //     fromAnchor: { x: 1, y: 0.5 }, // right middle
+    //     toAnchor: { x: 0, y: 0.5 }, // left middle
+    //     //fromSide: "right",
+    //     //toSide: "left",
+    //     //style: "curve", // or "orthogonal" if you added that toggle
+    //   });
 
-      return;
-    }
+    //   return;
+    // }
 
     addShape(type, x, y, uuidv4());
   };
