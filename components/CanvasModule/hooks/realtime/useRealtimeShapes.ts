@@ -126,8 +126,6 @@ export function useRealtimeShapes() {
         };
       }
 
-      console.log("shape", shape);
-
       list.push(toLiveShape(shape));
     },
     []
