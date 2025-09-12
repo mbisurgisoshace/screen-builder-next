@@ -31,6 +31,12 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { ProblemStatement } from "./ProblemStatement";
 import { Interview } from "./InterviewCard";
+import { JobsToBeDone } from "./JobsToBeDone";
+import { Pains } from "./Pains";
+import { Gains } from "./Gains";
+import { ProductsService } from "./ProductsService";
+import { PainRelievers } from "./PainRelievers";
+import { GainCreators } from "./GainCreators";
 
 type CardProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -75,17 +81,17 @@ export const Card: React.FC<CardProps> = (props) => {
   const getBody = () => {
     switch (subtype) {
       case "jobs_to_be_done_card":
-        return <span>Jobs To Be Done content goes here.</span>;
+        return <JobsToBeDone {...props} />;
       case "pains_card":
-        return <span>Pains content goes here.</span>;
+        return <Pains {...props} />;
       case "gains_card":
-        return <span>Gains content goes here.</span>;
+        return <Gains {...props} />;
       case "products_services_card":
-        return <span>Products & Services content goes here.</span>;
+        return <ProductsService {...props} />;
       case "pain_relievers_card":
-        return <span>Pain Relievers content goes here.</span>;
+        return <PainRelievers {...props} />;
       case "gain_creators_card":
-        return <span>Gain Creators content goes here.</span>;
+        return <GainCreators {...props} />;
       case "select_subtype":
         return <span>Please select a card type from the menu.</span>;
     }
