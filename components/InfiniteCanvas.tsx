@@ -41,7 +41,7 @@ import { Label } from "./ui/label";
 import { ActiveUsersBar } from "./CanvasModule/live/ActiveUsersBar";
 import { LiveCursors } from "./CanvasModule/live/LiveCursors";
 import { ValueMapOverlay } from "./CanvasModule/ValueMapOverlay";
-import Image from "next/image";
+import NextImage from "next/image";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -985,7 +985,7 @@ export default function InfiniteCanvas({
               title="Rectangle"
             >
               {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
-              <Image
+              <NextImage
                 src={"/rectangle.svg"}
                 alt="Rectangle"
                 width={20}
@@ -1008,7 +1008,7 @@ export default function InfiniteCanvas({
               title="Ellipse"
             >
               {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
-              <Image
+              <NextImage
                 src={"/ellipse.svg"}
                 alt="Ellipse"
                 width={20}
@@ -1042,7 +1042,7 @@ export default function InfiniteCanvas({
               title="Text"
             >
               {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
-              <Image
+              <NextImage
                 src={"/text.svg"}
                 alt="Text"
                 width={16}
@@ -1198,7 +1198,7 @@ export default function InfiniteCanvas({
               title="Card"
             >
               {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
-              <Image
+              <NextImage
                 src={"/card.svg"}
                 alt="Card"
                 width={20}
