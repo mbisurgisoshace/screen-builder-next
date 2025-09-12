@@ -41,6 +41,7 @@ import { Label } from "./ui/label";
 import { ActiveUsersBar } from "./CanvasModule/live/ActiveUsersBar";
 import { LiveCursors } from "./CanvasModule/live/LiveCursors";
 import { ValueMapOverlay } from "./CanvasModule/ValueMapOverlay";
+import NextImage from "next/image";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -980,10 +981,17 @@ export default function InfiniteCanvas({
 
                 e.dataTransfer.setData("shape-type", "rect");
               }}
-              className="w-10 h-10  flex flex-col items-center "
+              className="w-10 h-10 gap-1 flex flex-col items-center "
               title="Rectangle"
             >
-              <SquarePlus className="text-[#111827] pointer-events-none" />
+              {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+              <NextImage
+                src={"/rectangle.svg"}
+                alt="Rectangle"
+                width={20}
+                height={20}
+                className="pointer-events-none"
+              />
               <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
                 Rectangle
               </span>
@@ -996,10 +1004,17 @@ export default function InfiniteCanvas({
               onDragStart={(e) => {
                 e.dataTransfer.setData("shape-type", "ellipse");
               }}
-              className="w-10 h-10  flex flex-col items-center "
+              className="w-10 h-10 gap-1 flex flex-col items-center "
               title="Ellipse"
             >
-              <SquarePlus className="text-[#111827] pointer-events-none" />
+              {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+              <NextImage
+                src={"/ellipse.svg"}
+                alt="Ellipse"
+                width={20}
+                height={20}
+                className="pointer-events-none"
+              />
               <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
                 Ellipse
               </span>
@@ -1023,10 +1038,17 @@ export default function InfiniteCanvas({
               onDragStart={(e) => {
                 e.dataTransfer.setData("shape-type", "text");
               }}
-              className="w-10 h-10  flex flex-col items-center "
+              className="w-10 h-10 gap-1 flex flex-col items-center "
               title="Text"
             >
-              <SquarePlus className="text-[#111827] pointer-events-none" />
+              {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+              <NextImage
+                src={"/text.svg"}
+                alt="Text"
+                width={16}
+                height={16}
+                className="pointer-events-none"
+              />
               <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
                 Text
               </span>
@@ -1172,10 +1194,17 @@ export default function InfiniteCanvas({
               onDragStart={(e) => {
                 e.dataTransfer.setData("shape-type", "card");
               }}
-              className="w-10 h-10  flex flex-col items-center "
+              className="w-10 h-10 gap-1 flex flex-col items-center "
               title="Card"
             >
-              <SquarePlus className="text-[#111827] pointer-events-none" />
+              {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+              <NextImage
+                src={"/card.svg"}
+                alt="Card"
+                width={20}
+                height={20}
+                className="pointer-events-none"
+              />
               <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
                 Card
               </span>
@@ -1251,8 +1280,9 @@ export default function InfiniteCanvas({
 
                   if (
                     toShape?.type === "card" &&
-                    (toShape.subtype === "problem_statement_card" ||
-                      toShape.subtype === "assumption_card")
+                    (toShape.subtype === "jobs_to_be_done_card" ||
+                      toShape.subtype === "gains_card" ||
+                      toShape.subtype === "pains_card")
                   ) {
                     return false;
                   }
@@ -1265,8 +1295,9 @@ export default function InfiniteCanvas({
 
                   if (
                     toShape?.type === "card" &&
-                    (toShape.subtype === "interview_card" ||
-                      toShape.subtype === "solution_card")
+                    (toShape.subtype === "products_services_card" ||
+                      toShape.subtype === "gain_creators_card" ||
+                      toShape.subtype === "pain_relievers_card")
                   ) {
                     return false;
                   }
@@ -1302,8 +1333,9 @@ export default function InfiniteCanvas({
                 if (!problems) {
                   if (
                     shape.type === "card" &&
-                    (shape.subtype === "problem_statement_card" ||
-                      shape.subtype === "assumption_card")
+                    (shape.subtype === "jobs_to_be_done_card" ||
+                      shape.subtype === "gains_card" ||
+                      shape.subtype === "pains_card")
                   ) {
                     return false;
                   }
@@ -1312,8 +1344,9 @@ export default function InfiniteCanvas({
                 if (!solutions) {
                   if (
                     shape.type === "card" &&
-                    (shape.subtype === "interview_card" ||
-                      shape.subtype === "solution_card")
+                    (shape.subtype === "products_services_card" ||
+                      shape.subtype === "gain_creators_card" ||
+                      shape.subtype === "pain_relievers_card")
                   ) {
                     return false;
                   }

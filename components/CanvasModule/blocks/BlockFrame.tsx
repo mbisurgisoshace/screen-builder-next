@@ -4,6 +4,7 @@ import { Shape as IShape } from "../types";
 import { TagPicker } from "../tags/TagPicker";
 import { useExtrasNode } from "./toolbar/toolbarExtrasStore";
 import { BlockToolbar } from "./toolbar/BlockToolbar";
+import { Badge } from "@/components/ui/badge";
 
 type Dir = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 type Connector = "top" | "right" | "bottom" | "left";
@@ -236,6 +237,14 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
 
       {/* Resize handles (single select) */}
       {renderHandles()}
+
+      {shape.tags && shape.tags.length > 0 && (
+        <div className="absolute flex flex-row gap-1 -top-8 left-2">
+          {shape.tags.map((tag) => (
+            <Badge key={tag}>{tag}</Badge>
+          ))}
+        </div>
+      )}
 
       {/* Inner content (actual block visuals) */}
       <div

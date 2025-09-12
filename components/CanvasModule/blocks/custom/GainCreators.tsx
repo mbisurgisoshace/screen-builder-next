@@ -92,7 +92,7 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
     return rect.height + mt + mb;
   }
 
-  const MIN_HEIGHT = 100;
+  const MIN_HEIGHT = 75;
 
   function adjustHeight(delta: number) {
     // Only adjust if there is a visible change
@@ -166,6 +166,7 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex flex-row gap-2 p-2">
+          <span>Significance Score:</span>
           {tags.map((t) => (
             <button
               key={t}

@@ -22,12 +22,22 @@ type CardFrame = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: Shape;
   body: React.ReactNode;
   header: React.ReactNode;
+  headerBg?: string;
+  headerTextColor?: string;
   useAttachments?: boolean;
   onCommitStyle?: (id: string, patch: Partial<Shape>) => void;
 };
 
 export const CardFrame: React.FC<CardFrame> = (props) => {
-  const { shape, body, header, onCommitStyle, useAttachments = true } = props;
+  const {
+    shape,
+    body,
+    header,
+    onCommitStyle,
+    useAttachments = true,
+    headerBg = "#7559C3",
+    headerTextColor = "#FFFFFF",
+  } = props;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -186,7 +196,10 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
     >
       <div className="w-full h-full bg-white border-2 border-white rounded-xl shadow flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-3 py-2 bg-gradient-to-r from-indigo-200 to-indigo-100 text-[#6376F2] font-semibold flex items-center justify-between">
+        <div
+          className={`px-3 py-2 font-semibold flex items-center justify-between`}
+          style={{ backgroundColor: headerBg, color: headerTextColor }}
+        >
           {header}
         </div>
 

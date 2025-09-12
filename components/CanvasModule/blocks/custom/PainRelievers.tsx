@@ -92,7 +92,7 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
     return rect.height + mt + mb;
   }
 
-  const MIN_HEIGHT = 100;
+  const MIN_HEIGHT = 75;
 
   function adjustHeight(delta: number) {
     // Only adjust if there is a visible change
