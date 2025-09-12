@@ -2,10 +2,16 @@
 
 import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import Mentors from "@/app/(auth)/_components/Mentors";
+import AboutProgram from "@/app/(auth)/_components/AboutProgram";
 
 export default function AppHeader() {
   const { user } = useUser();
   const pathname = usePathname();
+  const [isMentorsOpen, setIsMentorsOpen] = useState(false);
+  const [isAboutProgramOpen, setIsAboutProgramOpen] = useState(false);
 
   let title = "";
 
@@ -22,12 +28,35 @@ export default function AppHeader() {
   return (
     <header className="flex items-center px-4 h-[46px] bg-white border-b-[0.5px] border-b-[#E4E5ED] justify-between font-semibold text-lg text-[#111827]">
       {title}
+
+      <div className="flex gap-3">
+        <Button
+          onClick={() => setIsMentorsOpen(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          View Mentors
+        </Button>
+        <Button
+          onClick={() => setIsAboutProgramOpen(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          View About Program
+        </Button>
+      </div>
       <div className="flex items-center flex-row gap-2.5">
         <UserButton />
         <span className="text-xs font-bold text-[#111827]">
           {user?.fullName}
         </span>
       </div>
+      <Mentors
+        isOpen={isMentorsOpen}
+        onClose={() => setIsMentorsOpen(false)}
+      />
+      <AboutProgram
+        isOpen={isAboutProgramOpen}
+        onClose={() => setIsAboutProgramOpen(false)}
+      />
     </header>
   );
 }
