@@ -126,9 +126,30 @@ export const Card: React.FC<CardProps> = (props) => {
     }
   };
 
+  const getColor = () => {
+    switch (subtype) {
+      case "jobs_to_be_done_card":
+        return "#FDE1B5";
+      case "pains_card":
+        return "#FFBCBC";
+      case "gains_card":
+        return "#FFCBAF";
+      case "products_services_card":
+        return "#DDF5B5";
+      case "pain_relievers_card":
+        return "#CCF6EA";
+      case "gain_creators_card":
+        return "#D5F9D7";
+      default:
+        return "#FFFFFF";
+    }
+  };
+
   return (
     <CardFrame
       {...props}
+      headerBg={getColor()}
+      headerTextColor="#111827"
       useAttachments={useAttachments()}
       header={
         <div className="w-full flex flex-row items-center justify-between">
