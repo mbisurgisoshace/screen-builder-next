@@ -44,16 +44,16 @@ export default function Todo({ title, todos }: TodoProps) {
   };
 
   return (
-    <div className="border-2 bg-white border-white rounded-[12px] w-[505px] min-w-[505px] overflow-hidden">
+    <div className="border-2 bg-white border-white rounded-[12px] w-[280px] min-w-[280px] overflow-hidden">
       <div className="px-[22px] py-[15px] bg-[#7559C3]">
         <h3 className="text-[14px] font-semibold text-white">
-          {isNaN(Number(title)) ? title : `Day ${title}`}
+          {isNaN(Number(title)) ? title : `Session ${title}`}
         </h3>
       </div>
       <div className="px-[22px] py-[15px] flex flex-col gap-4">
         {todos.map((todo) => (
           <div key={todo.task}>
-            <h5 className="text-[11px] text-[#111827] font-medium opacity-50 mb-3">
+            <h5 className="text-[14px] text-[#111827] font-medium opacity-70 mb-3">
               {todo.task}
             </h5>
             <ul className="flex gap-1 flex-col">

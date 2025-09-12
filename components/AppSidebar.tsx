@@ -7,6 +7,7 @@ import {
   DotIcon,
   FolderClosedIcon,
   FolderIcon,
+  Rocket,
 } from "lucide-react";
 
 import {
@@ -141,15 +142,25 @@ export function AppSidebar({
             <Link
               href={"/startups"}
               className="flex flex-row gap-2.5 items-center w-full"
-            >
-              <FolderClosedIcon className="h-4 w-4" />
+            >       
+              <Image
+                width={17}
+                height={17}
+                src={"/Rocket--Streamline-Lucide.png"}
+                alt="Rocket"
+              />
               <span className="text-xs font-bold text-[#111827]">
                 {organization?.name}
               </span>
             </Link>
           ) : (
             <>
-              <FolderClosedIcon className="h-4 w-4" />
+               <Image
+                width={17}
+                height={17}
+                src={"/Rocket--Streamline-Lucide.png"}
+                alt="Rocket"
+              />
               <span className="text-xs font-bold text-[#111827]">
                 {organization?.name}
               </span>
