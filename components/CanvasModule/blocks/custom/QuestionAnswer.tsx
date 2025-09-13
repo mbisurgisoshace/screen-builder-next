@@ -60,6 +60,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
   const [editorState, setEditorState] =
     useState<EditorState>(initialEditorState);
   const [editingBody, setEditingBody] = useState(true);
+  const [showToolbar, setShowToolbar] = useState(false);
 
   const [answerEditorState, setAnswerEditorState] = useState<EditorState>(
     initialAnswerEditorState
@@ -151,6 +152,8 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
               onMouseDown={(e) => e.stopPropagation()}
             >
               <RteEditor
+                onBlur={() => setShowToolbar(false)}
+                onFocus={() => setShowToolbar(true)}
                 editorState={editorState}
                 onEditorStateChange={setEditorState}
                 toolbar={{
@@ -160,6 +163,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                   },
                   list: { options: ["unordered", "ordered"] },
                 }}
+                toolbarHidden={!showToolbar}
                 toolbarClassName="border-b px-2"
                 editorClassName="px-2 py-2 min-h-[120px]"
                 wrapperClassName=""
