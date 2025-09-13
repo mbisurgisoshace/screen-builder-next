@@ -166,6 +166,62 @@ export const Gains: React.FC<GainsProps> = (props) => {
         className="mt-1 rounded-[8px] "
         onMouseDown={(e) => e.stopPropagation()}
       >
+        <div className="px-8 flex items-center justify-center">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleCollapsed();
+            }}
+            data-nodrag="true"
+            className="inline-flex items-center gap-2 text-[12px] text-gray-700 bg-white border rounded-md px-2 py-1 hover:bg-gray-50"
+          >
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                collapsed ? "-rotate-90" : "rotate-0"
+              }`}
+            />
+            {collapsed ? "Show questions" : "Hide questions"}
+            <span className="ml-2 text-gray-400">
+              ({answeredCount}/{fiQuestions.length})
+            </span>
+          </button>
+        </div>
+
+        {!collapsed && (
+          <div
+            ref={questionsRef}
+            className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md"
+          >
+            {fiQuestions.map((q, idx) => (
+              <div className="flex flex-col gap-3" key={q.id}>
+                <h3 className="font-bold text-[14px] text-[#111827]">
+                  {q.question}
+                </h3>
+
+                <div
+                  data-nodrag="true"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="w-full"
+                >
+                  <Select value={tags[idx] ?? ""} onValueChange={addTag}>
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="Select an option" />
+                    </SelectTrigger>
+                    <SelectContent onMouseDown={(e) => e.stopPropagation()}>
+                      {q.question_options.map((option) => (
+                        <SelectItem value={option} key={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="flex flex-row gap-2 p-2">
           <span>Significance Score:</span>
           {tags.map((t) => (
@@ -214,62 +270,6 @@ export const Gains: React.FC<GainsProps> = (props) => {
           wrapperClassName=""
         />
       </div>
-
-      <div className="px-8 flex items-center justify-center">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleCollapsed();
-          }}
-          data-nodrag="true"
-          className="inline-flex items-center gap-2 text-[12px] text-gray-700 bg-white border rounded-md px-2 py-1 hover:bg-gray-50"
-        >
-          <ChevronDown
-            className={`w-4 h-4 transition-transform ${
-              collapsed ? "-rotate-90" : "rotate-0"
-            }`}
-          />
-          {collapsed ? "Show questions" : "Hide questions"}
-          <span className="ml-2 text-gray-400">
-            ({answeredCount}/{fiQuestions.length})
-          </span>
-        </button>
-      </div>
-
-      {!collapsed && (
-        <div
-          ref={questionsRef}
-          className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md"
-        >
-          {fiQuestions.map((q, idx) => (
-            <div className="flex flex-col gap-3" key={q.id}>
-              <h3 className="font-bold text-[14px] text-[#111827]">
-                {q.question}
-              </h3>
-
-              <div
-                data-nodrag="true"
-                onMouseDown={(e) => e.stopPropagation()}
-                className="w-full"
-              >
-                <Select value={tags[idx] ?? ""} onValueChange={addTag}>
-                  <SelectTrigger className="w-full bg-white">
-                    <SelectValue placeholder="Select an option" />
-                  </SelectTrigger>
-                  <SelectContent onMouseDown={(e) => e.stopPropagation()}>
-                    {q.question_options.map((option) => (
-                      <SelectItem value={option} key={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
