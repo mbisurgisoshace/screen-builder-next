@@ -134,7 +134,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
 
   const [editorState, setEditorState] =
     useState<EditorState>(initialEditorState);
-  const [editingBody, setEditingBody] = useState(true);
+  const [editingBody, setEditingBody] = useState(false);
+  const [showToolbar, setShowToolbar] = useState(false);
 
   useEffect(() => {
     if (editingBody) return;
@@ -196,6 +197,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
           ))}
         </div>
         <RteEditor
+          onBlur={() => setShowToolbar(false)}
+          onFocus={() => setShowToolbar(true)}
           editorState={editorState}
           onEditorStateChange={setEditorState}
           toolbar={{
@@ -205,7 +208,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
             },
             list: { options: ["unordered", "ordered"] },
           }}
-          toolbarClassName="border-b px-2"
+          toolbarHidden={!showToolbar}
+          toolbarClassName={`border-b px-2`}
           editorClassName="px-2 py-2 min-h-[120px]"
           wrapperClassName=""
         />
