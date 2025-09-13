@@ -19,6 +19,7 @@ import { Shape as IShape } from "../../types";
 import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useQuestions } from "../../questions/QuestionsProvider";
 import { CardFrame } from "../CardFrame";
+import { Slider } from "@/components/ui/slider";
 
 type PainsProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -160,6 +161,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
+  const [currentValue, setCurrentValue] = useState<number>(0);
+
   return (
     <div className="flex-1 overflow-auto">
       <div
@@ -204,7 +207,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
                   onMouseDown={(e) => e.stopPropagation()}
                   className="w-full"
                 >
-                  <Select value={tags[idx] ?? ""} onValueChange={addTag}>
+                  {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="Select an option" />
                     </SelectTrigger>
@@ -215,7 +218,19 @@ export const Pains: React.FC<PainsProps> = (props) => {
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </Select> */}
+                  <div className="flex flex-col gap-1 items-center">
+                    <Slider
+                      defaultValue={[parseInt(tags[idx] ?? 0)]}
+                      min={0}
+                      max={10}
+                      step={1}
+                      value={[parseInt(tags[idx] ?? currentValue)]}
+                      onValueCommit={(value) => addTag(value[0].toString())}
+                      onValueChange={(value) => setCurrentValue(value[0])}
+                    />
+                    <span>{currentValue}</span>
+                  </div>
                 </div>
               </div>
             ))}

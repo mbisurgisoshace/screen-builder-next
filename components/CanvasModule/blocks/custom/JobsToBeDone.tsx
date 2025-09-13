@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import { Slider } from "@/components/ui/slider";
 import { ChevronDown, EllipsisIcon, MicIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
@@ -160,6 +161,8 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
+  const [currentValue, setCurrentValue] = useState<number>(0);
+
   return (
     <div className="flex-1 overflow-auto">
       <div
@@ -204,7 +207,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                   onMouseDown={(e) => e.stopPropagation()}
                   className="w-full"
                 >
-                  <Select value={tags[idx] ?? ""} onValueChange={addTag}>
+                  {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="Select an option" />
                     </SelectTrigger>
@@ -215,7 +218,19 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </Select> */}
+                  <div className="flex flex-col gap-1 items-center">
+                    <Slider
+                      defaultValue={[parseInt(tags[idx] ?? 0)]}
+                      min={0}
+                      max={10}
+                      step={1}
+                      value={[parseInt(tags[idx] ?? currentValue)]}
+                      onValueCommit={(value) => addTag(value[0].toString())}
+                      onValueChange={(value) => setCurrentValue(value[0])}
+                    />
+                    <span>{currentValue}</span>
+                  </div>
                 </div>
               </div>
             ))}
