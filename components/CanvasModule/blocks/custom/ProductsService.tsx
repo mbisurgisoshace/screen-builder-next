@@ -135,6 +135,7 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
   const [editorState, setEditorState] =
     useState<EditorState>(initialEditorState);
   const [editingBody, setEditingBody] = useState(true);
+  const [showToolbar, setShowToolbar] = useState(false);
 
   useEffect(() => {
     if (editingBody) return;
@@ -196,6 +197,8 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
           ))}
         </div>
         <RteEditor
+          onBlur={() => setShowToolbar(false)}
+          onFocus={() => setShowToolbar(true)}
           editorState={editorState}
           onEditorStateChange={setEditorState}
           toolbar={{
@@ -205,6 +208,7 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
             },
             list: { options: ["unordered", "ordered"] },
           }}
+          toolbarHidden={!showToolbar}
           toolbarClassName="border-b px-2"
           editorClassName="px-2 py-2 min-h-[120px]"
           wrapperClassName=""
