@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import { EllipsisIcon, MicIcon } from "lucide-react";
+import { ChevronDown, EllipsisIcon, MicIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 
@@ -9,6 +9,9 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Shape as IShape } from "../../types";
 import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useValueProp } from "@/app/(auth)/questions/_components/ValuePropProvider";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 type QuestionProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -124,9 +127,92 @@ export const Question: React.FC<QuestionProps> = (props) => {
 
   const formattedValuePropData = formatValuePropStructure();
 
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const userToggledRef = useRef(false);
+  const questionsRef = useRef<HTMLDivElement | null>(null);
 
-  console.log("formattedValuePropData", formattedValuePropData);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
+
+  function outerHeight(el: HTMLElement | null) {
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
+    const cs = window.getComputedStyle(el);
+    const mt = parseFloat(cs.marginTop || "0");
+    const mb = parseFloat(cs.marginBottom || "0");
+    return rect.height + mt + mb;
+  }
+
+  const MIN_HEIGHT = 75;
+
+  function adjustHeight(delta: number) {
+    // Only adjust if there is a visible change
+    const current = shape.height ?? 200;
+    const next = Math.max(MIN_HEIGHT, Math.round(current + delta));
+    if (Math.abs(next - current) > 1) {
+      commit({ height: next });
+    }
+  }
+
+  function toggleCollapsed() {
+    userToggledRef.current = true;
+    // setCollapsed((c) => !c);
+    if (!collapsed) {
+      // Going to collapse: measure BEFORE hiding and shrink now
+      const dh = -outerHeight(questionsRef.current);
+      adjustHeight(dh);
+      setCollapsed(true);
+    } else {
+      // Going to expand: first show, then measure and grow
+      setCollapsed(false);
+      // wait for layout to flush
+      requestAnimationFrame(() => {
+        const dh = outerHeight(questionsRef.current);
+        adjustHeight(dh);
+      });
+    }
+  }
+
+  const getTitle = (subtype: string) => {
+    switch (subtype) {
+      case "solution_card":
+        return "Solution";
+      case "interview_card":
+        return "Interview";
+      case "assumption_card":
+        return "Assumption";
+      case "problem_statement_card":
+        return "Problem Statement";
+      case "jobs_to_be_done_card":
+        return "Jobs To Be Done";
+      case "pains_card":
+        return "Pains";
+      case "gains_card":
+        return "Gains";
+      case "products_services_card":
+        return "Products & Services";
+      case "pain_relievers_card":
+        return "Pain Relievers";
+      case "gain_creators_card":
+        return "Gain Creators";
+      case "summary_card":
+        return "Summary";
+      case "select_subtype":
+        return "Select Card Type";
+      default:
+        return "Unknown";
+    }
+  };
+
+  const updateCheckTags = (id: string, checked: boolean) => {
+    let nextTags = shape.questionTags ? [...shape.questionTags] : [];
+    if (checked) {
+      if (!nextTags.includes(id)) {
+        nextTags.push(id);
+      }
+    } else {
+      nextTags = nextTags.filter((tag) => tag !== id);
+    }
+    commit({ questionTags: nextTags });
+  };
 
   return (
     <ShapeFrame
@@ -136,10 +222,20 @@ export const Question: React.FC<QuestionProps> = (props) => {
     >
       <div className="w-full h-full bg-white border-1 border-[#E9E6F0] rounded-xl shadow flex flex-col overflow-hidden px-8 py-6 gap-4">
         <h3 className="text-[11px] font-medium text-[#8B93A1]">Question</h3>
+        {shape.questionTags && shape.questionTags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {shape.questionTags.map((tag) => (
+              <Badge key={tag} className="bg-indigo-100 text-indigo-800">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
         {/* <h2 className="font-extrabold text-[14px] text-[#111827]">
           <span className="text-[#8B93A1] mr-1">1.</span>
           How much time does your team spend on project research?
         </h2> */}
+
         <h2
           className="font-extrabold text-[14px] text-[#111827]"
           onDoubleClick={startTitleEdit}
@@ -196,6 +292,74 @@ export const Question: React.FC<QuestionProps> = (props) => {
             />
           </div>
         </div>
+
+        <div className="px-8 flex items-center justify-center">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleCollapsed();
+            }}
+            data-nodrag="true"
+            className="inline-flex items-center gap-2 text-[12px] text-gray-700 bg-white border rounded-md px-2 py-1 hover:bg-gray-50"
+          >
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${
+                collapsed ? "-rotate-90" : "rotate-0"
+              }`}
+            />
+            {collapsed ? "Show questions" : "Hide questions"}
+            {/* <span className="ml-2 text-gray-400">
+              ({answeredCount}/{fiQuestions.length})
+            </span> */}
+          </button>
+        </div>
+
+        {!collapsed && (
+          <div
+            ref={questionsRef}
+            className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md"
+          >
+            {Object.keys(formattedValuePropData)
+              .filter((key) => key !== "summary_card")
+              .map((key) => {
+                const valueProp = formattedValuePropData[key];
+
+                return (
+                  <div key={key}>
+                    <h3 className="font-semibold mb-2">{getTitle(key)}</h3>
+                    <div className="flex flex-col px-4 gap-2">
+                      {valueProp.map((item: any) => {
+                        const raw = JSON.parse(item.draftRaw);
+                        const editor = EditorState.createWithContent(
+                          convertFromRaw(raw)
+                        );
+                        const text = editor.getCurrentContent().getPlainText();
+
+                        return (
+                          <div
+                            className="flex items-center gap-2"
+                            key={item.id}
+                          >
+                            <Checkbox
+                              key={item.id}
+                              checked={shape.questionTags?.includes(
+                                `${key}::${text}`
+                              )}
+                              onCheckedChange={(checked) => {
+                                updateCheckTags(`${key}::${text}`, !!checked);
+                              }}
+                            />
+                            <Label>{text}</Label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        )}
       </div>
     </ShapeFrame>
   );

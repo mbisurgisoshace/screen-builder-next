@@ -104,6 +104,9 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, featureIdeaEditorState, editingBody]);
 
+  const [showToolbarFeature, setShowToolbarFeature] = useState(false);
+  const [showToolbarWhyFeature, setShowToolbarWhyFeature] = useState(false);
+
   return (
     <CardFrame
       {...props}
@@ -120,6 +123,8 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                 onMouseDown={(e) => e.stopPropagation()}
               >
                 <RteEditor
+                  onBlur={() => setShowToolbarFeature(false)}
+                  onFocus={() => setShowToolbarFeature(true)}
                   editorState={editorState}
                   onEditorStateChange={setEditorState}
                   toolbar={{
@@ -129,6 +134,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                     },
                     list: { options: ["unordered", "ordered"] },
                   }}
+                  toolbarHidden={!showToolbarFeature}
                   toolbarClassName="border-b px-2"
                   editorClassName="px-2 py-2 min-h-[120px]"
                   wrapperClassName=""
@@ -147,6 +153,8 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                 onMouseDown={(e) => e.stopPropagation()}
               >
                 <RteEditor
+                  onBlur={() => setShowToolbarWhyFeature(false)}
+                  onFocus={() => setShowToolbarWhyFeature(true)}
                   editorState={featureIdeaEditorState}
                   onEditorStateChange={setFeatureIdeaEditorState}
                   toolbar={{
@@ -156,6 +164,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                     },
                     list: { options: ["unordered", "ordered"] },
                   }}
+                  toolbarHidden={!showToolbarWhyFeature}
                   toolbarClassName="border-b px-2"
                   editorClassName="px-2 py-2 min-h-[120px]"
                   wrapperClassName=""
