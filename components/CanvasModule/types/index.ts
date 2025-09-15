@@ -66,7 +66,7 @@ export interface Shape {
   cardTags?: string[];
 
   // question
-  questionTags: string[];
+  questionTags?: string[];
   questionTitle?: string;
 
   metadata?: any;
