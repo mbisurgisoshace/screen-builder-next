@@ -21,7 +21,8 @@ export type CardType =
   | "gains_card"
   | "products_services_card"
   | "pain_relievers_card"
-  | "gain_creators_card";
+  | "gain_creators_card"
+  | "summary_card";
 
 export type Kind = "image" | "video" | "pdf" | "file";
 
@@ -70,6 +71,8 @@ export interface Shape {
   questionTitle?: string;
 
   metadata?: any;
+
+  summary?: any;
 
   question_answers?: {
     name: string;

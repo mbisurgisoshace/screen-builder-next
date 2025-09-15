@@ -37,6 +37,7 @@ import { Gains } from "./Gains";
 import { ProductsService } from "./ProductsService";
 import { PainRelievers } from "./PainRelievers";
 import { GainCreators } from "./GainCreators";
+import { Summary } from "./Summary";
 
 type CardProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -71,6 +72,8 @@ export const Card: React.FC<CardProps> = (props) => {
         return "Pain Relievers";
       case "gain_creators_card":
         return "Gain Creators";
+      case "summary_card":
+        return "Summary";
       case "select_subtype":
         return "Select Card Type";
       default:
@@ -92,6 +95,8 @@ export const Card: React.FC<CardProps> = (props) => {
         return <PainRelievers {...props} />;
       case "gain_creators_card":
         return <GainCreators {...props} />;
+      case "summary_card":
+        return <Summary {...props} />;
       case "select_subtype":
         return <span>Please select a card type from the menu.</span>;
     }
@@ -119,6 +124,8 @@ export const Card: React.FC<CardProps> = (props) => {
         return false;
       case "gain_creators_card":
         return false;
+      case "summary_card":
+        return false;
       case "select_subtype":
         return false;
       default:
@@ -140,6 +147,8 @@ export const Card: React.FC<CardProps> = (props) => {
         return "#CCF6EA";
       case "gain_creators_card":
         return "#D5F9D7";
+      case "summary_card":
+        return "#7559C3";
       default:
         return "#FFFFFF";
     }
@@ -233,6 +242,17 @@ export const Card: React.FC<CardProps> = (props) => {
                 }`}
               >
                 Gain Creators
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => {
+                  onCommitStyle?.(shape.id, {
+                    subtype: "summary_card",
+                  });
+                }}
+                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 `}
+              >
+                Summary
               </DropdownMenuItem>
               {/* <DropdownMenuItem
                 onClick={() => {
