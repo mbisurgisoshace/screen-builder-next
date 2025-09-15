@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import InfiniteCanvas from "@/components/InfiniteCanvas";
 import { initializeInterviewRoom } from "@/services/rooms";
+import { getValuePropData } from "@/services/questions";
+import { ValuePropProvider } from "../../questions/_components/ValuePropProvider";
 
 export default async function RoomPage({
   params,
@@ -12,6 +14,8 @@ export default async function RoomPage({
 }) {
   const { orgId } = await auth();
   const { participantId } = await params;
+
+  const valuePropData = await getValuePropData();
 
   const participant = await prisma.participant.findUnique({
     where: { id: participantId },
@@ -27,9 +31,11 @@ export default async function RoomPage({
   return (
     <div className="flex flex-col h-full">
       <div className="h-full">
-        <Room roomId={roomId}>
-          <InfiniteCanvas />
-        </Room>
+        <ValuePropProvider valuePropData={valuePropData}>
+          <Room roomId={roomId}>
+            <InfiniteCanvas />
+          </Room>
+        </ValuePropProvider>
       </div>
     </div>
   );

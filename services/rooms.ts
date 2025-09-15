@@ -40,6 +40,7 @@ export async function initializeInterviewRoom(roomId: string) {
           draftRaw: null,
           metadata: {
             questionId: shape.data.id,
+            questionDate: new Date().toDateString(),
           },
         },
       };

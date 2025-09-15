@@ -8,6 +8,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import { Shape as IShape } from "../../types";
 import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
+import { useValueProp } from "@/app/(auth)/questions/_components/ValuePropProvider";
 
 type QuestionProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -25,6 +26,8 @@ export const Question: React.FC<QuestionProps> = (props) => {
 
   const fallbackTitle = "Double click to edit the question.";
   const title = (shape as any).questionTitle ?? fallbackTitle;
+
+  const { valuePropData } = useValueProp();
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
@@ -102,6 +105,8 @@ export const Question: React.FC<QuestionProps> = (props) => {
     const text = content.hasText() ? content.getPlainText("\n") : "";
     return text.length ? text : "Write interview notes here…";
   }, [editorState]);
+
+  console.log("valuePropData", valuePropData);
 
   return (
     <ShapeFrame

@@ -86,6 +86,7 @@ export async function generateAnalysisRoom(roomId: string) {
   await liveblocks.mutateStorage(roomId, ({ root }) => {
     //@ts-ignore
     const analysisQuestions = root.get("shapes");
+
     //@ts-ignore
     if (analysisQuestions.length === 0) {
       questions.forEach((question: any) => {
@@ -107,12 +108,13 @@ export async function generateAnalysisRoom(roomId: string) {
         const answersForQuestion = answers.filter(
           (a) => a.questionId === question.id
         );
-
         //@ts-ignore
         const doesExist = analysisQuestions.find((q) => {
-          //@ts-ignore
-          const analysisQuestion = q.toObject();
-          return analysisQuestion.id === question.id;
+          try {
+            //@ts-ignore
+            const analysisQuestion = q.toObject();
+            return analysisQuestion.id === question.id;
+          } catch (err) {}
         });
 
         if (!doesExist) {
@@ -124,6 +126,9 @@ export async function generateAnalysisRoom(roomId: string) {
               question_answers: answersForQuestion,
             })
           );
+        } else {
+          doesExist.set("questionTitle", question.questionTitle);
+          doesExist.set("question_answers", answersForQuestion);
         }
       });
     }

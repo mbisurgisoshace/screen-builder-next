@@ -68,6 +68,8 @@ export interface Shape {
   // question
   questionTitle?: string;
 
+  metadata?: any;
+
   question_answers?: {
     name: string;
     participantId: string;

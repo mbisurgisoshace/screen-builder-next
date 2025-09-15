@@ -5,6 +5,8 @@ import {
   ChevronRightIcon,
   EllipsisIcon,
   UserIcon,
+  LayoutDashboardIcon,
+  LayoutListIcon,
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
@@ -30,6 +32,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
 
   const question_answers = shape.question_answers || [];
 
+  const [view, setView] = useState<"slide" | "board">("slide");
   const [currentAnswer, setCurrentAnswer] = useState<number>(0);
 
   const commit = (patch: Partial<IShape>) => {
@@ -128,8 +131,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
       return Math.max(prev - 1, 0);
     });
   };
-
-  console.log("currentAnswer", currentAnswer, question_answers);
+  console.log("question_answers", question_answers);
 
   return (
     <ShapeFrame
@@ -138,15 +140,13 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div className="h-full flex flex-row rounded-xl shadow border-1 border-[#E9E6F0] bg-white">
-        <div className="w-full h-full flex flex-col overflow-hidden px-8 py-6 gap-4 border-r ">
+        <div className="flex-1/2 h-full flex flex-col overflow-hidden px-8 py-6 gap-4 border-r ">
           <h3 className="text-[11px] font-medium text-[#8B93A1]">Question</h3>
           <h2 className="font-extrabold text-[14px] text-[#111827]">
-            <span className="text-[#8B93A1] mr-1">1.</span>
             {shape.questionTitle}
           </h2>
           {/* Body */}
           <div className="flex-1 overflow-auto">
-            <h3 className="text-[11px] font-medium text-[#8B93A1]">Summary</h3>
             <div
               className="mt-5 rounded-[8px] "
               onMouseDown={(e) => e.stopPropagation()}
@@ -172,80 +172,169 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
           </div>
         </div>
         <div className="w-full h-full flex flex-col overflow-hidden px-8 py-6 gap-4">
-          <h3 className="text-[11px] font-medium text-[#8B93A1]">Answers</h3>
-          <div className="flex items-center">
-            <div className="h-[40px] w-[40px] bg-[#F4F0FF] rounded-full flex items-center justify-center">
-              <UserIcon className="h-[26px] w-[26px] text-[#6376F2]" />
-            </div>
+          <h3 className="text-[11px] font-medium text-[#8B93A1] flex flex-row justify-between items-center">
+            <>
+              Answers
+              {view === "slide" ? (
+                <LayoutListIcon
+                  size={18}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setView("board");
+                  }}
+                />
+              ) : (
+                <LayoutDashboardIcon
+                  size={18}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setView("slide");
+                  }}
+                />
+              )}
+            </>
+          </h3>
+          {view === "slide" && (
+            <>
+              <div className="flex items-center">
+                <div className="h-[40px] w-[40px] bg-[#F4F0FF] rounded-full flex items-center justify-center">
+                  <UserIcon className="h-[26px] w-[26px] text-[#6376F2]" />
+                </div>
 
-            {/* Interviewer */}
-            <div className="flex flex-col ml-5">
-              <span className="text-[#111827] text-[14px] font-medium">
-                {question_answers[currentAnswer]?.name || "Interviewee"}
-              </span>
-              <span className="text-[#111827] opacity-50 text-[11px] font-medium">
-                UX/UI designer
-              </span>
-            </div>
-          </div>
-          {/* Body */}
-          <div className="flex-1 overflow-auto">
-            <div
-              className="mt-5 rounded-[8px] "
-              onMouseDown={(e) => e.stopPropagation()}
-            >
-              <RteEditor
-                editorState={answerEditorState}
-                //onEditorStateChange={setAnswerEditorState}
-                toolbar={{
-                  options: ["inline", "list", "link", "history"],
-                  inline: {
-                    options: ["bold", "italic", "underline", "strikethrough"],
-                  },
-                  list: { options: ["unordered", "ordered"] },
-                }}
-                toolbarClassName="border-b px-2"
-                editorClassName="px-2 py-2 min-h-[120px]"
-                wrapperClassName=""
-              />
-            </div>
-          </div>
+                {/* Interviewer */}
+                <div className="flex flex-col ml-5">
+                  <span className="text-[#111827] text-[14px] font-medium">
+                    {question_answers[currentAnswer]?.name || "Interviewee"}
+                  </span>
+                  <span className="text-[#111827] opacity-50 text-[11px] font-medium">
+                    UX/UI designer
+                  </span>
+                </div>
+              </div>
+              {/* Body */}
+              <div className="flex-1 overflow-auto">
+                <div
+                  className="mt-5 rounded-[8px] "
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <RteEditor
+                    editorState={answerEditorState}
+                    //onEditorStateChange={setAnswerEditorState}
+                    toolbar={{
+                      options: ["inline", "list", "link", "history"],
+                      inline: {
+                        options: [
+                          "bold",
+                          "italic",
+                          "underline",
+                          "strikethrough",
+                        ],
+                      },
+                      list: { options: ["unordered", "ordered"] },
+                    }}
+                    toolbarHidden
+                    toolbarClassName="border-b px-2"
+                    editorClassName="px-2 py-2 min-h-[120px]"
+                    wrapperClassName=""
+                  />
+                </div>
+              </div>
 
-          <div className="flex flex-row justify-between items-center">
-            <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#E9E6F0]">
-              <ChevronLeftIcon
-                className="h-4 w-4 text-[#8B92A1]"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  getPreviousAnswer();
-                }}
-              />
-            </div>
+              <div className="flex flex-row justify-between items-center">
+                <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#E9E6F0]">
+                  <ChevronLeftIcon
+                    className="h-4 w-4 text-[#8B92A1]"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      getPreviousAnswer();
+                    }}
+                  />
+                </div>
 
-            <div className="text-[11px] font-medium text-[#8B93A1]">
-              <span className="mr-[1px]">Answer</span>
-              <span className="text-black font-bold text-[12px]">
-                {" "}
-                {(currentAnswer || 0) + 1}
-              </span>
-              <span className="font-semibold text-[12px]"> / </span>
-              <span className="font-bold text-[12px]">
-                {question_answers.length}
-              </span>
-            </div>
+                <div className="text-[11px] font-medium text-[#8B93A1]">
+                  <span className="mr-[1px]">Answer</span>
+                  <span className="text-black font-bold text-[12px]">
+                    {" "}
+                    {(currentAnswer || 0) + 1}
+                  </span>
+                  <span className="font-semibold text-[12px]"> / </span>
+                  <span className="font-bold text-[12px]">
+                    {question_answers.length}
+                  </span>
+                </div>
 
-            <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#E9E6F0]">
-              <ChevronRightIcon
-                className="h-4 w-4 text-[#8B92A1]"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  getNextAnswer();
-                }}
-              />
+                <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#E9E6F0]">
+                  <ChevronRightIcon
+                    className="h-4 w-4 text-[#8B92A1]"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      getNextAnswer();
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {view == "board" && (
+            <div className="grid grid-cols-2 gap-4">
+              {question_answers.map((answer, index) => {
+                const raw = JSON.parse(answer.draftRaw);
+
+                return (
+                  <div
+                    key={index}
+                    className="bg-[#EEF0FA] px-6 py-4 rounded-xl"
+                  >
+                    <div className="flex items-center">
+                      <div className="h-[40px] w-[40px] bg-[#F4F0FF] rounded-full flex items-center justify-center">
+                        <UserIcon className="h-[26px] w-[26px] text-[#6376F2]" />
+                      </div>
+
+                      {/* Interviewer */}
+                      <div className="flex flex-col ml-5">
+                        <span className="text-[#111827] text-[14px] font-medium">
+                          {answer.name || "Interviewee"}
+                        </span>
+                        <span className="text-[#111827] opacity-50 text-[11px] font-medium">
+                          UX/UI designer
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-[10px] mt-3">
+                      <RteEditor
+                        editorState={EditorState.createWithContent(
+                          convertFromRaw(raw)
+                        )}
+                        //onEditorStateChange={setAnswerEditorState}
+                        toolbar={{
+                          options: ["inline", "list", "link", "history"],
+                          inline: {
+                            options: [
+                              "bold",
+                              "italic",
+                              "underline",
+                              "strikethrough",
+                            ],
+                          },
+                          list: { options: ["unordered", "ordered"] },
+                        }}
+                        toolbarHidden
+                        toolbarClassName="border-b px-2"
+                        editorClassName="px-2 py-2 min-h-[120px]"
+                        wrapperClassName=""
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </ShapeFrame>
