@@ -31,7 +31,7 @@ export default function AboutProgram({ isOpen, onClose }: AboutProgramProps) {
         <div className="p-6 bg-white">
           <div className="mb-6">
             <img
-              src="/Rectangle 2029.png"
+              src="/Rectangle 2035.png"
               alt="Program overview"
               className="w-full h-30 object-cover rounded-lg"
             />
