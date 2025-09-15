@@ -106,7 +106,27 @@ export const Question: React.FC<QuestionProps> = (props) => {
     return text.length ? text : "Write interview notes here…";
   }, [editorState]);
 
-  console.log("valuePropData", valuePropData);
+  const formatValuePropStructure = () => {
+    if (!valuePropData) return {};
+
+    const options: any = {};
+
+    valuePropData.forEach((item: any) => {
+      if (options[item.subtype]) {
+        options[item.subtype].push(item);
+      } else {
+        options[item.subtype] = [item];
+      }
+    });
+
+    return options;
+  };
+
+  const formattedValuePropData = formatValuePropStructure();
+
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+
+  console.log("formattedValuePropData", formattedValuePropData);
 
   return (
     <ShapeFrame

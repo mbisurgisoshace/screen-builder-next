@@ -51,8 +51,18 @@ const data = {
       //icon: PieChart,
     },
     {
+      name: "Segments",
+      url: "/segments",
+      //icon: Map,
+    },
+    {
       name: "Value Proposition",
       url: "/value-proposition",
+      //icon: Map,
+    },
+    {
+      name: "Ecosystem Map",
+      url: "/ecosystem-map",
       //icon: Map,
     },
   ],
@@ -142,7 +152,7 @@ export function AppSidebar({
             <Link
               href={"/startups"}
               className="flex flex-row gap-2.5 items-center w-full"
-            >       
+            >
               <Image
                 width={24}
                 height={24}
@@ -155,7 +165,7 @@ export function AppSidebar({
             </Link>
           ) : (
             <>
-               <Image
+              <Image
                 width={24}
                 height={24}
                 src={"/Rocket--Streamline-Lucide.png"}

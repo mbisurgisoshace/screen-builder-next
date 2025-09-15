@@ -42,6 +42,9 @@ import { ActiveUsersBar } from "./CanvasModule/live/ActiveUsersBar";
 import { LiveCursors } from "./CanvasModule/live/LiveCursors";
 import { ValueMapOverlay } from "./CanvasModule/ValueMapOverlay";
 import NextImage from "next/image";
+import { HelperQuestions } from "./CanvasModule/HelperQuestions";
+import { HelperValueProp } from "./CanvasModule/HelperValueProp";
+import { HelperAnalysis } from "./CanvasModule/HelperAnalysis";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -98,6 +101,8 @@ export default function InfiniteCanvas({
   const { scale, canvasRef, position, setPosition, setScale } =
     useCanvasTransform();
 
+  const isAnalysisCanvas = pathname.includes("/analysis");
+  const isQuestionsCanvas = pathname.includes("/questions");
   const isValuePropCanvas = pathname.includes("/value-proposition");
 
   const [problems, setProblems] = useState(true);
@@ -957,6 +962,12 @@ export default function InfiniteCanvas({
           <Comments />
         </div>
       )}
+
+      <div className="absolute bottom-4 left-4 z-20">
+        {isAnalysisCanvas && <HelperAnalysis />}
+        {isQuestionsCanvas && <HelperQuestions />}
+        {isValuePropCanvas && <HelperValueProp />}
+      </div>
 
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
         <ActiveUsersBar maxVisible={3} includeSelf={false} />
