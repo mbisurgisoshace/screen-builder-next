@@ -54,7 +54,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
 
   function addTag(name: string) {
     if (!name) return;
-    const next = Array.from(new Set([...(tags ?? []), name]));
+    const next = [name];
     commit({ cardTags: next });
   }
 
@@ -219,11 +219,11 @@ export const Gains: React.FC<GainsProps> = (props) => {
                   </Select> */}
                   <div className="flex flex-col gap-1 items-center">
                     <Slider
-                      defaultValue={[parseInt(tags[idx] ?? 0)]}
                       min={0}
                       max={10}
                       step={1}
-                      value={[parseInt(tags[idx] ?? currentValue)]}
+                      defaultValue={[parseInt(tags[idx])]}
+                      value={currentValue ? [currentValue] : undefined}
                       onValueCommit={(value) => addTag(value[0].toString())}
                       onValueChange={(value) => setCurrentValue(value[0])}
                     />

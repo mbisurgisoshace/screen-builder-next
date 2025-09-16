@@ -34,7 +34,7 @@ export function HelperAnalysis() {
           Help
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[512px] min-w-[512px]" side="left">
+      <SheetContent className="w-[512px] min-w-[512px]" side="right">
         <SheetHeader className="border-b">
           <SheetTitle className="text-[26px] font-medium text-[#162A4F]">
             Analysis Help

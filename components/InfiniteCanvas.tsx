@@ -963,7 +963,7 @@ export default function InfiniteCanvas({
         </div>
       )}
 
-      <div className="absolute bottom-4 left-4 z-20">
+      <div className="absolute bottom-4 right-35 z-20">
         {isAnalysisCanvas && <HelperAnalysis />}
         {isQuestionsCanvas && <HelperQuestions />}
         {isValuePropCanvas && <HelperValueProp />}
