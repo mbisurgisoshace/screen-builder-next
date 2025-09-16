@@ -1332,6 +1332,7 @@ export default function InfiniteCanvas({
 
           {shapes
             .filter((shape) => {
+              if (!shape) return false;
               if (isValuePropCanvas) {
                 if (
                   shape.type === "text" ||
