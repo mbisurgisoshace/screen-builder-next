@@ -33,7 +33,7 @@ export default function CustomerDiscoveryPage() {
       </div>
       <div className="min-h-screen bg-[#eff0f4]">
        <div className="max-w-full mx-auto  bg-[#eff0f4]">
-         <div className="p-8">
+         <div className="p-25 pt-8 pb-8">
            <div className="flex gap-3 mb-12 mt-10 justify-center">
              <div className="bg-white rounded-full px-6 py-2 mr-2 text-gray-700 text-sm font-medium">
                9.10.25
@@ -74,7 +74,7 @@ export default function CustomerDiscoveryPage() {
            </div>
          </div>
 
-         <div className="px-8 pb-8">
+         <div className="p-25 pt-8 pb-8">
            <div className="flex gap-8">
              <div className="flex-1">
                <div className="mb-12">
