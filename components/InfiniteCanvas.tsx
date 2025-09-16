@@ -34,7 +34,7 @@ import { useRealtimeConnections } from "./CanvasModule/hooks/realtime/useRealtim
 import { uploadToSupabase } from "@/lib/uploadToSupabase";
 import { Comments } from "./CanvasModule/Comments";
 import { Button } from "./ui/button";
-import { SquarePlus } from "lucide-react";
+import { PlusIcon, SquarePlus, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
@@ -98,7 +98,7 @@ export default function InfiniteCanvas({
   },
 }: InfiniteCanvasProps) {
   const pathname = usePathname();
-  const { scale, canvasRef, position, setPosition, setScale } =
+  const { scale, canvasRef, position, setPosition, setScale, zoomIn, zoomOut } =
     useCanvasTransform();
 
   const isAnalysisCanvas = pathname.includes("/analysis");
@@ -967,6 +967,25 @@ export default function InfiniteCanvas({
         {isAnalysisCanvas && <HelperAnalysis />}
         {isQuestionsCanvas && <HelperQuestions />}
         {isValuePropCanvas && <HelperValueProp />}
+      </div>
+
+      <div className="absolute bottom-4 left-4 z-20 flex items-center flex-row gap-2">
+        <Button
+          variant={"default"}
+          size={"icon"}
+          className="size-8"
+          onClick={zoomIn}
+        >
+          <ZoomInIcon />
+        </Button>
+        <Button
+          variant={"default"}
+          size={"icon"}
+          className="size-8"
+          onClick={zoomOut}
+        >
+          <ZoomOutIcon />
+        </Button>
       </div>
 
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
