@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { redirect } from "next/navigation";
 
-import Todo from "./_components/Todo";
-import { getStructuredTodosByOrg, getTodos } from "@/services/todos";
 import {
   Todo as ITodo,
   Task,
