@@ -41,7 +41,17 @@ export default function CollapsibleSidebar({ items }: CollapsibleSidebarProps) {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton 
+                  tooltip={item.title}
+                  style={{
+                    fontFamily: "Manrope",
+                    fontWeight: 700,
+                    fontSize: "14px",
+                    lineHeight: "20px",
+                    letterSpacing: "0%",
+                    color: "#697288",
+                  }}
+                >
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
@@ -57,8 +67,13 @@ export default function CollapsibleSidebar({ items }: CollapsibleSidebarProps) {
                           asChild
                           style={{
                             opacity: isActive ? 1 : 0.6,
-                            color: isActive ? "#6A35FF" : "#111827",
+                            color: isActive ? "#6A35FF" : "#697288",
                             backgroundColor: isActive ? "#F4F0FF" : "",
+                            fontFamily: "Manrope",
+                            fontWeight: 700,
+                            fontSize: "13px",
+                            lineHeight: "20px",
+                            letterSpacing: "0%",
                           }}
                         >
                           <Link href={subItem.url}>

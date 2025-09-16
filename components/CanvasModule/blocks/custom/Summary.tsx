@@ -164,14 +164,25 @@ export const Summary: React.FC<SummaryProps> = (props) => {
   }, [editorState, editingBody]);
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1 overflow-auto bg-[#6A35FF]">
       <div
         className="mt-1 rounded-[8px] "
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col gap-6 p-2">
+        <div className="flex flex-col gap-6 p-8">
           <div className="flex flex-row items-center gap-1">
-            <h3 className="text-3xl font-medium">Our</h3>
+            <h3 
+              className="text-3xl font-medium text-white"
+              style={{
+                fontFamily: "Manrope",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                letterSpacing: "0%",
+              }}
+            >
+              Our
+            </h3>
             <div className="relative">
               <Input
                 value={shape.summary?.["our"]}
@@ -183,14 +194,25 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
+                className="w-105 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                placeholder="Products and Services"
               />
-              <Label className="absolute text-blue-600 -bottom-4">
-                Products and Services
-              </Label>
             </div>
           </div>
+        
           <div className="flex flex-row items-center gap-1">
-            <h3 className="text-3xl font-medium">help(s)</h3>
+            <h3 
+              className="text-3xl font-medium text-white"
+              style={{
+                fontFamily: "Manrope",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                letterSpacing: "0%",
+              }}
+            >
+              Help(s)
+            </h3>
             <div className="relative">
               <Input
                 value={shape.summary?.["help"]}
@@ -202,14 +224,25 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
+                className="w-98 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                placeholder="Customer Segment"
               />
-              <Label className="absolute text-blue-600 -bottom-4">
-                Customer Segment
-              </Label>
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <h3 className="text-3xl font-medium">who want to </h3>
+          
+          <div className="flex flex-row items-center gap-1">
+            <h3 
+              className="text-3xl font-medium text-white"
+              style={{
+                fontFamily: "Manrope",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                letterSpacing: "0%",
+              }}
+            >
+              who want to 
+            </h3>
             <div className="relative">
               <Input
                 value={shape.summary?.["who"]}
@@ -221,14 +254,25 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
+                className="w-88 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                placeholder="Jobs to be Done"
               />
-              <Label className="absolute text-blue-600 -bottom-4">
-                Jobs to be Done
-              </Label>
             </div>
           </div>
+          
           <div className="flex flex-row items-center gap-1">
-            <h3 className="text-3xl font-medium">by</h3>
+            <h3 
+              className="text-3xl font-medium text-white"
+              style={{
+                fontFamily: "Manrope",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                letterSpacing: "0%",
+              }}
+            >
+              By
+            </h3>
             <div className="relative">
               <Input
                 value={shape.summary?.["verb_pain"]}
@@ -240,8 +284,9 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
+                className="w-52 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                placeholder="Verb"
               />
-              <Label className="absolute text-blue-600 -bottom-4">Verb</Label>
             </div>
             <div className="relative">
               <Input
@@ -254,14 +299,25 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
+                className="w-56 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                placeholder="Customer Pain"
               />
-              <Label className="absolute text-blue-600 -bottom-4">
-                Customer Pain
-              </Label>
             </div>
           </div>
+          
           <div className="flex flex-row items-center gap-1">
-            <h3 className="text-3xl font-medium">and</h3>
+            <h3 
+              className="text-3xl font-medium text-white"
+              style={{
+                fontFamily: "Manrope",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                letterSpacing: "0%",
+              }}
+            >
+              And
+            </h3>
             <div className="relative">
               <Input
                 value={shape.summary?.["verb_gain"]}
@@ -273,8 +329,9 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
+                className="w-48 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                placeholder="Verb"
               />
-              <Label className="absolute text-blue-600 -bottom-4">Verb</Label>
             </div>
             <div className="relative">
               <Input
@@ -287,15 +344,25 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
+                className="w-56 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                placeholder="Customer Gain"
               />
-              <Label className="absolute text-blue-600 -bottom-4">
-                Customer Gain
-              </Label>
             </div>
           </div>
           <div className="flex flex-row items-center gap-1">
-            <h3 className="text-3xl font-medium">(unlike</h3>
-            <div className="relative w-full">
+            <h3 
+              className="text-3xl font-medium text-white"
+              style={{
+                fontFamily: "Manrope",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                letterSpacing: "0%",
+              }}
+            >
+              (Unlike
+            </h3>
+            <div className="relative">
               <Input
                 value={shape.summary?.["unlike"]}
                 onChange={(e) => {
@@ -306,12 +373,22 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
+                className="w-96 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                placeholder="Competing Value Proposition"
               />
-              <Label className="absolute text-blue-600 -bottom-4">
-                Competing Value Proposition
-              </Label>
             </div>
-            <h3 className="text-3xl font-medium">)</h3>
+            <h3 
+              className="text-3xl font-medium text-white"
+              style={{
+                fontFamily: "Manrope",
+                fontWeight: 500,
+                fontSize: "18px",
+                lineHeight: "24px",
+                letterSpacing: "0%",
+              }}
+            >
+              )
+            </h3>
           </div>
         </div>
       </div>

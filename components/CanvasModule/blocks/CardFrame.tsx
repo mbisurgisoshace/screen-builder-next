@@ -198,8 +198,8 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
       <div className="w-full h-full bg-white border-2 border-white rounded-xl shadow flex flex-col overflow-hidden">
         {/* Header */}
         <div
-          className={`px-3 py-2 font-semibold flex items-center justify-between`}
-          style={{ backgroundColor: headerBg, color: headerTextColor }}
+          className={`px-3 py-2 font-semibold text-4xl flex items-center justify-between`}
+          style={{ backgroundColor: '#6A35FF', color: 'white' }}
         >
           {header}
         </div>

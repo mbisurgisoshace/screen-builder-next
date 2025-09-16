@@ -24,18 +24,23 @@ export default function SecondarySidebar({
       <SidebarMenu>
         {isAdminOrMentor && (
           <SidebarMenuItem key={"startups"}>
-            <SidebarMenuButton
-              asChild
-              style={{
-                opacity: pathname === "/startups" ? 1 : 0.6,
-                color: pathname === "/startups" ? "#6A35FF" : "#111827",
-                backgroundColor: pathname === "/startups" ? "#F4F0FF" : "",
-              }}
-            >
-              <Link href={"/startups"}>
-                <span>{`Startups`}</span>
-              </Link>
-            </SidebarMenuButton>
+              <SidebarMenuButton
+                asChild
+                style={{
+                  opacity: pathname === "/startups" ? 1 : 0.6,
+                  color: pathname === "/startups" ? "#6A35FF" : "#697288",
+                  backgroundColor: pathname === "/startups" ? "#F4F0FF" : "",
+                  fontFamily: "Manrope",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  lineHeight: "20px",
+                  letterSpacing: "0%",
+                }}
+              >
+                <Link href={"/startups"}>
+                  <span>{`Startups`}</span>
+                </Link>
+              </SidebarMenuButton>
           </SidebarMenuItem>
         )}
         {items.map((item) => {
@@ -46,8 +51,13 @@ export default function SecondarySidebar({
                 asChild
                 style={{
                   opacity: isActive ? 1 : 0.6,
-                  color: isActive ? "#6A35FF" : "#111827",
+                  color: isActive ? "#6A35FF" : "#697288",
                   backgroundColor: isActive ? "#F4F0FF" : "",
+                  fontFamily: "Manrope",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  lineHeight: "20px",
+                  letterSpacing: "0%",
                 }}
               >
                 <Link href={item.url}>

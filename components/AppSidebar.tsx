@@ -50,25 +50,27 @@ const data = {
       url: "/idea-brainstorm",
       //icon: PieChart,
     },
-    {
-      name: "Segments",
-      url: "/segments",
-      //icon: Map,
-    },
-    {
-      name: "Value Proposition",
-      url: "/value-proposition",
-      //icon: Map,
-    },
-    {
-      name: "Ecosystem Map",
-      url: "/ecosystem-map",
-      //icon: Map,
-    },
   ],
   navMain: [
     {
-      title: "Discovery",
+      title: "Hypothesis",
+      items: [
+        {
+          title: "Segments",
+          url: "/segments",
+        },
+        {
+          title: "Value Proposition",
+          url: "/value-proposition",
+        },
+        {
+          title: "Ecosystem Map",
+          url: "/ecosystem-map",
+        },
+      ],
+    },
+    {
+      title: "Validate",
       items: [
         {
           title: "Questions",
@@ -86,6 +88,19 @@ const data = {
         {
           title: "Analysis",
           url: "/analysis",
+        },
+      ],
+    },
+    {
+      title: "Resources",
+      items: [
+        {
+          title: "Customer Discovery",
+          url: "/customer-discovery",
+        },
+        {
+          title: "Common Vocabulary",
+          url: "/common-vocabulary",
         },
       ],
     },
@@ -133,18 +148,18 @@ export function AppSidebar({
 
   return (
     <Sidebar className="bg-white" {...props}>
-      <SidebarHeader className="bg-white p-4 flex gap-4">
+      <SidebarHeader className="bg-white p-3 flex gap-4">
         <Link href={"/"} className="flex flex-col gap-2 items-center">
           <Image
-            width={120}
-            height={40}
+            width={200}
+            height={50}
             src={"/nutech_logo.jpg"}
             alt="Nutech Ventures"
           />
 
           <div className="h-[0.5px] bg-gray-300 w-full" />
 
-          <Image width={140} height={40} src={"/nsf_logo.jpg"} alt="NSF" />
+          <Image width={200} height={50} src={"/nsf_logo.jpg"} alt="NSF" />
         </Link>
 
         <div className="h-8 rounded-[8px] flex flex-row gap-2.5 items-center px-2">
@@ -159,7 +174,17 @@ export function AppSidebar({
                 src={"/Rocket--Streamline-Lucide.png"}
                 alt="Rocket"
               />
-              <span className="text-lg font-bold text-[#111827]">
+              <span 
+                className="text-lg font-bold"
+                style={{
+                  fontFamily: "Manrope",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  lineHeight: "20px",
+                  letterSpacing: "0%",
+                  color: "#111827",
+                }}
+              >
                 {organization?.name}
               </span>
             </Link>
@@ -171,14 +196,24 @@ export function AppSidebar({
                 src={"/Rocket--Streamline-Lucide.png"}
                 alt="Rocket"
               />
-              <span className="text-lg font-bold text-[#111827]">
+              <span 
+                className="text-lg font-bold"
+                style={{
+                  fontFamily: "Manrope",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  lineHeight: "20px",
+                  letterSpacing: "0%",
+                  color: "#111827",
+                }}
+              >
                 {organization?.name}
               </span>
             </>
           )}
         </div>
       </SidebarHeader>
-      <SidebarContent className="p-4 bg-white border-t flex justify-between">
+      <SidebarContent className="p-3 bg-white border-t flex justify-between">
         <div>
           <SecondarySidebar
             items={data.subMain}
