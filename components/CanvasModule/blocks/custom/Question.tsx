@@ -214,6 +214,36 @@ export const Question: React.FC<QuestionProps> = (props) => {
     commit({ questionTags: nextTags });
   };
 
+  const firtQuestionsOrder = [
+    {
+      key: "jobs_to_be_done_card",
+      label: "Jobs to be Done",
+    },
+    {
+      key: "pains_card",
+      label: "Pains",
+    },
+    {
+      key: "gains_card",
+      label: "Gains",
+    },
+  ];
+
+  const secondQuestionsOrder = [
+    {
+      key: "products_services_card",
+      label: "Products & Services",
+    },
+    {
+      key: "pain_relievers_card",
+      label: "Pain Relivers",
+    },
+    {
+      key: "gain_creators_card",
+      label: "Gain Creators",
+    },
+  ];
+
   return (
     <ShapeFrame
       {...props}
@@ -320,45 +350,79 @@ export const Question: React.FC<QuestionProps> = (props) => {
             ref={questionsRef}
             className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md"
           >
-            {Object.keys(formattedValuePropData)
-              .filter((key) => key !== "summary_card")
-              .map((key) => {
-                const valueProp = formattedValuePropData[key];
+            {firtQuestionsOrder.map(({ key, label }) => {
+              const valueProp = formattedValuePropData[key];
 
-                return (
-                  <div key={key}>
-                    <h3 className="font-semibold mb-2">{getTitle(key)}</h3>
-                    <div className="flex flex-col px-4 gap-2">
-                      {valueProp.map((item: any) => {
-                        if (!item.draftRaw) return null;
-                        const raw = JSON.parse(item.draftRaw);
-                        const editor = EditorState.createWithContent(
-                          convertFromRaw(raw)
-                        );
-                        const text = editor.getCurrentContent().getPlainText();
+              return (
+                <div key={key}>
+                  <h3 className="font-semibold mb-2">{getTitle(key)}</h3>
+                  <div className="flex flex-col gap-2">
+                    {valueProp.map((item: any) => {
+                      if (!item.draftRaw) return null;
+                      const raw = JSON.parse(item.draftRaw);
+                      const editor = EditorState.createWithContent(
+                        convertFromRaw(raw)
+                      );
+                      const text = editor.getCurrentContent().getPlainText();
 
-                        return (
-                          <div
-                            className="flex items-center gap-2"
+                      return (
+                        <div className="flex items-center gap-2" key={item.id}>
+                          <Checkbox
                             key={item.id}
-                          >
-                            <Checkbox
-                              key={item.id}
-                              checked={shape.questionTags?.includes(
-                                `${key}::${text}`
-                              )}
-                              onCheckedChange={(checked) => {
-                                updateCheckTags(`${key}::${text}`, !!checked);
-                              }}
-                            />
-                            <Label>{text}</Label>
-                          </div>
-                        );
-                      })}
-                    </div>
+                            checked={shape.questionTags?.includes(
+                              `${key}::${text}`
+                            )}
+                            className="bg-white"
+                            onCheckedChange={(checked) => {
+                              updateCheckTags(`${key}::${text}`, !!checked);
+                            }}
+                          />
+                          <Label>{text}</Label>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
+
+            <div className="border border-dashed border-[black]" />
+
+            {secondQuestionsOrder.map(({ key, label }) => {
+              const valueProp = formattedValuePropData[key];
+
+              return (
+                <div key={key}>
+                  <h3 className="font-semibold mb-2">{getTitle(key)}</h3>
+                  <div className="flex flex-col gap-2">
+                    {valueProp.map((item: any) => {
+                      if (!item.draftRaw) return null;
+                      const raw = JSON.parse(item.draftRaw);
+                      const editor = EditorState.createWithContent(
+                        convertFromRaw(raw)
+                      );
+                      const text = editor.getCurrentContent().getPlainText();
+
+                      return (
+                        <div className="flex items-center gap-2" key={item.id}>
+                          <Checkbox
+                            key={item.id}
+                            checked={shape.questionTags?.includes(
+                              `${key}::${text}`
+                            )}
+                            className="bg-white"
+                            onCheckedChange={(checked) => {
+                              updateCheckTags(`${key}::${text}`, !!checked);
+                            }}
+                          />
+                          <Label>{text}</Label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
