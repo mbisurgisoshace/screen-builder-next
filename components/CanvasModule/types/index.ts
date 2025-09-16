@@ -22,6 +22,9 @@ export type CardType =
   | "products_services_card"
   | "pain_relievers_card"
   | "gain_creators_card"
+  | "industry_market_segment_card"
+  | "customer_card"
+  | "end_user_card"
   | "summary_card";
 
 export type Kind = "image" | "video" | "pdf" | "file";

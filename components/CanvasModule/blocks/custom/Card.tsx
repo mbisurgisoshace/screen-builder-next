@@ -38,6 +38,7 @@ import { ProductsService } from "./ProductsService";
 import { PainRelievers } from "./PainRelievers";
 import { GainCreators } from "./GainCreators";
 import { Summary } from "./Summary";
+import { usePathname } from "next/navigation";
 
 type CardProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -45,6 +46,7 @@ type CardProps = Omit<ShapeFrameProps, "children" | "shape"> & {
 };
 
 export const Card: React.FC<CardProps> = (props) => {
+  const pathname = usePathname();
   const { shape, onCommitStyle } = props;
   const { subtype } = shape;
 
@@ -52,6 +54,12 @@ export const Card: React.FC<CardProps> = (props) => {
 
   const getTitle = () => {
     switch (subtype) {
+      case "industry_market_segment_card":
+        return "Industry/Market Segment";
+      case "customer_card":
+        return "Customer";
+      case "end_user_card":
+        return "End-User";
       case "solution_card":
         return "Solution";
       case "interview_card":
@@ -83,6 +91,12 @@ export const Card: React.FC<CardProps> = (props) => {
 
   const getBody = () => {
     switch (subtype) {
+      case "industry_market_segment_card":
+        return <span>Industry/Market Segment Card</span>;
+      case "customer_card":
+        return <span>Customer Card</span>;
+      case "end_user_card":
+        return <span>End-User Card</span>;
       case "jobs_to_be_done_card":
         return <JobsToBeDone {...props} />;
       case "pains_card":
@@ -104,6 +118,9 @@ export const Card: React.FC<CardProps> = (props) => {
 
   const useAttachments = () => {
     switch (subtype) {
+      case "industry_market_segment_card":
+      case "customer_card":
+      case "end_user_card":
       case "solution_card":
         return false;
       case "interview_card":
@@ -135,6 +152,9 @@ export const Card: React.FC<CardProps> = (props) => {
 
   const getColor = () => {
     switch (subtype) {
+      case "industry_market_segment_card":
+      case "customer_card":
+      case "end_user_card":
       case "jobs_to_be_done_card":
         return "#FDE1B5";
       case "pains_card":
@@ -151,6 +171,137 @@ export const Card: React.FC<CardProps> = (props) => {
         return "#7559C3";
       default:
         return "#FFFFFF";
+    }
+  };
+
+  const getMenuOptions = () => {
+    if (pathname.includes("/value-proposition"))
+      return (
+        <>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "jobs_to_be_done_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "jobs_to_be_done_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Jobs To Be Done
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, { subtype: "pains_card" });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "pains_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Pains
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, { subtype: "gains_card" });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "gains_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Gains
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="h-[1px] bg-gray-200" />
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "products_services_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "products_services_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Products & Services
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "pain_relievers_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "pain_relievers_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Pain Relievers
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "gain_creators_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "gain_creators_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Gain Creators
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="h-[1px] bg-gray-200" />
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "summary_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 `}
+          >
+            Ad-Lib
+          </DropdownMenuItem>
+        </>
+      );
+
+    if (pathname.includes("/segments")) {
+      return (
+        <>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "industry_market_segment_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "industry_market_segment_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Industry/Market Segment
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "customer_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "customer_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Customer
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "end_user_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "end_user_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            End-User
+          </DropdownMenuItem>
+        </>
+      );
     }
   };
 
@@ -174,128 +325,7 @@ export const Card: React.FC<CardProps> = (props) => {
               align="end"
               className="absolute -top-11 left-5 p-1.5 w-[216px]"
             >
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, {
-                    subtype: "jobs_to_be_done_card",
-                  });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "jobs_to_be_done_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Jobs To Be Done
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, { subtype: "pains_card" });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "pains_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Pains
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, { subtype: "gains_card" });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "gains_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Gains
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="h-[1px] bg-gray-200" />
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, {
-                    subtype: "products_services_card",
-                  });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "products_services_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Products & Services
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, {
-                    subtype: "pain_relievers_card",
-                  });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "pain_relievers_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Pain Relievers
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, {
-                    subtype: "gain_creators_card",
-                  });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "gain_creators_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Gain Creators
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, {
-                    subtype: "summary_card",
-                  });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 `}
-              >
-                Summary
-              </DropdownMenuItem>
-              {/* <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, { subtype: "assumption_card" });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "assumption_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Assumption card
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, {
-                    subtype: "problem_statement_card",
-                  });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "problem_statement_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Problem Statement card
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, { subtype: "interview_card" });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "interview_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Interview card
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  onCommitStyle?.(shape.id, { subtype: "solution_card" });
-                }}
-                className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
-                  subtype === "solution_card" ? "bg-[#D5F9D7]" : ""
-                }`}
-              >
-                Solution card
-              </DropdownMenuItem> */}
+              {getMenuOptions()}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

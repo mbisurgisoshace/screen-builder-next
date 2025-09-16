@@ -12,11 +12,11 @@ export default async function SegmentsPage() {
           <InfiniteCanvas
             toolbarOptions={{
               text: true,
-              card: false,
+              card: true,
               table: false,
               answer: false,
               ellipse: true,
-              feature: true,
+              feature: false,
               question: false,
               rectangle: true,
               interview: false,
