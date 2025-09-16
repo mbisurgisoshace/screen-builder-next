@@ -113,6 +113,7 @@ enum CardType {
 enum TodoType {
   text
   link
+  modal
   image
   video
 }
