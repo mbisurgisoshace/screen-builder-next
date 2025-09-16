@@ -3,189 +3,138 @@ import { redirect } from "next/navigation";
 
 import Todo from "./_components/Todo";
 import { getStructuredTodosByOrg, getTodos } from "@/services/todos";
-import { Todo as ITodo, TodoType } from "@/lib/generated/prisma";
+import {
+  Todo as ITodo,
+  Task,
+  TaskList,
+  TaskSectionTitle,
+  TodoType,
+} from "@/lib/generated/prisma";
+import {
+  getCompletedTasks,
+  getTasks,
+  TaskWithListAndSection,
+} from "@/services/tasks";
+import TaskCard from "./_components/Task";
 
-type StructuredTodos = Array<{
-  week: number;
-  days: Array<{
-    weekday: string;
-    weekday_order: number;
-    tasks: Array<Task>;
+type GroupedTasks = Array<{
+  task_list: TaskList;
+  sections: Array<{
+    section_title: TaskSectionTitle;
+    tasks: TaskWithListAndSection[];
   }>;
 }>;
-
-export type Task = {
-  task: string;
-  task_order: number;
-  todos: Array<Todo>;
-};
-
-export type Todo = {
-  id: string;
-  text: string; // task_todo
-  description?: string;
-  url?: string;
-  type: TodoType;
-  completed: boolean;
-  created_at: Date;
-  updated_at: Date;
-};
-
-async function formatTodos(todos: ITodo[]): Promise<StructuredTodos> {
-  const norm = (s: string) =>
-    (s ?? "")
-      .normalize("NFKC")
-      .replace(/\p{Cf}/gu, "") // quita ZWSP/ZWNJ/ZWJ/BOM, etc.
-      .replace(/[\p{Zs}\s]+/gu, " ") // todo tipo de espacios -> 1 espacio
-      .trim()
-      .toLowerCase();
-
-  const ord = (n: number) =>
-    Number.isFinite(n) && n > 0 ? n : Number.MAX_SAFE_INTEGER;
-
-  // 2) Build hierarchy in a single pass using Maps for O(1) grouping
-  const weeksMap = new Map<
-    number,
-    {
-      week: number;
-      daysMap: Map<
-        string,
-        {
-          weekday: string;
-          weekday_order: number;
-          tasksMap: Map<
-            string,
-            {
-              task: string;
-              task_order: number;
-              todos: Array<{
-                id: string;
-                text: string;
-                description?: string;
-                url?: string;
-                type: TodoType;
-                completed: boolean;
-                created_at: Date;
-                updated_at: Date;
-              }>;
-            }
-          >;
-        }
-      >;
-    }
-  >();
-
-  for (const r of todos) {
-    // --- Week ---
-    let w = weeksMap.get(r.week);
-    if (!w) {
-      w = { week: r.week, daysMap: new Map() };
-      weeksMap.set(r.week, w);
-    }
-
-    // --- Day ---
-    const dayKey = `${r.weekday_order}|${r.weekday}`;
-    let d = w.daysMap.get(dayKey);
-    if (!d) {
-      d = {
-        weekday: r.weekday,
-        weekday_order: r.weekday_order,
-        tasksMap: new Map(),
-      };
-      w.daysMap.set(dayKey, d);
-    }
-
-    // --- Task (group only by name) ---
-    const taskKey = norm(r.task);
-    let t = d.tasksMap.get(taskKey);
-    if (!t) {
-      t = {
-        task: r.task,
-        // initialize as Infinity so zeros don’t “win”
-        task_order: Number.POSITIVE_INFINITY,
-        todos: [],
-      };
-      d.tasksMap.set(taskKey, t);
-    }
-
-    // keep the smallest *positive* order we see; ignore 0
-    if (r.task_order > 0) {
-      t.task_order = Math.min(t.task_order, r.task_order);
-    }
-
-    // --- Todo ---
-    t.todos.push({
-      id: r.id,
-      text: r.task_todo,
-      description: r.task_todo_description || undefined,
-      url: r.task_todo_url || undefined,
-      type: r.type,
-      completed: r.completed,
-      created_at: r.created_at,
-      updated_at: r.updated_at,
-    });
-  }
-
-  // --- Maps → Arrays + sorting ---
-  const result: StructuredTodos = [];
-  for (const [, w] of weeksMap) {
-    const days = Array.from(w.daysMap.values()).map((d) => {
-      const tasks = Array.from(d.tasksMap.values())
-        .map((t) => ({
-          task: t.task,
-          // expose 0 only if no positive order was ever found
-          task_order: Number.isFinite(t.task_order) ? t.task_order : 0,
-          todos: [...t.todos].sort(
-            (a, b) => +new Date(a.created_at) - +new Date(b.created_at)
-          ),
-        }))
-        // sort: explicit orders first (1,2,3...), then any “unset” (0) at the end by name
-        .sort(
-          (a, b) =>
-            ord(a.task_order) - ord(b.task_order) ||
-            a.task.localeCompare(b.task)
-        );
-
-      return { weekday: d.weekday, weekday_order: d.weekday_order, tasks };
-    });
-
-    result.push({ week: w.week, days });
-  }
-
-  // defensive final ordering
-  result.sort((a, b) => a.week - b.week);
-  for (const w of result) {
-    w.days.sort((a, b) => a.weekday_order - b.weekday_order);
-    for (const d of w.days) {
-      d.tasks.sort(
-        (a, b) =>
-          ord(a.task_order) - ord(b.task_order) || a.task.localeCompare(b.task)
-      );
-    }
-  }
-
-  return result;
-}
 
 export default async function Home({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const todos = await getTodos();
-  const formattedTodos = await formatTodos(todos);
+  const tasks = await getTasks();
+  const completedTasks = await getCompletedTasks();
+  const groupedTasks = groupTasksByListAndSection(tasks || []);
 
   return (
-    <div className="p-10 w-full pb-20">
-      {formattedTodos.map((week) => {
+    <div className="flex flex-row p-10 gap-6 w-full pb-20">
+      {groupedTasks.map((taskList) => {
         return (
-          <div key={week.week} className="flex gap-6 mb-8">
-            {week.days.map((day) => (
-              <Todo key={day.weekday} title={day.weekday} todos={day.tasks} />
-            ))}
+          <div
+            key={taskList.task_list.id}
+            className="border-2 bg-white border-white rounded-[12px] w-[300px] min-w-[300px] overflow-y-auto h-full max-h-600"
+          >
+            <div className="px-[22px] py-[15px] bg-[#7559C3]">
+              <h3 className="text-[14px] font-semibold text-white">
+                {taskList.task_list.title}
+              </h3>
+            </div>
+            <div className="px-[12px] py-[12px] flex flex-col gap-4">
+              {taskList.sections.map((section) => (
+                <div key={section.section_title.id}>
+                  <h5 className="text-[14px] text-[#111827] font-medium opacity-70 mb-3">
+                    {section.section_title.title}
+                  </h5>
+                  <ul className="flex gap-1 flex-col">
+                    {section.tasks.map((task) => {
+                      const isCompleted = completedTasks.some(
+                        (ct) => ct.task_id === task.id && ct.completed
+                      );
+                      return (
+                        <TaskCard
+                          key={task.id}
+                          task={task}
+                          isCompleted={isCompleted}
+                        />
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </div>
         );
       })}
     </div>
   );
+}
+
+export function groupTasksByListAndSection(
+  tasks: TaskWithListAndSection[]
+): GroupedTasks {
+  // First, build nested maps to avoid O(n^2) scans
+  const listMap = new Map<
+    number,
+    {
+      task_list: TaskList;
+      sections: Map<
+        number | null,
+        {
+          section_title: TaskSectionTitle;
+          tasks: Task[];
+        }
+      >;
+    }
+  >();
+
+  for (const t of tasks) {
+    const tl = t.task_list!;
+    if (!listMap.has(tl.id)) {
+      listMap.set(tl.id, {
+        task_list: tl,
+        sections: new Map(),
+      });
+    }
+    const listEntry = listMap.get(tl.id)!;
+
+    const st = t.section_title ?? null; // allow null/undefined
+    const sectionKey = st?.id ?? null;
+
+    if (!listEntry.sections.has(sectionKey)) {
+      listEntry.sections.set(sectionKey, {
+        section_title: st ?? {
+          id: null as any,
+          title: "Unsectioned",
+          order: Number.MAX_SAFE_INTEGER,
+        },
+        tasks: [],
+      });
+    }
+    listEntry.sections.get(sectionKey)!.tasks.push(t);
+  }
+
+  // Now materialize into sorted arrays
+  const result: GroupedTasks = Array.from(listMap.values())
+    .sort((a, b) => (a.task_list.order ?? 0) - (b.task_list.order ?? 0))
+    .map(({ task_list, sections }) => ({
+      task_list,
+      sections: Array.from(sections.values())
+        .sort(
+          (a, b) => (a.section_title.order ?? 0) - (b.section_title.order ?? 0)
+        )
+        .map(({ section_title, tasks }) => ({
+          section_title,
+          tasks: tasks.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+        })),
+    }));
+
+  return result;
 }

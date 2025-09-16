@@ -135,3 +135,57 @@ model Todo {
 
   @@map("todos")
 }
+
+model TaskList {
+  id         Int      @id @default(autoincrement())
+  title      String
+  order      Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  Task       Task[]
+
+  @@map("task_lists")
+}
+
+model TaskSectionTitle {
+  id         Int      @id @default(autoincrement())
+  title      String
+  order      Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  Task       Task[]
+
+  @@map("task_section_titles")
+}
+
+model Task {
+  id               Int      @id @default(autoincrement())
+  title            String
+  order            Int      @default(0)
+  task_list_id     Int
+  section_title_id Int
+  task_type        TodoType
+  task_description String?
+  task_url         String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  task_list     TaskList         @relation(fields: [task_list_id], references: [id], onDelete: Cascade)
+  section_title TaskSectionTitle @relation(fields: [section_title_id], references: [id], onDelete: Cascade)
+  org_task      OrgTask[]
+
+  @@map("tasks")
+}
+
+model OrgTask {
+  id         Int      @id @default(autoincrement())
+  org_id     String
+  task_id    Int
+  completed  Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  task       Task     @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+  @@unique([org_id, task_id])
+  @@map("org_tasks")
+}
