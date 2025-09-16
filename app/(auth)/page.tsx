@@ -32,6 +32,8 @@ export default async function Home({
   const completedTasks = await getCompletedTasks();
   const groupedTasks = groupTasksByListAndSection(tasks || []);
 
+  console.log("completedTasks", completedTasks);
+
   return (
     <div className="flex flex-row p-10 gap-6 w-full pb-20">
       {groupedTasks.map((taskList) => {
@@ -57,8 +59,9 @@ export default async function Home({
                         (ct) => ct.task_id === task.id && ct.completed
                       );
                       const completedTask = completedTasks.find(
-                        (task) => task.id === task.id
+                        (ct) => ct.task_id === task.id
                       );
+
                       return (
                         <TaskCard
                           task={task}

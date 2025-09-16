@@ -330,6 +330,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
                     <h3 className="font-semibold mb-2">{getTitle(key)}</h3>
                     <div className="flex flex-col px-4 gap-2">
                       {valueProp.map((item: any) => {
+                        if (!item.draftRaw) return null;
                         const raw = JSON.parse(item.draftRaw);
                         const editor = EditorState.createWithContent(
                           convertFromRaw(raw)

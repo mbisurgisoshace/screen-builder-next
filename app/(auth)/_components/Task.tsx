@@ -15,9 +15,13 @@ interface TaskProps {
 }
 
 export default function TaskCard({ task, data, isCompleted }: TaskProps) {
-  const markAsComplete = async (id: number, complete: boolean) => {
+  const markAsComplete = async (
+    id: number,
+    complete: boolean,
+    data?: Record<string, any>
+  ) => {
     //await updateTodo(id, { completed: complete });
-    await updateTask(id, complete);
+    await updateTask(id, complete, data);
   };
 
   const renderTodo = (todo: Task) => {
@@ -49,7 +53,7 @@ export default function TaskCard({ task, data, isCompleted }: TaskProps) {
       );
     }
 
-     if (todo.task_type === "modal") {
+    if (todo.task_type === "modal") {
       return (
         <ModalTodo
           key={todo.id}

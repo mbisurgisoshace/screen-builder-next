@@ -3,6 +3,7 @@ import {
   Clock3Icon,
   CopyIcon,
   ExternalLinkIcon,
+  Loader2Icon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,12 +11,23 @@ import { Button } from "@/components/ui/button";
 import { Task } from "@/lib/generated/prisma";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ScheduleTodoProps {
   todo: Task;
   isCompleted: boolean;
   data: Record<string, any>;
-  markAsComplete: (id: number, complete: boolean) => Promise<void>;
+  markAsComplete: (
+    id: number,
+    complete: boolean,
+    data?: Record<string, any>
+  ) => Promise<void>;
 }
 
 export default function ScheduleTodo({
@@ -24,15 +36,25 @@ export default function ScheduleTodo({
   isCompleted,
   markAsComplete,
 }: ScheduleTodoProps) {
+  const [isSaving, setIsSaving] = useState(false);
   const [scheduleData, setScheduleData] = useState(
     data
       ? data
       : {
           mentor: "",
-          date: "",
+          date: new Date(),
           time: "",
         }
   );
+
+  const isDisabled =
+    !scheduleData.mentor || !scheduleData.date || !scheduleData.time;
+
+  const onSaveSchedule = async () => {
+    setIsSaving(true);
+    await markAsComplete(todo.id, true, scheduleData);
+    setIsSaving(false);
+  };
 
   return (
     <li
@@ -61,8 +83,30 @@ export default function ScheduleTodo({
           {todo.title}
         </span>
       </div>
-      <div className="flex flex-col">
-        <Calendar mode="single" className="w-full" />
+      <div className="flex flex-col gap-2">
+        <Select
+          onValueChange={(value) =>
+            setScheduleData({ ...scheduleData, mentor: value })
+          }
+          value={scheduleData.mentor}
+        >
+          <SelectTrigger className="w-full bg-white">
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectContent onMouseDown={(e) => e.stopPropagation()}>
+            {["Peter Pen", "John Doe"].map((option) => (
+              <SelectItem value={option} key={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Calendar
+          mode="single"
+          className="w-full"
+          selected={scheduleData.date}
+          onSelect={(date) => setScheduleData({ ...scheduleData, date })}
+        />
         <div className="border border-[#E4E5ED] rounded-md">
           <div className="flex flex-row gap-2 items-center bg-[#EEF0FA] py-4 px-6">
             <Clock3Icon size={14} />
@@ -72,23 +116,25 @@ export default function ScheduleTodo({
           </div>
           <div className="py-4 px-6 flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-2 justify-items-center">
-              <span className="border-[1.5px] border-[#E4E5ED] w-[67px] h-[30px] flex items-center justify-center text-xs font-semibold rounded-md">
-                9:30 PM
-              </span>
-              <span className="border-[1.5px] border-[#E4E5ED] w-[67px] h-[30px] flex items-center justify-center text-xs font-semibold rounded-md">
-                11:45 PM
-              </span>
-              <span className="border-[1.5px] border-[#E4E5ED] w-[67px] h-[30px] flex items-center justify-center text-xs font-semibold rounded-md">
-                2:30 AM
-              </span>
-              <span className="border-[1.5px] border-[#E4E5ED] w-[67px] h-[30px] flex items-center justify-center text-xs font-semibold rounded-md">
-                4:30 PM
-              </span>
-              <span className="border-[1.5px] border-[#E4E5ED] w-[67px] h-[30px] flex items-center justify-center text-xs font-semibold rounded-md">
-                7:30 PM
-              </span>
+              {["9:30 PM", "11:45 PM", "2:30 AM", "4:30 PM", "7:30 PM"].map(
+                (time) => (
+                  <span
+                    key={time}
+                    onClick={() => {
+                      setScheduleData({ ...scheduleData, time });
+                    }}
+                    className={`border-[1.5px] border-[#E4E5ED] w-[67px] h-[30px] flex items-center justify-center text-xs font-semibold rounded-md ${
+                      scheduleData.time === time ? "bg-[#6A35FF]" : ""
+                    }`}
+                  >
+                    {time}
+                  </span>
+                )
+              )}
             </div>
-            <Button>Save</Button>
+            <Button disabled={isDisabled || isSaving} onClick={onSaveSchedule}>
+              {isSaving ? <Loader2Icon className="animate-spin" /> : "Save"}
+            </Button>
           </div>
         </div>
       </div>

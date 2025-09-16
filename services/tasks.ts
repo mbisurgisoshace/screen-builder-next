@@ -39,7 +39,11 @@ export async function getCompletedTasks() {
   return completedTasks;
 }
 
-export async function updateTask(taskId: number, isComplete: boolean) {
+export async function updateTask(
+  taskId: number,
+  isComplete: boolean,
+  data?: Record<string, any>
+) {
   const { orgId, userId } = await auth();
 
   if (!orgId || !userId) throw new Error("Unauthorized");
@@ -52,9 +56,11 @@ export async function updateTask(taskId: number, isComplete: boolean) {
       },
     },
     update: {
+      data,
       completed: isComplete,
     },
     create: {
+      data,
       org_id: orgId,
       task_id: taskId,
       completed: isComplete,
