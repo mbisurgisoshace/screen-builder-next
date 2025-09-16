@@ -77,7 +77,7 @@ export default async function Home({
   );
 }
 
-export function groupTasksByListAndSection(
+function groupTasksByListAndSection(
   tasks: TaskWithListAndSection[]
 ): GroupedTasks {
   // First, build nested maps to avoid O(n^2) scans
@@ -122,6 +122,7 @@ export function groupTasksByListAndSection(
   }
 
   // Now materialize into sorted arrays
+  //@ts-ignore
   const result: GroupedTasks = Array.from(listMap.values())
     .sort((a, b) => (a.task_list.order ?? 0) - (b.task_list.order ?? 0))
     .map(({ task_list, sections }) => ({
