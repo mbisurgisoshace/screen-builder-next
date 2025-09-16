@@ -133,18 +133,18 @@ export function AppSidebar({
 
   return (
     <Sidebar className="bg-white" {...props}>
-      <SidebarHeader className="bg-white p-5 flex gap-6">
+      <SidebarHeader className="bg-white p-4 flex gap-4">
         <Link href={"/"} className="flex flex-col gap-2 items-center">
           <Image
-            width={200}
-            height={50}
+            width={120}
+            height={40}
             src={"/nutech_logo.jpg"}
             alt="Nutech Ventures"
           />
 
           <div className="h-[0.5px] bg-gray-300 w-full" />
 
-          <Image width={200} height={50} src={"/nsf_logo.jpg"} alt="NSF" />
+          <Image width={140} height={40} src={"/nsf_logo.jpg"} alt="NSF" />
         </Link>
 
         <div className="h-8 rounded-[8px] flex flex-row gap-2.5 items-center px-2">

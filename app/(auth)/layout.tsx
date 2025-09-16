@@ -16,9 +16,9 @@ export default async function Layout({
   return (
     <SidebarProvider>
       <AppSidebar isAdminOrMentor={isAdminOrMentor} />
-      <SidebarInset>
+      <SidebarInset className="flex flex-col h-screen overflow-hidden">
         <AppHeader />
-        <div className="bg-[#EFF0F4] h-full w-full">{children}</div>
+        <div className="bg-[#EFF0F4] flex-1 w-full overflow-y-auto">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

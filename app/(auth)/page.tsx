@@ -176,10 +176,10 @@ export default async function Home({
   const formattedTodos = await formatTodos(todos);
 
   return (
-    <div className="p-10 w-full">
+    <div className="p-10 w-full pb-20">
       {formattedTodos.map((week) => {
         return (
-          <div key={week.week} className="flex gap-6">
+          <div key={week.week} className="flex gap-6 mb-8">
             {week.days.map((day) => (
               <Todo key={day.weekday} title={day.weekday} todos={day.tasks} />
             ))}

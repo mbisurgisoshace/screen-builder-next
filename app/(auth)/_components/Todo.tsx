@@ -44,7 +44,7 @@ export default function Todo({ title, todos }: TodoProps) {
   };
 
   return (
-    <div className="border-2 bg-white border-white rounded-[12px] w-[280px] min-w-[280px] overflow-y-auto h-full max-h-600">
+    <div className="border-2 bg-white border-white rounded-[12px] w-[300px] min-w-[300px] overflow-y-auto h-full max-h-600">
       <div className="px-[22px] py-[15px] bg-[#7559C3]">
         <h3 className="text-[14px] font-semibold text-white">
           {isNaN(Number(title)) ? title : `Session ${title}`}
