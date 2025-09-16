@@ -171,7 +171,7 @@ export const Card: React.FC<CardProps> = (props) => {
       case "gain_creators_card":
         return "#D5F9D7";
       case "summary_card":
-        return "#7559C3";
+        return "#6A35FF";
       default:
         return "#FFFFFF";
     }
@@ -312,7 +312,7 @@ export const Card: React.FC<CardProps> = (props) => {
     <CardFrame
       {...props}
       headerBg={getColor()}
-      headerTextColor="#111827"
+      headerTextColor={subtype === "summary_card" ? "white" : "black"}
       useAttachments={useAttachments()}
       header={
         <div className="w-full flex flex-row items-center justify-between">
