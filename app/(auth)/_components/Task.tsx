@@ -4,6 +4,7 @@ import { Task } from "@/lib/generated/prisma";
 import LinkTodo from "./LinkTodo";
 import ImageTodo from "./ImageTodo";
 import VideoTodo from "./VideoTodo";
+import ModalTodo from "./ModalTodo";
 import { updateTask } from "@/services/tasks";
 import ScheduleTodo from "./ScheduleTodo";
 
@@ -40,6 +41,17 @@ export default function TaskCard({ task, data, isCompleted }: TaskProps) {
     if (todo.task_type === "link") {
       return (
         <LinkTodo
+          key={todo.id}
+          todo={todo}
+          markAsComplete={markAsComplete}
+          isCompleted={isCompleted}
+        />
+      );
+    }
+
+     if (todo.task_type === "modal") {
+      return (
+        <ModalTodo
           key={todo.id}
           todo={todo}
           markAsComplete={markAsComplete}

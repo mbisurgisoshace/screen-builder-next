@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TagsProvider } from "@/components/CanvasModule/tags/TagsProvider";
@@ -12,6 +12,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
@@ -29,7 +34,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
+          className={`${geistSans.variable} ${geistMono.variable} ${manrope.variable} antialiased h-screen`}
         >
           <TagsProvider>{children}</TagsProvider>
           <Toaster richColors />
