@@ -5,15 +5,15 @@ import LinkTodo from "./LinkTodo";
 import ImageTodo from "./ImageTodo";
 import VideoTodo from "./VideoTodo";
 import { updateTask } from "@/services/tasks";
+import ScheduleTodo from "./ScheduleTodo";
 
 interface TaskProps {
   task: Task;
   isCompleted: boolean;
+  data: Record<string, any>;
 }
 
-export default function TaskCard({ task, isCompleted }: TaskProps) {
-  console.log("TaskCard Rendered with task:", task);
-
+export default function TaskCard({ task, data, isCompleted }: TaskProps) {
   const markAsComplete = async (id: number, complete: boolean) => {
     //await updateTodo(id, { completed: complete });
     await updateTask(id, complete);
@@ -23,6 +23,18 @@ export default function TaskCard({ task, isCompleted }: TaskProps) {
     if (todo.task_type === "text") {
       //return <span key={todo.id}>Text</span>;
       return null;
+    }
+
+    if (todo.task_type === "schedule") {
+      return (
+        <ScheduleTodo
+          data={data}
+          todo={todo}
+          key={todo.id}
+          markAsComplete={markAsComplete}
+          isCompleted={isCompleted}
+        />
+      );
     }
 
     if (todo.task_type === "link") {

@@ -56,11 +56,19 @@ export default async function Home({
                       const isCompleted = completedTasks.some(
                         (ct) => ct.task_id === task.id && ct.completed
                       );
+                      const completedTask = completedTasks.find(
+                        (task) => task.id === task.id
+                      );
                       return (
                         <TaskCard
-                          key={task.id}
                           task={task}
+                          key={task.id}
                           isCompleted={isCompleted}
+                          data={
+                            completedTask
+                              ? (completedTask.data as Record<string, any>)
+                              : {}
+                          }
                         />
                       );
                     })}

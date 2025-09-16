@@ -116,6 +116,7 @@ enum TodoType {
   modal
   image
   video
+  schedule
 }
 
 model Todo {
@@ -182,6 +183,7 @@ model OrgTask {
   id         Int      @id @default(autoincrement())
   org_id     String
   task_id    Int
+  data       Json?
   completed  Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
