@@ -20,7 +20,10 @@ import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useQuestions } from "../../questions/QuestionsProvider";
 import { CardFrame } from "../CardFrame";
 
-type GainCreatorsProps = Omit<ShapeFrameProps, "children" | "shape"> & {
+type IndustryMarketSegmentProps = Omit<
+  ShapeFrameProps,
+  "children" | "shape"
+> & {
   shape: IShape;
   onCommitStyle?: (id: string, patch: Partial<IShape>) => void;
 };
@@ -31,7 +34,9 @@ const RteEditor = dynamic(
   { ssr: false }
 );
 
-export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
+export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
+  props
+) => {
   const questions = [
     {
       id: "gain_creators_question_1",
@@ -166,7 +171,7 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
         className="mt-1 rounded-[8px] "
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-row gap-2 p-2">
+        {/* <div className="flex flex-row gap-2 p-2">
           <span>Significance Score:</span>
           {tags.map((t) => (
             <button
@@ -195,7 +200,7 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
               </svg>
             </button>
           ))}
-        </div>
+        </div> */}
         <RteEditor
           onBlur={() => setShowToolbar(false)}
           onFocus={() => setShowToolbar(true)}

@@ -39,6 +39,9 @@ import { PainRelievers } from "./PainRelievers";
 import { GainCreators } from "./GainCreators";
 import { Summary } from "./Summary";
 import { usePathname } from "next/navigation";
+import { IndustryMarketSegment } from "./IndustryMarketSegmentCard";
+import { Customer } from "./CustomerCard";
+import { EndUser } from "./EndUserCard";
 
 type CardProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -92,11 +95,11 @@ export const Card: React.FC<CardProps> = (props) => {
   const getBody = () => {
     switch (subtype) {
       case "industry_market_segment_card":
-        return <span>Industry/Market Segment Card</span>;
+        return <IndustryMarketSegment {...props} />;
       case "customer_card":
-        return <span>Customer Card</span>;
+        return <Customer {...props} />;
       case "end_user_card":
-        return <span>End-User Card</span>;
+        return <EndUser {...props} />;
       case "jobs_to_be_done_card":
         return <JobsToBeDone {...props} />;
       case "pains_card":
