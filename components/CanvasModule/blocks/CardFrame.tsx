@@ -17,6 +17,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { uploadToSupabase } from "@/lib/uploadToSupabase";
+import { AttachmentTileDialog } from "../AttachmentTile";
 
 type CardFrame = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: Shape;
@@ -254,6 +255,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
                     onOpen={openPreviewById}
                     onRemove={() => removeAttachment(att.id)}
                   />
+                  // <AttachmentTileDialog key={att.id} attachment={att} />
                 ))}
               </div>
             </div>
@@ -264,7 +266,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
               items={attachments.map((a) => ({
                 id: a.id,
                 name: a.name,
-                url: a.preview || a.url, // show local preview if still uploading
+                url: a.url ? a.url : a.preview, // show local preview if still uploading
                 mime: a.mime,
                 size: a.size,
               }))}
@@ -444,7 +446,7 @@ function AttachmentTile({
   onRemove: () => void;
   onOpen: (id: string) => void;
 }) {
-  const src = att.url || att.preview;
+  const src = att.url ? att.url : att.preview;
 
   const open = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
@@ -558,16 +560,16 @@ function formatBytes(bytes?: number) {
   return `${val.toFixed(val >= 10 || i === 0 ? 0 : 1)} ${sizes[i]}`;
 }
 
-function isImage(mime = "", url = "") {
+export function isImage(mime = "", url = "") {
   return (
     mime.startsWith("image/") ||
     /\.(png|jpe?g|gif|webp|avif|svg)(\?|#|$)/i.test(url)
   );
 }
-function isVideo(mime = "", url = "") {
+export function isVideo(mime = "", url = "") {
   return mime.startsWith("video/") || /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(url);
 }
-function isPdf(mime = "", url = "") {
+export function isPdf(mime = "", url = "") {
   return mime === "application/pdf" || /\.pdf(\?|#|$)/i.test(url);
 }
 
@@ -585,6 +587,8 @@ export function AttachmentPreviewModal({
   setIndex: (i: number) => void;
 }) {
   const att = items[index];
+  console.log("items", items);
+  console.log("att", att);
 
   // Keyboard nav
   useEffect(() => {
@@ -608,7 +612,7 @@ export function AttachmentPreviewModal({
 
   return (
     <div
-      className="fixed inset-0 z-[1000] bg-black/70 flex items-center justify-center"
+      className="fixed inset-0 z-[1000000] bg-black/70 flex items-center justify-center"
       data-nodrag="true"
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => {
@@ -658,14 +662,14 @@ export function AttachmentPreviewModal({
 
       {/* Content */}
       <div
-        className="max-w-[90vw] max-h-[85vh] w-auto h-auto bg-transparent rounded shadow-lg overflow-hidden"
+        className="w-auto z-[1000000] h-auto bg-transparent rounded shadow-lg overflow-hidden"
         onMouseDown={(e) => e.stopPropagation()}
       >
         {showImage && (
           <img
             src={att.url}
             alt={att.name}
-            className="max-w-[90vw] max-h-[85vh] object-contain select-none"
+            className="object-contain select-none"
             draggable={false}
           />
         )}
@@ -673,7 +677,7 @@ export function AttachmentPreviewModal({
         {showVideo && (
           <video
             src={att.url}
-            className="max-w-[90vw] max-h-[85vh]"
+            className=""
             controls
             autoPlay
             preload="metadata"
