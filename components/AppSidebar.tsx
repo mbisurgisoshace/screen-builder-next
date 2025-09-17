@@ -40,11 +40,11 @@ const data = {
       url: "/",
       //icon: Frame,
     },
-    {
-      name: "Progress",
-      url: "/progress",
-      //icon: Frame,
-    },
+    // {
+    //   name: "Progress",
+    //   url: "/progress",
+    //   //icon: Frame,
+    // },
     {
       name: "Idea Brainstorm",
       url: "/idea-brainstorm",
@@ -174,7 +174,7 @@ export function AppSidebar({
                 src={"/Rocket--Streamline-Lucide.png"}
                 alt="Rocket"
               />
-              <span 
+              <span
                 className="text-lg font-bold"
                 style={{
                   fontFamily: "Manrope",
@@ -196,7 +196,7 @@ export function AppSidebar({
                 src={"/Rocket--Streamline-Lucide.png"}
                 alt="Rocket"
               />
-              <span 
+              <span
                 className="text-lg font-bold"
                 style={{
                   fontFamily: "Manrope",

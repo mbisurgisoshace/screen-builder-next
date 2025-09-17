@@ -12,6 +12,7 @@ import { useValueProp } from "@/app/(auth)/questions/_components/ValuePropProvid
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { LoadingText } from "@/components/ui/loader";
 
 type QuestionProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -95,6 +96,10 @@ export const Question: React.FC<QuestionProps> = (props) => {
     }, 500);
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
+
+
+  const hasContent = shape.draftRaw;
+  const isEmpty = !hasContent;
 
   const startBodyEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -250,8 +255,11 @@ export const Question: React.FC<QuestionProps> = (props) => {
       resizable={true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
-      <div className="w-full h-full bg-white border-1 border-[#E9E6F0] rounded-xl shadow flex flex-col overflow-hidden px-8 py-6 gap-4">
-        <h3 className="text-[11px] font-medium text-[#8B93A1]">Question</h3>
+      <div className="w-full bg-[#DDE1F2] border border-[#B4B9C9] rounded-lg shadow-lg flex flex-col overflow-hidden px-6 py-6 gap-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-blue-600">Question</h3>
+          <EllipsisIcon className="w-4 h-4 text-gray-600" />
+        </div>
         {shape.questionTags && shape.questionTags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {shape.questionTags.map((tag) => (
@@ -267,7 +275,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
         </h2> */}
 
         <h2
-          className="font-extrabold text-[14px] text-[#111827]"
+          className="font-bold text-lg text-gray-900"
           onDoubleClick={startTitleEdit}
         >
           {/* <span className="text-[#8B93A1] mr-1">1.</span> */}
@@ -291,39 +299,46 @@ export const Question: React.FC<QuestionProps> = (props) => {
                   cancelTitle();
                 }
               }}
-              className="w-[calc(100%-1.25rem)] bg-transparent outline-none border-b border-indigo-200"
+              className="w-full bg-transparent outline-none text-lg font-bold text-gray-900 placeholder:text-[#2E3545]"
               // ^ small underline to hint edit mode; tweak styles as you wish
             />
           )}
         </h2>
         {/* Body */}
-        <div className="flex-1 overflow-auto">
-          <h3 className="text-[11px] font-medium text-[#8B93A1]">Summary</h3>
-          <div
-            className="mt-5 rounded-[8px] "
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <RteEditor
-              onBlur={() => setShowToolbar(false)}
-              onFocus={() => setShowToolbar(true)}
-              editorState={editorState}
-              onEditorStateChange={setEditorState}
-              toolbar={{
-                options: ["inline", "list", "link", "history"],
-                inline: {
-                  options: ["bold", "italic", "underline", "strikethrough"],
-                },
-                list: { options: ["unordered", "ordered"] },
-              }}
-              toolbarHidden={!showToolbar}
-              toolbarClassName="border-b px-2"
-              editorClassName="px-2 py-2 min-h-[120px]"
-              wrapperClassName=""
+        {isEmpty && !editingBody && (
+          <div className="mt-4 p-4 bg-white border border-red-200 rounded-lg">
+            <LoadingText 
+              text="Click to add interview notes..." 
+              showLoader={false}
+              centered={true}
             />
           </div>
+        )}
+        <div
+          className="mt-4 rounded-lg"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <RteEditor
+            onBlur={() => setShowToolbar(false)}
+            onFocus={() => setShowToolbar(true)}
+            editorState={editorState}
+            onEditorStateChange={setEditorState}
+            toolbar={{
+              options: ["inline", "list", "link", "history"],
+              inline: {
+                options: ["bold", "italic", "underline", "strikethrough"],
+              },
+              list: { options: ["unordered", "ordered"] },
+            }}
+            toolbarHidden={!showToolbar}
+            toolbarClassName={`border-b px-2 text-[24px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+            editorClassName={`px-2 py-2 min-h-[120px] text-[24px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+            wrapperClassName=""
+            placeholder="Write here..."
+          />
         </div>
 
-        <div className="px-8 flex items-center justify-center">
+        <div className="border-t border-[#B4B9C9] pt-4">
           <button
             type="button"
             onClick={(e) => {
@@ -331,14 +346,16 @@ export const Question: React.FC<QuestionProps> = (props) => {
               toggleCollapsed();
             }}
             data-nodrag="true"
-            className="inline-flex items-center gap-2 text-[12px] text-gray-700 bg-white border rounded-md px-2 py-1 hover:bg-gray-50"
+            className="w-full flex items-center justify-between text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors"
           >
-            <ChevronDown
-              className={`w-4 h-4 transition-transform ${
-                collapsed ? "-rotate-90" : "rotate-0"
-              }`}
-            />
-            {collapsed ? "Show questions" : "Hide questions"}
+            <span className="flex items-center gap-2">
+              <ChevronDown
+                className={`w-4 h-4 transition-transform ${
+                  collapsed ? "-rotate-90" : "rotate-0"
+                }`}
+              />
+              Subquestions ({firtQuestionsOrder.length + secondQuestionsOrder.length})
+            </span>
             {/* <span className="ml-2 text-gray-400">
               ({answeredCount}/{fiQuestions.length})
             </span> */}
@@ -348,14 +365,14 @@ export const Question: React.FC<QuestionProps> = (props) => {
         {!collapsed && (
           <div
             ref={questionsRef}
-            className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md"
+            className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
           >
             {firtQuestionsOrder.map(({ key, label }) => {
               const valueProp = formattedValuePropData[key];
 
               return (
-                <div key={key}>
-                  <h3 className="font-semibold mb-2">{getTitle(key)}</h3>
+                <div key={key} className="mb-4 ">
+                  <h3 className="font-semibold text-sm text-gray-800 mb-3">{getTitle(key)}</h3>
                   <div className="flex flex-col gap-2">
                     {valueProp.map((item: any) => {
                       if (!item.draftRaw) return null;
@@ -366,18 +383,18 @@ export const Question: React.FC<QuestionProps> = (props) => {
                       const text = editor.getCurrentContent().getPlainText();
 
                       return (
-                        <div className="flex items-center gap-2" key={item.id}>
+                        <div className="flex items-center gap-3" key={item.id}>
                           <Checkbox
                             key={item.id}
                             checked={shape.questionTags?.includes(
                               `${key}::${text}`
                             )}
-                            className="bg-white"
+                            className="bg-white border-gray-300"
                             onCheckedChange={(checked) => {
                               updateCheckTags(`${key}::${text}`, !!checked);
                             }}
                           />
-                          <Label>{text}</Label>
+                          <Label className="text-sm text-gray-700">{text}</Label>
                         </div>
                       );
                     })}
@@ -386,14 +403,14 @@ export const Question: React.FC<QuestionProps> = (props) => {
               );
             })}
 
-            <div className="border border-dashed border-[black]" />
+            <div className="border-t border-gray-300 my-4" />
 
             {secondQuestionsOrder.map(({ key, label }) => {
               const valueProp = formattedValuePropData[key];
 
               return (
-                <div key={key}>
-                  <h3 className="font-semibold mb-2">{getTitle(key)}</h3>
+                <div key={key} className="mb-5">
+                  <h3 className="font-semibold text-sm text-gray-800 mb-3">{getTitle(key)}</h3>
                   <div className="flex flex-col gap-2">
                     {valueProp.map((item: any) => {
                       if (!item.draftRaw) return null;
@@ -404,18 +421,18 @@ export const Question: React.FC<QuestionProps> = (props) => {
                       const text = editor.getCurrentContent().getPlainText();
 
                       return (
-                        <div className="flex items-center gap-2" key={item.id}>
+                        <div className="flex items-center gap-3" key={item.id}>
                           <Checkbox
                             key={item.id}
                             checked={shape.questionTags?.includes(
                               `${key}::${text}`
                             )}
-                            className="bg-white"
+                            className="bg-white border-gray-300"
                             onCheckedChange={(checked) => {
                               updateCheckTags(`${key}::${text}`, !!checked);
                             }}
                           />
-                          <Label>{text}</Label>
+                          <Label className="text-sm text-gray-700">{text}</Label>
                         </div>
                       );
                     })}

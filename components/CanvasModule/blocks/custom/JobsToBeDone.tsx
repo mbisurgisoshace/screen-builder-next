@@ -135,7 +135,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
 
   const [editorState, setEditorState] =
     useState<EditorState>(initialEditorState);
-  const [editingBody, setEditingBody] = useState(true);
+  const [editingBody, setEditingBody] = useState(false);
   const [showToolbar, setShowToolbar] = useState(false);
 
   useEffect(() => {
@@ -163,50 +163,115 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
 
   const [currentValue, setCurrentValue] = useState<number>(0);
 
+  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const isEmpty = !hasContent && !editingBody;
+
   return (
     <div className="flex-1 overflow-auto">
       <div
-        className="mt-1 rounded-[8px] "
+        className="shadow-lg bg-[#FDE1B5]"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="px-8 flex items-center justify-center">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleCollapsed();
-            }}
-            data-nodrag="true"
-            className="inline-flex items-center gap-2 text-[12px] text-gray-700 bg-white border rounded-md px-2 py-1 hover:bg-gray-50"
-          >
-            <ChevronDown
-              className={`w-4 h-4 transition-transform ${
-                collapsed ? "-rotate-90" : "rotate-0"
-              }`}
+        <div className="p-6 pt-0">
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder={isEmpty ? "Title of the video text example" : "Type in a Jobs to be Done"}
+              className="w-full bg-transparent border-none outline-none text-lg font-manrope font-bold text-[24px] placeholder:text-[#2E3545] placeholder:font-medium"
+              defaultValue={shape.cardTitle || ""}
+              onBlur={(e) => {
+                if (e.target.value !== shape.cardTitle) {
+                  commit({ cardTitle: e.target.value });
+                }
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
             />
-            {collapsed ? "Show questions" : "Hide questions"}
-            <span className="ml-2 text-gray-400">
-              ({answeredCount}/{fiQuestions.length})
-            </span>
-          </button>
-        </div>
+          </div>
 
-        {!collapsed && (
-          <div
-            ref={questionsRef}
-            className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md"
-          >
-            {fiQuestions.map((q, idx) => (
-              <div className="flex flex-col gap-3" key={q.id}>
-                <h3 className="font-bold text-[14px] text-[#111827]">
-                  {q.question}
-                </h3>
-
-                <div
-                  data-nodrag="true"
-                  onMouseDown={(e) => e.stopPropagation()}
-                  className="w-full"
+          <div className="mb-6">
+            {isEmpty ? (
+              <div className="flex items-center">
+                <button
+                  onClick={() => {
+                    setEditingBody(true);
+                    setShowToolbar(true);
+                  }}
+                  className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
                 >
+                  + add more details
+                </button>
+              </div>
+            ) : (
+              <RteEditor
+                onBlur={() => {
+                  setShowToolbar(false);
+                  setEditingBody(false);
+                    const contentState = editorState.getCurrentContent();
+                    const hasText = contentState.hasText();
+                    if (!hasText) {
+                      setEditorState(EditorState.createEmpty());
+                      commit({ draftRaw: undefined });
+                    }
+                }}
+                onFocus={() => {
+                  setShowToolbar(true);
+                  setEditingBody(true);
+                }}
+                editorState={editorState}
+                onEditorStateChange={setEditorState}
+                toolbar={{
+                  options: ["inline", "list", "link", "history"],
+                  inline: {
+                    options: ["bold", "italic", "underline", "strikethrough"],
+                  },
+                  list: { options: ["unordered", "ordered"] },
+                }}
+                toolbarHidden={!showToolbar}
+                toolbarClassName={`border-b px-2 text-[14px]  ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+                editorClassName={`px-2 py-2 min-h-[120px] text-[14px]  ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+                wrapperClassName=""
+                placeholder="Write here..."
+              />
+            )}
+          </div>
+          <div className="border-t border-[#B4B9C9] pt-4">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleCollapsed();
+              }}
+              data-nodrag="true"
+              className="w-full flex items-center justify-between text-sm text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
+                {collapsed ? `Subquestions (${fiQuestions.length})` : `Subquestions (${fiQuestions.length})`}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform text-[#80889D] ${collapsed ? "-rotate-90" : "rotate-0"
+                    }`}
+                />
+              </span>
+              {/* <span className="text-gray-400">
+                ({answeredCount}/{fiQuestions.length})
+              </span> */}
+            </button>
+
+            {!collapsed && (
+              <div
+                ref={questionsRef}
+                className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
+              >
+                {fiQuestions.map((q, idx) => (
+                  <div className="flex flex-col gap-3" key={q.id}>
+                    <h3 className="font-semibold text-sm text-gray-800">
+                      {q.question}
+                    </h3>
+
+                    <div
+                      data-nodrag="true"
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className="w-full"
+                    >
                   {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="Select an option" />
@@ -219,71 +284,40 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                       ))}
                     </SelectContent>
                   </Select> */}
-                  <div className="flex flex-col gap-1 items-center">
-                    <Slider
-                      min={0}
-                      max={10}
-                      step={1}
-                      defaultValue={[parseInt(tags[idx])]}
-                      value={currentValue ? [currentValue] : undefined}
-                      onValueCommit={(value) => addTag(value[0].toString())}
-                      onValueChange={(value) => setCurrentValue(value[0])}
-                    />
-                    <span>{currentValue}</span>
+                      <div className="flex flex-col gap-2 items-center">
+                        <Slider
+                          min={0}
+                          max={10}
+                          step={1}
+                          defaultValue={[parseInt(tags[idx]) || 0]}
+                          value={currentValue ? [currentValue] : undefined}
+                          onValueCommit={(value) => addTag(value[0].toString())}
+                          onValueChange={(value) => setCurrentValue(value[0])}
+                          className="w-full"
+                        />
+                        <span className="text-xs font-medium text-gray-700">{currentValue || 0}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
 
-        <div className="flex flex-row gap-2 p-2">
-          <span>Significance Score:</span>
-          {tags.map((t) => (
-            <button
-              key={t}
-              title="Remove"
-              data-nodrag="true"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                //removeTag(t);
-              }}
-              className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200"
-            >
-              {t}
-              <svg
-                className="w-3 h-3 opacity-70"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  d="M6 6l8 8M14 6l-8 8"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
-          ))}
+          {tags.length > 0 && (
+            <div className="mt-4 flex flex-row gap-2 items-center">
+              <span className="text-sm text-gray-600">Significance Score:</span>
+              {tags.map((t) => (
+                <span
+                  key={t}
+                  className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
-        <RteEditor
-          onBlur={() => setShowToolbar(false)}
-          onFocus={() => setShowToolbar(true)}
-          editorState={editorState}
-          onEditorStateChange={setEditorState}
-          toolbar={{
-            options: ["inline", "list", "link", "history"],
-            inline: {
-              options: ["bold", "italic", "underline", "strikethrough"],
-            },
-            list: { options: ["unordered", "ordered"] },
-          }}
-          toolbarHidden={!showToolbar}
-          toolbarClassName="border-b px-2"
-          editorClassName="px-2 py-2 min-h-[120px]"
-          wrapperClassName=""
-        />
       </div>
     </div>
   );

@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Shape as IShape } from "../types";
 import { TagPicker } from "../tags/TagPicker";
 import { useExtrasNode } from "./toolbar/toolbarExtrasStore";
 import { BlockToolbar } from "./toolbar/BlockToolbar";
 import { Badge } from "@/components/ui/badge";
+import { useElementSize } from "../hooks/useElementSize";
 
 type Dir = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 type Connector = "top" | "right" | "bottom" | "left";
@@ -39,6 +40,7 @@ export interface ShapeFrameProps {
   interactive?: boolean;
 
   onChangeTags?: (id: string, tagIds: string[]) => void;
+  onCommitStyle?: (id: string, patch: Partial<IShape>) => void;
 }
 
 export const ShapeFrame: React.FC<ShapeFrameProps> = ({
@@ -54,7 +56,16 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   selectable = true,
   onChangeTags,
   interactive = true,
+  onCommitStyle,
 }) => {
+  const { ref, height } = useElementSize<HTMLDivElement>({
+    box: "content-box",
+  });
+
+  useEffect(() => {
+    onCommitStyle?.(shape.id, { height });
+  }, [height]);
+
   const canInteract = interactive;
   const showSingleSelectionUI =
     canInteract && selectable && isSelected && selectedCount === 1;
@@ -192,6 +203,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
 
   return (
     <div
+      ref={ref}
       data-shapeid={shape.id}
       onMouseDown={onMouseDown}
       style={{
@@ -199,7 +211,8 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
         left: shape.x,
         top: shape.y,
         width: shape.width,
-        height: shape.height,
+        // height: shape.height,
+        height: "min-content",
         zIndex: isSelected ? 50 : 45,
         pointerEvents: canInteract ? "auto" : "none",
       }}
@@ -241,7 +254,9 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
       {shape.tags && shape.tags.length > 0 && (
         <div className="absolute flex flex-row gap-1 -top-8 left-2">
           {shape.tags.map((tag) => (
-            <Badge key={tag}>{tag}</Badge>
+            <Badge key={tag} variant="outlineGray">
+              {tag}
+            </Badge>
           ))}
         </div>
       )}

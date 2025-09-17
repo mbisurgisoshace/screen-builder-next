@@ -115,8 +115,10 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
   const previewText = useMemo(() => {
     const content = editorState.getCurrentContent();
     const text = content.hasText() ? content.getPlainText("\n") : "";
-    return text.length ? text : "Write interview notes here…";
+    return text.length ? text : "";
   }, [editorState]);
+
+  const isEmpty = !previewText.trim();
 
   const getNextAnswer = () => {
     setCurrentAnswer((prev) => {
@@ -139,14 +141,21 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
       resizable={true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
-      <div className="h-full flex flex-row rounded-xl shadow border-1 border-[#E9E6F0] bg-white">
-        <div className="flex-1/2 h-full flex flex-col overflow-hidden px-8 py-6 gap-4 border-r ">
-          <h3 className="text-[11px] font-medium text-[#8B93A1]">Question</h3>
-          <h2 className="font-extrabold text-[14px] text-[#111827]">
+      <div className="w-full h-full bg-[#DDE1F2] border border-[#B4B9C9] rounded-lg shadow-lg flex flex-row overflow-hidden">
+        <div className="flex-1/2 h-full flex flex-col overflow-hidden px-6 py-6 gap-4 border-r border-[#B4B9C9]">
+          <h3 className="text-sm font-medium text-blue-600">Question</h3>
+          <h2 className="text-lg font-bold text-gray-900">
             {shape.questionTitle}
           </h2>
           {/* Body */}
           <div className="flex-1 overflow-auto">
+            {isEmpty && !editingBody && (
+              <div className="mt-5 p-4 bg-white border border-red-200 rounded-lg">
+                <p className="text-sm text-gray-500 text-center">
+                  Click to add interview notes...
+                </p>
+              </div>
+            )}
             <div
               className="mt-5 rounded-[8px] "
               onMouseDown={(e) => e.stopPropagation()}
@@ -164,38 +173,44 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                   list: { options: ["unordered", "ordered"] },
                 }}
                 toolbarHidden={!showToolbar}
-                toolbarClassName="border-b px-2"
-                editorClassName="px-2 py-2 min-h-[120px]"
+                toolbarClassName={`border-b px-2 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+                editorClassName={`px-2 py-2 min-h-[120px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
                 wrapperClassName=""
               />
             </div>
           </div>
         </div>
-        <div className="w-full h-full flex flex-col overflow-hidden px-8 py-6 gap-4">
-          <h3 className="text-[11px] font-medium text-[#8B93A1] flex flex-row justify-between items-center">
-            <>
-              Answers
+        <div className="w-full h-full flex flex-col overflow-hidden px-6 py-6 gap-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-blue-600">Answers</h3>
+            <div className="flex items-center gap-2">
               {view === "slide" ? (
-                <LayoutListIcon
-                  size={18}
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
                     setView("board");
                   }}
-                />
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  title="Switch to board view"
+                >
+                  <LayoutListIcon size={18} className="text-gray-600" />
+                </button>
               ) : (
-                <LayoutDashboardIcon
-                  size={18}
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
                     setView("slide");
                   }}
-                />
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  title="Switch to slide view"
+                >
+                  <LayoutDashboardIcon size={18} className="text-gray-600" />
+                </button>
               )}
-            </>
-          </h3>
+            </div>
+          </div>
           {view === "slide" && (
             <>
               <div className="flex items-center">
@@ -248,16 +263,18 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
               </div>
 
               <div className="flex flex-row justify-between items-center">
-                <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#E9E6F0]">
-                  <ChevronLeftIcon
-                    className="h-4 w-4 text-[#8B92A1]"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      getPreviousAnswer();
-                    }}
-                  />
-                </div>
+                <button
+                  className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#B4B9C9] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    getPreviousAnswer();
+                  }}
+                  disabled={currentAnswer === 0}
+                  data-nodrag="true"
+                >
+                  <ChevronLeftIcon className="h-4 w-4 text-[#8B92A1]" />
+                </button>
 
                 <div className="text-[11px] font-medium text-[#8B93A1]">
                   <span className="mr-[1px]">Answer</span>
@@ -271,16 +288,18 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#E9E6F0]">
-                  <ChevronRightIcon
-                    className="h-4 w-4 text-[#8B92A1]"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      getNextAnswer();
-                    }}
-                  />
-                </div>
+                <button
+                  className="flex items-center justify-center rounded-full h-[30px] w-[30px] border border-[#B4B9C9] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    getNextAnswer();
+                  }}
+                  disabled={currentAnswer >= question_answers.length - 1}
+                  data-nodrag="true"
+                >
+                  <ChevronRightIcon className="h-4 w-4 text-[#8B92A1]" />
+                </button>
               </div>
             </>
           )}
@@ -293,7 +312,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                 return (
                   <div
                     key={index}
-                    className="bg-[#EEF0FA] px-6 py-4 rounded-xl"
+                    className="bg-[#EDEBFE] border border-[#B4B9C9] px-6 py-4 rounded-lg"
                   >
                     <div className="flex items-center">
                       <div className="h-[40px] w-[40px] bg-[#F4F0FF] rounded-full flex items-center justify-center">
@@ -314,7 +333,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-[10px] mt-3">
+                    <div className="bg-white rounded-lg mt-3">
                       <RteEditor
                         editorState={EditorState.createWithContent(
                           convertFromRaw(raw)
