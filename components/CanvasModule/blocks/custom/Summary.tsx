@@ -172,7 +172,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
         <div className="flex flex-col gap-6 p-8">
           <div className="flex flex-row items-center gap-1">
             <h3 
-              className="text-3xl font-medium text-white"
+              className="text-3xl font-medium text-gray-300"
               style={{
                 fontFamily: "Manrope",
                 fontWeight: 500,
@@ -194,7 +194,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
-                className="w-105 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                className="w-105 border-0 border-b-2 border-gray-400 bg-transparent text-white font-bold placeholder:text-gray-400 focus:border-gray-400 focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
                 placeholder="Products and Services"
               />
             </div>
@@ -202,7 +202,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
         
           <div className="flex flex-row items-center gap-1">
             <h3 
-              className="text-3xl font-medium text-white"
+              className="text-3xl font-medium text-gray-300"
               style={{
                 fontFamily: "Manrope",
                 fontWeight: 500,
@@ -224,7 +224,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
-                className="w-98 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                className="w-98 border-0 border-b-2 border-gray-400 bg-transparent text-white font-bold placeholder:text-gray-400 focus:border-gray-400 focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
                 placeholder="Customer Segment"
               />
             </div>
@@ -232,7 +232,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
           
           <div className="flex flex-row items-center gap-1">
             <h3 
-              className="text-3xl font-medium text-white"
+              className="text-3xl font-medium text-gray-300"
               style={{
                 fontFamily: "Manrope",
                 fontWeight: 500,
@@ -254,7 +254,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
-                className="w-88 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                className="w-88 border-0 border-b-2 border-gray-400 bg-transparent text-white font-bold placeholder:text-gray-400 focus:border-gray-400 focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
                 placeholder="Jobs to be Done"
               />
             </div>
@@ -262,7 +262,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
           
           <div className="flex flex-row items-center gap-1">
             <h3 
-              className="text-3xl font-medium text-white"
+              className="text-3xl font-medium text-gray-300"
               style={{
                 fontFamily: "Manrope",
                 fontWeight: 500,
@@ -284,7 +284,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
-                className="w-52 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                className="w-52 border-0 border-b-2 border-gray-400 bg-transparent text-white font-bold placeholder:text-gray-400 focus:border-gray-400 focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
                 placeholder="Verb"
               />
             </div>
@@ -299,7 +299,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
-                className="w-56 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                className="w-56 border-0 border-b-2 border-gray-400 bg-transparent text-white font-bold placeholder:text-gray-400 focus:border-gray-400 focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
                 placeholder="Customer Pain"
               />
             </div>
@@ -307,7 +307,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
           
           <div className="flex flex-row items-center gap-1">
             <h3 
-              className="text-3xl font-medium text-white"
+              className="text-3xl font-medium text-gray-300"
               style={{
                 fontFamily: "Manrope",
                 fontWeight: 500,
@@ -329,7 +329,7 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
-                className="w-48 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                className="w-48 border-0 border-b-2 border-gray-400 bg-transparent text-white font-bold placeholder:text-gray-400 focus:border-gray-400 focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
                 placeholder="Verb"
               />
             </div>
@@ -344,14 +344,14 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
-                className="w-56 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                className="w-56 border-0 border-b-2 border-gray-400 bg-transparent text-white font-bold placeholder:text-gray-400 focus:border-gray-400 focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
                 placeholder="Customer Gain"
               />
             </div>
           </div>
           <div className="flex flex-row items-center gap-1">
             <h3 
-              className="text-3xl font-medium text-white"
+              className="text-3xl font-medium text-gray-300"
               style={{
                 fontFamily: "Manrope",
                 fontWeight: 500,
@@ -373,12 +373,12 @@ export const Summary: React.FC<SummaryProps> = (props) => {
                     },
                   });
                 }}
-                className="w-96 border-0 border-b-2 border-white bg-transparent text-white placeholder:text-white/70 focus:border-white focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
+                className="w-96 border-0 border-b-2 border-gray-400 bg-transparent text-white font-bold placeholder:text-gray-400 focus:border-gray-400 focus:border-t-0 focus:border-x-0 focus:ring-0 focus:outline-none rounded-none"
                 placeholder="Competing Value Proposition"
               />
             </div>
             <h3 
-              className="text-3xl font-medium text-white"
+              className="text-3xl font-medium text-gray-300"
               style={{
                 fontFamily: "Manrope",
                 fontWeight: 500,

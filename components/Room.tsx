@@ -7,6 +7,7 @@ import {
   ClientSideSuspense,
 } from "@liveblocks/react/suspense";
 import { LiveList } from "@liveblocks/client";
+import { LoadingText } from "@/components/ui/loader";
 
 interface RoomProps {
   roomId: string;
@@ -29,7 +30,11 @@ export function Room({ roomId, children }: RoomProps) {
           connections: new LiveList([]),
         }}
       >
-        <ClientSideSuspense fallback={<div>Loading…</div>}>
+        <ClientSideSuspense fallback={
+          <div className="flex items-center justify-center min-h-[200px]">
+            <LoadingText text="Loading room..." />
+          </div>
+        }>
           {children}
         </ClientSideSuspense>
       </RoomProvider>

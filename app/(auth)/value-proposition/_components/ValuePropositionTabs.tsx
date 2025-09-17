@@ -6,6 +6,7 @@ import React, { useState } from "react";
 
 import { Room } from "@/components/Room";
 import InfiniteCanvas from "@/components/InfiniteCanvas";
+import { LoadingText } from "@/components/ui/loader";
 import {
   createWorkspaceRoom,
   renameWorkspaceRoom,
@@ -78,7 +79,9 @@ export default function ValuePropositionTabsView({ rooms }: { rooms: any[] }) {
             </Room>
           </div>
         ) : (
-          <div className="p-6 text-gray-500">Loading…</div>
+          <div className="p-6 flex items-center justify-center min-h-[200px]">
+            <LoadingText text="Loading workspace..." />
+          </div>
         )}
       </div>
     </div>

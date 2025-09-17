@@ -195,7 +195,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
       interactive={props.interactive ?? true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
-      <div className="w-full h-full bg-white border-2 border-white rounded-xl shadow flex flex-col overflow-hidden">
+      <div className="w-fullbg-white border-1 border-[#B4B9C9] rounded-xl flex flex-col overflow-hidden shadow-[0px_4px_33.3px_0px_rgba(30,39,143,0.2)]">
         {/* Header */}
         <div
           className={`px-3 py-2 font-semibold text-[14px] flex items-center justify-between`}

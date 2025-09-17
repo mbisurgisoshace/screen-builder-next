@@ -160,12 +160,30 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
+
+  const hasContent = shape.cardTitle || shape.draftRaw;
+  const isEmpty = !hasContent;
+
   return (
     <div className="flex-1 overflow-auto">
       <div
-        className="mt-1 rounded-[8px] "
+        className="mt-1 rounded-lg shadow-lg bg-[#CCF6EA] border border-[#B4B9C9]"
         onMouseDown={(e) => e.stopPropagation()}
       >
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Type in a Pain Reliever"
+            className="w-full bg-transparent border-none outline-none text-[14px] font-extrabold text-[#111827] placeholder:text-[#2E3545]"
+            defaultValue={shape.cardTitle || ""}
+            onBlur={(e) => {
+              if (e.target.value !== shape.cardTitle) {
+                commit({ cardTitle: e.target.value });
+              }
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+          />
+        </div>
         <div className="flex flex-row gap-2 p-2">
           {tags.map((t) => (
             <button
@@ -195,23 +213,32 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
             </button>
           ))}
         </div>
-        <RteEditor
-          onBlur={() => setShowToolbar(false)}
-          onFocus={() => setShowToolbar(true)}
-          editorState={editorState}
-          onEditorStateChange={setEditorState}
-          toolbar={{
-            options: ["inline", "list", "link", "history"],
-            inline: {
-              options: ["bold", "italic", "underline", "strikethrough"],
-            },
-            list: { options: ["unordered", "ordered"] },
-          }}
-          toolbarHidden={!showToolbar}
-          toolbarClassName="border-b px-2"
-          editorClassName="px-2 py-2 min-h-[120px]"
-          wrapperClassName=""
-        />
+        {isEmpty ? (
+          <div className="p-4">
+            <p className="text-gray-600 text-sm leading-relaxed">
+              The average number of hours for all respondents is approximately 15 hours. Many of them note that very often there is not enough time from the schedule and they have to go beyond it.
+            </p>
+          </div>
+        ) : (
+          <RteEditor
+            onBlur={() => setShowToolbar(false)}
+            onFocus={() => setShowToolbar(true)}
+            editorState={editorState}
+            onEditorStateChange={setEditorState}
+            toolbar={{
+              options: ["inline", "list", "link", "history"],
+              inline: {
+                options: ["bold", "italic", "underline", "strikethrough"],
+              },
+              list: { options: ["unordered", "ordered"] },
+            }}
+            toolbarHidden={!showToolbar}
+            toolbarClassName={`border-b px-2 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+            editorClassName={`px-2 py-2 min-h-[120px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+            wrapperClassName=""
+            placeholder="Write here..."
+          />
+        )}
       </div>
 
       {/* <div className="px-8 flex items-center justify-center">
