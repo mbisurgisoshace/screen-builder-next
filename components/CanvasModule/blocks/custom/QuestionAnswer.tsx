@@ -306,7 +306,10 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                           {answer.name || "Interviewee"}
                         </span>
                         <span className="text-[#111827] opacity-50 text-[11px] font-medium">
-                          UX/UI designer
+                          Role: {answer.role || "UX/UI designer"}
+                        </span>
+                        <span className="text-[#111827] opacity-50 text-[11px] font-medium">
+                          Market Segment: {answer.market_segment || " "}
                         </span>
                       </div>
                     </div>
