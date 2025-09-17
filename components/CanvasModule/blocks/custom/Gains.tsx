@@ -162,8 +162,8 @@ export const Gains: React.FC<GainsProps> = (props) => {
   }, [editorState, editingBody]);
   const [currentValue, setCurrentValue] = useState<number>(0);
 
-  const hasContent = shape.cardTitle || shape.draftRaw;
-  const isEmpty = !hasContent;
+  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const isEmpty = !hasContent && !editingBody;
 
   return (
     <div className="flex-1 overflow-auto">
@@ -177,7 +177,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
             <input
               type="text"
               placeholder={isEmpty ? "Title of the video text example" : "Type in a Gain"}
-              className="w-full bg-transparent border-none outline-none text-lgfont-manrope font-bold text-[24px] placeholder:text-[#2E3545] placeholder:font-medium"
+              className="w-full bg-transparent border-none outline-none text-lg font-manrope font-bold text-[24px] placeholder:text-[#2E3545] placeholder:font-medium"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
                 if (e.target.value !== shape.cardTitle) {
@@ -189,14 +189,28 @@ export const Gains: React.FC<GainsProps> = (props) => {
           </div>
           <div className="mb-6">
             {isEmpty ? (
-              <p className="text-gray-600 text-sm leading-relaxed">
-                The average number of hours for all respondents is approximately 15 hours. Many of them note that very often there is not enough time from the schedule and they have to go beyond it.
-              </p>
+              <div className="flex items-center">
+                <button
+                  onClick={() => {
+                    setEditingBody(true);
+                    setShowToolbar(true);
+                  }}
+                  className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                >
+                  + add more details
+                </button>
+              </div>
             ) : (
               <RteEditor
                 onBlur={() => {
                   setShowToolbar(false);
                   setEditingBody(false);
+                    const contentState = editorState.getCurrentContent();
+                    const hasText = contentState.hasText();
+                    if (!hasText) {
+                      setEditorState(EditorState.createEmpty());
+                      commit({ draftRaw: undefined });
+                    }
                 }}
                 onFocus={() => {
                   setShowToolbar(true);
@@ -230,10 +244,10 @@ export const Gains: React.FC<GainsProps> = (props) => {
               data-nodrag="true"
               className="w-full flex items-center justify-between text-sm text-gray-700 hover:text-gray-900 transition-colors"
             >
-              <span className="flex items-center gap-2 font-manrope font-bold font-[#111827] text-[14px]">
+              <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
                 {collapsed ? `Subquestions (${fiQuestions.length})` : `Subquestions (${fiQuestions.length})`}
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform text-[#80889D] ${collapsed ? "-rotate-90" : "rotate-0"
+                  className={`w-4 h-4 transition-transform text-[#80889D] ${collapsed ? "-rotate-0" : "rotate-180"
                     }`}
                 />
               </span>
@@ -292,7 +306,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
 
           {/* Significance Score Display */}
           {tags.length > 0 && (
-            <div className="mt-4 flex flex-row gap-2">
+            <div className="mt-4 flex flex-row gap-2 items-center">
               <span className="text-sm text-gray-600">Significance Score:</span>
               {tags.map((t) => (
                 <span

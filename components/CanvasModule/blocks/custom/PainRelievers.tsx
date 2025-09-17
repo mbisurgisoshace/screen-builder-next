@@ -161,8 +161,8 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
   }, [editorState, editingBody]);
 
 
-  const hasContent = shape.cardTitle || shape.draftRaw;
-  const isEmpty = !hasContent;
+  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const isEmpty = !hasContent && !editingBody;
 
   return (
     <div className="flex-1 overflow-auto">
@@ -215,14 +215,34 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
         </div>
         {isEmpty ? (
           <div className="p-4">
-            <p className="text-gray-600 text-sm leading-relaxed">
-              The average number of hours for all respondents is approximately 15 hours. Many of them note that very often there is not enough time from the schedule and they have to go beyond it.
-            </p>
+            <div className="flex items-center">
+              <button
+                onClick={() => {
+                  setEditingBody(true);
+                  setShowToolbar(true);
+                }}
+                className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+              >
+                + add more details
+              </button>
+            </div>
           </div>
         ) : (
           <RteEditor
-            onBlur={() => setShowToolbar(false)}
-            onFocus={() => setShowToolbar(true)}
+            onBlur={() => {
+              setShowToolbar(false);
+              setEditingBody(false);
+                const contentState = editorState.getCurrentContent();
+                const hasText = contentState.hasText();
+                if (!hasText) {
+                  setEditorState(EditorState.createEmpty());
+                  commit({ draftRaw: undefined });
+                }
+            }}
+            onFocus={() => {
+              setShowToolbar(true);
+              setEditingBody(true);
+            }}
             editorState={editorState}
             onEditorStateChange={setEditorState}
             toolbar={{
@@ -233,8 +253,8 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
               list: { options: ["unordered", "ordered"] },
             }}
             toolbarHidden={!showToolbar}
-            toolbarClassName={`border-b px-2 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-            editorClassName={`px-2 py-2 min-h-[120px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+            toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+            editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
             wrapperClassName=""
             placeholder="Write here..."
           />

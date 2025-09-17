@@ -160,8 +160,8 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
-  const hasContent = shape.cardTitle || shape.draftRaw;
-  const isEmpty = !hasContent;
+  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const isEmpty = !hasContent && !editingBody;
 
   return (
     <div className="flex-1 overflow-auto">
@@ -215,14 +215,34 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
         </div>
         {isEmpty ? (
           <div className="p-4">
-            <p className="text-gray-600 text-sm leading-relaxed">
-              The average number of hours for all respondents is approximately 15 hours. Many of them note that very often there is not enough time from the schedule and they have to go beyond it.
-            </p>
+            <div className="flex items-center">
+              <button
+                onClick={() => {
+                  setEditingBody(true);
+                  setShowToolbar(true);
+                }}
+                className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+              >
+                + add more details
+              </button>
+            </div>
           </div>
         ) : (
           <RteEditor
-            onBlur={() => setShowToolbar(false)}
-            onFocus={() => setShowToolbar(true)}
+            onBlur={() => {
+              setShowToolbar(false);
+              setEditingBody(false);
+                const contentState = editorState.getCurrentContent();
+                const hasText = contentState.hasText();
+                if (!hasText) {
+                  setEditorState(EditorState.createEmpty());
+                  commit({ draftRaw: undefined });
+                }
+            }}
+            onFocus={() => {
+              setShowToolbar(true);
+              setEditingBody(true);
+            }}
             editorState={editorState}
             onEditorStateChange={setEditorState}
             toolbar={{
