@@ -5,7 +5,6 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { getParticipant } from "@/services/participants";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { set } from "lodash";
 
 export default function AppHeader() {
   const { user } = useUser();
