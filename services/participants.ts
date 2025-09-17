@@ -9,6 +9,18 @@ import { auth } from "@clerk/nextjs/server";
 
 import { participantFormSchema } from "@/schemas/participant";
 
+export async function getParticipant(participantId: string) {
+  const { orgId, userId } = await auth();
+
+  if (!orgId || !userId) return redirect("/sign-in");
+
+  const participant = await prisma.participant.findFirst({
+    where: { id: participantId, org_id: orgId },
+  });
+
+  return participant;
+}
+
 export async function getParticipants() {
   const { orgId, userId } = await auth();
 
@@ -47,7 +59,21 @@ export async function createParticipant(
   return newParticipant;
 }
 
-export async function updateParticipant() {}
+export async function updateParticipant(
+  participantId: string,
+  values: z.infer<typeof participantFormSchema>
+) {
+  const { orgId, userId } = await auth();
+
+  if (!orgId || !userId) return redirect("/sign-in");
+
+  const updatedParticipant = await prisma.participant.update({
+    where: { id: participantId, org_id: orgId },
+    data: { ...values },
+  });
+
+  revalidatePath(`/participants`);
+}
 
 export async function markParticipantAsComplete(participantId: string) {
   const { orgId, userId } = await auth();
