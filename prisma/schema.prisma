@@ -27,21 +27,28 @@ model Tag {
 
 enum ParticipantStatus {
   complete
+  scheduled
   incomplete
+  interviewed
+  not_available
+  need_to_schedule
 }
 
 model Participant {
-  id              String            @id @default(uuid())
-  name            String
-  org_id          String
-  role            String?
-  contact_info    String?
-  rationale       String?
-  blocking_issues String?
-  status          ParticipantStatus @default(incomplete)
-  scheduled_date  DateTime
-  created_at      DateTime          @default(now())
-  ParticipantRoom ParticipantRoom?
+  id                     String            @id @default(uuid())
+  name                   String
+  org_id                 String
+  role                   String?
+  market_segment         String?
+  contact_info           String?
+  rationale              String?
+  blocking_issues        String?
+  hypothesis_to_validate String?
+  learnings              String?
+  status                 ParticipantStatus @default(need_to_schedule)
+  scheduled_date         DateTime
+  created_at             DateTime          @default(now())
+  ParticipantRoom        ParticipantRoom?
 
   @@map("participants")
 }
