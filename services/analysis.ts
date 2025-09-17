@@ -54,8 +54,7 @@ export async function generateAnalysisRoom(roomId: string) {
         .filter((shape: any) => shape.type === "question")
         .map((shape: any) => {
           return {
-            name: participant.name,
-            participantId: participant.id,
+            ...participant,
             questionId: shape.metadata?.questionId,
             draftRaw: shape.draftRaw,
           };

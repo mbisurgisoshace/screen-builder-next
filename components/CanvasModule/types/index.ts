@@ -79,6 +79,8 @@ export interface Shape {
 
   question_answers?: {
     name: string;
+    role: string;
+    market_segment?: string;
     participantId: string;
     questionId: string;
     draftRaw: string;
