@@ -172,12 +172,12 @@ export const Pains: React.FC<PainsProps> = (props) => {
         className="bg-[#FFBCBC]"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="p-6">
+        <div className="p-6 pt-0">
           <div className="mb-4">
             <input
               type="text"
               placeholder={isEmpty ? "Title of the video text example" : "Type in a Pain"}
-              className="w-full bg-transparent border-none outline-none text-lg font-manrope font-bold placeholder:text-[#2E3545] placeholder:font-medium"
+              className="w-full bg-transparent border-none outline-none text-lg font-manrope font-bold text-[24px] placeholder:text-[#2E3545] placeholder:font-medium"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
                 if (e.target.value !== shape.cardTitle) {
@@ -212,8 +212,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
                   list: { options: ["unordered", "ordered"] },
                 }}
                 toolbarHidden={!showToolbar}
-                toolbarClassName={`border-b px-2 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-                editorClassName={`px-2 py-2 min-h-[120px] ${editingBody ? "bg-white rounded" : "bg-transparent"
+                toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+                editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
                   } placeholder:text-gray-500 `}
                 wrapperClassName=""
                 placeholder="Write here..."

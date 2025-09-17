@@ -253,7 +253,6 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
           zIndex: 25,
           width: "100%",
           height: "100%",
-          maxWidth: "340px",
         }}
       >
         {children}

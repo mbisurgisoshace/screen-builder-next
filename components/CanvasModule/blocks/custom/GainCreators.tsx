@@ -233,8 +233,8 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
               list: { options: ["unordered", "ordered"] },
             }}
             toolbarHidden={!showToolbar}
-            toolbarClassName={`border-b px-2 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-            editorClassName={`px-2 py-2 min-h-[120px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+            toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+            editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
             wrapperClassName=""
             placeholder="Write here..."
           />
