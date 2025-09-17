@@ -30,7 +30,7 @@ export type CardType =
 export type Kind = "image" | "video" | "pdf" | "file";
 
 export interface Shape {
-  cardTitle: string | undefined;
+  cardTitle?: string;
   x: number;
   y: number;
   id: string;
