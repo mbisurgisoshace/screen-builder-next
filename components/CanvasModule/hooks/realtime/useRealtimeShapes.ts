@@ -101,6 +101,7 @@ export function useRealtimeShapes() {
             ? 320
             : 112,
         color: "bg-blue-500",
+        cardTitle: "",
         text: type === "text" ? "New text" : undefined,
       };
 
