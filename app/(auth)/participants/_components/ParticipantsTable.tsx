@@ -17,6 +17,24 @@ import {
 import { format } from "date-fns/format";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import ParticipantTableActions from "./ParticipantTableActions";
+import { Participant } from "@/lib/generated/prisma";
 
 export default function ParticipantsTable({ data }: { data: any[] }) {
   const table = useReactTable({
@@ -172,8 +190,11 @@ const columns: ColumnDef<any>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original;
-      return <div></div>;
+      const participant = row.original;
+
+      return (
+        <ParticipantTableActions participant={participant as Participant} />
+      );
     },
   },
 ];

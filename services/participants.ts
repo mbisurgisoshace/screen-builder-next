@@ -46,3 +46,18 @@ export async function createParticipant(
 
   return newParticipant;
 }
+
+export async function updateParticipant() {}
+
+export async function markParticipantAsComplete(participantId: string) {
+  const { orgId, userId } = await auth();
+
+  if (!orgId || !userId) return redirect("/sign-in");
+
+  const updatedParticipant = await prisma.participant.update({
+    where: { id: participantId, org_id: orgId },
+    data: { status: "complete" },
+  });
+
+  revalidatePath(`/participants`);
+}
