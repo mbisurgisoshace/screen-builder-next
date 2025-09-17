@@ -177,7 +177,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
             <input
               type="text"
               placeholder={isEmpty ? "Title of the video text example" : "Type in a Gain"}
-              className="w-full bg-transparent border-none outline-none text-lg placeholder:text-[#2E3545]"
+              className="w-full bg-transparent border-none outline-none text-lgfont-manrope font-bold placeholder:text-[#2E3545] placeholder:font-medium"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
                 if (e.target.value !== shape.cardTitle) {

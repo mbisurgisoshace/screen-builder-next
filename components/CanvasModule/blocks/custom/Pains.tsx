@@ -177,7 +177,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
             <input
               type="text"
               placeholder={isEmpty ? "Title of the video text example" : "Type in a Pain"}
-              className="w-full bg-transparent border-none outline-none text-lg font-manrope placeholder:text-[#2E3545]"
+              className="w-full bg-transparent border-none outline-none text-lg font-manrope font-bold placeholder:text-[#2E3545] placeholder:font-medium"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
                 if (e.target.value !== shape.cardTitle) {
