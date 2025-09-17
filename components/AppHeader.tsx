@@ -16,6 +16,7 @@ export default function AppHeader() {
 
     if (pathname === "/") title = "To-do's";
     if (pathname === "/startups") title = "Startups";
+    if (pathname.includes("/analysis")) title = "Analysis";
     if (pathname.includes("/questions")) title = "Questions";
     if (pathname.includes("/participants")) title = "Participants";
     if (pathname.includes("/segments")) title = "Market Segments";

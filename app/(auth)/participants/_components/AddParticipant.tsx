@@ -36,10 +36,28 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { SelectValue } from "@radix-ui/react-select";
+import { EditorState, convertFromRaw } from "draft-js";
 import { participantFormSchema } from "@/schemas/participant";
 import { createParticipant } from "@/services/participants";
 
-export default function AddParticipant() {
+interface AddParticipantProps {
+  marketSegments: any[];
+}
+
+export default function AddParticipant({
+  marketSegments,
+}: AddParticipantProps) {
+  const marketSegmentOptions = marketSegments
+    ?.filter((s: any) => s.draftRaw)
+    .map((segment: any) => {
+      const draftRaw = segment.draftRaw;
+      const raw = JSON.parse(draftRaw);
+      const editor = EditorState.createWithContent(convertFromRaw(raw));
+      const text = editor.getCurrentContent().getPlainText();
+
+      return text;
+    });
+
   const form = useForm<z.infer<typeof participantFormSchema>>({
     resolver: zodResolver(participantFormSchema),
     defaultValues: {
@@ -48,6 +66,9 @@ export default function AddParticipant() {
       contact_info: "",
       rationale: "",
       blocking_issues: "",
+      hypothesis_to_validate: "",
+      learnings: "",
+      market_segment: "",
       scheduled_date: new Date(),
     },
   });
@@ -107,8 +128,45 @@ export default function AddParticipant() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="user">User</SelectItem>
-                        <SelectItem value="customer">Customer</SelectItem>
+                        <SelectItem value="Customer">Customer</SelectItem>
+                        <SelectItem value="End-User">End-User</SelectItem>
+                        <SelectItem value="Both Customer & End-User">
+                          Both Customer & End-User
+                        </SelectItem>
+                        <SelectItem value="Additional Decision Maker">
+                          Additional Decision Maker
+                        </SelectItem>
+                        <SelectItem value="Additional Stakeholder">
+                          Additional Stakeholder
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="market_segment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Market Segment</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a market segment" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {marketSegmentOptions?.map((segment: string) => (
+                          <SelectItem key={segment} value={segment}>
+                            {segment}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -152,6 +210,36 @@ export default function AddParticipant() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Blocking Issues</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="hypothesis_to_validate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hypothesis to Validate</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="learnings"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Learnings</FormLabel>
                     <FormControl>
                       <Textarea {...field} />
                     </FormControl>

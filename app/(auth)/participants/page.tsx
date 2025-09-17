@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import ParticipantsTable from "./_components/ParticipantsTable";
 import AddParticipant from "./_components/AddParticipant";
 import { getParticipants } from "@/services/participants";
+import { getSegments } from "@/services/segments";
 
 export default async function ParticipantsPage() {
+  const marketSegments = await getSegments();
   const participants = await getParticipants();
 
   return (
@@ -21,7 +23,7 @@ export default async function ParticipantsPage() {
           {/* <Button className="rounded-full text-sm font-bold">
             + Add Participant
           </Button> */}
-          <AddParticipant />
+          <AddParticipant marketSegments={marketSegments} />
         </header>
 
         <ParticipantsTable data={participants} />

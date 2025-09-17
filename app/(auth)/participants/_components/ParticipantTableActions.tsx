@@ -49,6 +49,9 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { participantFormSchema } from "@/schemas/participant";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { getSegments } from "@/services/segments";
+import { EditorState, convertFromRaw } from "draft-js";
 
 interface ParticipantTableActionsProps {
   participant: Participant;
@@ -57,6 +60,29 @@ interface ParticipantTableActionsProps {
 export default function ParticipantTableActions({
   participant,
 }: ParticipantTableActionsProps) {
+  const [marketSegments, setMarketSegments] = useState<string[]>([]);
+
+  const getMarketSegments = async () => {
+    const segments = await getSegments();
+
+    const marketSegmentOptions = segments
+      ?.filter((s: any) => s.draftRaw)
+      .map((segment: any) => {
+        const draftRaw = segment.draftRaw;
+        const raw = JSON.parse(draftRaw);
+        const editor = EditorState.createWithContent(convertFromRaw(raw));
+        const text = editor.getCurrentContent().getPlainText();
+
+        return text;
+      });
+
+    setMarketSegments(marketSegmentOptions);
+  };
+
+  useEffect(() => {
+    getMarketSegments();
+  }, []);
+
   const form = useForm<z.infer<typeof participantFormSchema>>({
     resolver: zodResolver(participantFormSchema),
     defaultValues: {
@@ -64,7 +90,10 @@ export default function ParticipantTableActions({
       role: participant.role || "",
       contact_info: participant.contact_info || "",
       rationale: participant.rationale || "",
+      market_segment: participant.market_segment || "",
       blocking_issues: participant.blocking_issues || "",
+      hypothesis_to_validate: participant.hypothesis_to_validate || "",
+      learnings: participant.learnings || "",
       scheduled_date: participant.scheduled_date || new Date(),
     },
   });
@@ -143,8 +172,45 @@ export default function ParticipantTableActions({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="user">User</SelectItem>
-                        <SelectItem value="customer">Customer</SelectItem>
+                        <SelectItem value="Customer">Customer</SelectItem>
+                        <SelectItem value="End-User">End-User</SelectItem>
+                        <SelectItem value="Both Customer & End-User">
+                          Both Customer & End-User
+                        </SelectItem>
+                        <SelectItem value="Additional Decision Maker">
+                          Additional Decision Maker
+                        </SelectItem>
+                        <SelectItem value="Additional Stakeholder">
+                          Additional Stakeholder
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="market_segment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Market Segment</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a market segment" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {marketSegments?.map((segment: string) => (
+                          <SelectItem key={segment} value={segment}>
+                            {segment}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -188,6 +254,36 @@ export default function ParticipantTableActions({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Blocking Issues</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="hypothesis_to_validate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hypothesis to Validate</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="learnings"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Learnings</FormLabel>
                     <FormControl>
                       <Textarea {...field} />
                     </FormControl>
