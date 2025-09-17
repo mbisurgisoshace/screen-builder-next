@@ -241,7 +241,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
       {shape.tags && shape.tags.length > 0 && (
         <div className="absolute flex flex-row gap-1 -top-8 left-2">
           {shape.tags.map((tag) => (
-            <Badge key={tag}>{tag}</Badge>
+            <Badge key={tag} variant="outlineGray">{tag}</Badge>
           ))}
         </div>
       )}

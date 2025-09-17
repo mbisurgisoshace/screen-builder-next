@@ -177,7 +177,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
             <input
               type="text"
               placeholder={isEmpty ? "Title of the video text example" : "Type in a Jobs to be Done"}
-              className="w-full bg-transparent border-none outline-none text-lg font-bold text-gray-900 placeholder:text-[#2E3545]"
+              className="w-full bg-transparent border-none outline-none text-lg placeholder:text-[#2E3545]"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
                 if (e.target.value !== shape.cardTitle) {
@@ -230,17 +230,16 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
               data-nodrag="true"
               className="w-full flex items-center justify-between text-sm text-gray-700 hover:text-gray-900 transition-colors"
             >
-              <span className="flex items-center gap-2">
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform ${
-                    collapsed ? "-rotate-90" : "rotate-0"
-                  }`}
-                />
+              <span className="flex items-center gap-2 font-manrope font-bold font-[#111827] text-[14px]">
                 {collapsed ? `Subquestions (${fiQuestions.length})` : `Subquestions (${fiQuestions.length})`}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform text-[#80889D] ${collapsed ? "-rotate-90" : "rotate-0"
+                    }`}
+                />
               </span>
-              <span className="text-gray-400">
+              {/* <span className="text-gray-400">
                 ({answeredCount}/{fiQuestions.length})
-              </span>
+              </span> */}
             </button>
 
             {!collapsed && (

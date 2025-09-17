@@ -177,7 +177,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
             <input
               type="text"
               placeholder={isEmpty ? "Title of the video text example" : "Type in a Pain"}
-              className="w-full bg-transparent border-none outline-none text-lg font-bold font-manrope text-gray-900 placeholder:text-[#2E3545]"
+              className="w-full bg-transparent border-none outline-none text-lg font-manrope placeholder:text-[#2E3545]"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
                 if (e.target.value !== shape.cardTitle) {
@@ -233,7 +233,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
               <span className="flex items-center gap-2 font-manrope font-bold font-[#111827] text-[14px]">
                 {collapsed ? `Subquestions (${fiQuestions.length})` : `Subquestions (${fiQuestions.length})`}
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform font-[#80889D] ${collapsed ? "-rotate-90" : "rotate-0"
+                  className={`w-4 h-4 transition-transform text-[#80889D] ${collapsed ? "-rotate-90" : "rotate-0"
                     }`}
                 />
               </span>
