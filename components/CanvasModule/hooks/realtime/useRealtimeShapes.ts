@@ -18,6 +18,7 @@ function toLiveShape(shape: Shape) {
     color: shape.color,
     text: shape.text ?? null,
     subtype: shape.subtype ?? null,
+    cardTitle: shape.cardTitle ?? null,
   });
 }
 
@@ -41,6 +42,7 @@ function fromLiveShape(obj: LiveObject<any>): Shape {
     width: obj.get("width")!,
     height: obj.get("height")!,
     color: obj.get("color")!,
+    cardTitle: obj.get("cardTitle") ?? undefined,
     text: obj.get("text") ?? undefined,
   };
 }
