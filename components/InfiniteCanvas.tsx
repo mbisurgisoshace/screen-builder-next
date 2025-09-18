@@ -1402,7 +1402,6 @@ export default function InfiniteCanvas({
             .map((shape) => {
               const Component = shapeRegistry[shape.type];
               if (!Component) return null;
-              console.log("rendering shape", shape);
 
               return (
                 <Component
