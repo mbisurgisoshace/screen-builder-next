@@ -40,7 +40,7 @@ export default async function Home({
         return (
           <div
             key={taskList.task_list.id}
-            className="border-2 bg-white border-white rounded-[12px] w-[300px] min-w-[300px] overflow-y-auto h-full max-h-600"
+            className="border-2 bg-white border-white rounded-[12px] w-[345px] min-w-[345px] overflow-y-auto h-full max-h-600"
           >
             <div className="px-[22px] py-[15px] bg-[#7559C3]">
               <h3 className="text-[14px] font-semibold text-white">
