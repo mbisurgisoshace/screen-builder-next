@@ -12,7 +12,6 @@ export default async function Layout({
 }) {
   const isAdminOrMentor =
     (await checkRole("admin")) || (await checkRole("mentor"));
-
   return (
     <SidebarProvider>
       <AppSidebar isAdminOrMentor={isAdminOrMentor} />
