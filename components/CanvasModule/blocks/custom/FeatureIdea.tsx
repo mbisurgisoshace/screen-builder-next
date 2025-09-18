@@ -119,7 +119,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
             {/* Body */}
             <div className="flex-1 overflow-auto">
               <div
-                className="mt-1 rounded-[8px] "
+                className="rounded-[8px] "
                 onMouseDown={(e) => e.stopPropagation()}
               >
                 <RteEditor
@@ -135,9 +135,11 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                     list: { options: ["unordered", "ordered"] },
                   }}
                   toolbarHidden={!showToolbarFeature}
-                  toolbarClassName="border-b px-2"
-                  editorClassName="px-2 py-2 min-h-[120px]"
+                  toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+                  editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
+                    } placeholder:text-gray-500 `}
                   wrapperClassName=""
+                  placeholder="Write here..."
                 />
               </div>
             </div>
@@ -149,7 +151,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
             {/* Body */}
             <div className="flex-1 overflow-auto">
               <div
-                className="mt-1 rounded-[8px] "
+                className="rounded-[8px] "
                 onMouseDown={(e) => e.stopPropagation()}
               >
                 <RteEditor
@@ -165,9 +167,11 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                     list: { options: ["unordered", "ordered"] },
                   }}
                   toolbarHidden={!showToolbarWhyFeature}
-                  toolbarClassName="border-b px-2"
-                  editorClassName="px-2 py-2 min-h-[120px]"
+                  toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+                  editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
+                    } placeholder:text-gray-500 `}
                   wrapperClassName=""
+                  placeholder="Write here..."
                 />
               </div>
             </div>

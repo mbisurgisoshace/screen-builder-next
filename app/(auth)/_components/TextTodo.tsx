@@ -1,5 +1,6 @@
 import { Task } from "@/lib/generated/prisma";
 import { CheckIcon } from "lucide-react";
+import { useState } from "react";
 
 interface TextTodoProps {
   todo: Task;
@@ -12,6 +13,12 @@ export default function TextTodo({
   isCompleted,
   markAsComplete,
 }: TextTodoProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showButton, setShowButton] = useState(false);
+  
+  const contentLength = todo.task_description?.length || 0;
+  const needsShowMore = contentLength > 200;
+
   return (
     <li
       key={todo.id}
@@ -39,12 +46,31 @@ export default function TextTodo({
         </span>
       </div>
       <div className="flex flex-col gap-5 pl-[30px]">
-        <h3
-          className={`text-[14px] font-medium text-[#2E3545] break-words overflow-wrap-anywhere ${
-            isCompleted ? "line-through" : ""
-          }`}
-          dangerouslySetInnerHTML={{ __html: todo.task_description || "" }}
-        />
+        <div className="relative">
+          <div
+            data-todo-content
+            className={`text-[14px] font-medium text-[#2E3545] break-words overflow-wrap-anywhere ${
+              isCompleted ? "line-through" : ""
+            } ${
+              !isExpanded && needsShowMore ? "line-clamp-3" : ""
+            }`}
+            dangerouslySetInnerHTML={{ 
+              __html: todo.task_description || "" 
+            }}
+            style={{
+              maxHeight: !isExpanded && needsShowMore ? "4.5rem" : "none",
+              overflow: !isExpanded && needsShowMore ? "hidden" : "visible"
+            }}
+          />
+          {needsShowMore && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-[12px] text-[#6A35FF] font-medium hover:text-[#5A2BC7] mt-1 transition-colors"
+            >
+              {isExpanded ? "Show less" : "Show more"}
+            </button>
+          )}
+        </div>
       </div>
     </li>
   );

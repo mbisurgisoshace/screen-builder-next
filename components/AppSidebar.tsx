@@ -53,7 +53,7 @@ const data = {
   ],
   navMain: [
     {
-      title: "Hypothesis",
+      title: "Hypothesize",
       items: [
         {
           title: "Segments",
@@ -171,8 +171,8 @@ export function AppSidebar({
               <Image
                 width={24}
                 height={24}
-                src={"/Rocket--Streamline-Lucide.png"}
-                alt="Rocket"
+                src={"/icons8-startup-64.png"}
+                alt="Startup"
               />
               <span
                 className="text-lg font-bold"
@@ -193,8 +193,8 @@ export function AppSidebar({
               <Image
                 width={24}
                 height={24}
-                src={"/Rocket--Streamline-Lucide.png"}
-                alt="Rocket"
+                src={"/icons8-startup-64.png"}
+                alt="Startup"
               />
               <span
                 className="text-lg font-bold"
