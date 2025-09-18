@@ -153,6 +153,21 @@ const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("blocking_issues")}</div>
     ),
+    
+  },
+  {
+    accessorKey: "hypothesis_to_validate",
+    header: "Hypothesis to Validate",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("hypothesis_to_validate")}</div>
+    ),
+  },
+  {
+    accessorKey: "learnings",
+    header: "Learnings",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("learnings")}</div>
+    ),
   },
   {
     accessorKey: "scheduled_date",
