@@ -38,9 +38,30 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
       id: "jobs_to_be_done_question_1",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, what is the significance of this to the customer/user?",
+        "Why does the stakeholder (Customer, End-User, etc) want this Job done?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
     },
+    {
+      id: "jobs_to_be_done_question_2",
+      card_type: "card",
+      question:
+        "What sort of Job is this? Functional (tangible, practical outcomes like saving time, making or saving money, etc), Emotional (makes them feel a certain way about themselves), Social (makes them feel a certain way about how others perceive them), Consumption (like learning, installing, using, maintaining the product)",
+      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    },
+    {
+      id: "jobs_to_be_done_question_3",
+      card_type: "card",
+      question:
+        "What are some barriers preventing the stakeholder from getting this Job done?",
+      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    },
+    {
+      id: "jobs_to_be_done_question_4",
+      card_type: "card",
+      question:
+        "On a scale of 1-10, 10 being highest, how significant is this Job to the stakeholder?",
+      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    }
   ];
   const { shape, onCommitStyle } = props;
 
