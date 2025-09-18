@@ -10,6 +10,7 @@ export default function Startups() {
   const { userMemberships, setActive, isLoaded } = useOrganizationList({
     userMemberships: {
       infinite: true,
+      pageSize: 100,
     },
   });
 
