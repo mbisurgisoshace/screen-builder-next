@@ -163,7 +163,7 @@ export const Customer: React.FC<CustomerProps> = (props) => {
   return (
     <div className="flex-1 overflow-auto">
       <div
-        className="mt-1 rounded-[8px] "
+        className="rounded-[8px] "
         onMouseDown={(e) => e.stopPropagation()}
       >
         {/* <div className="flex flex-row gap-2 p-2">
@@ -209,9 +209,11 @@ export const Customer: React.FC<CustomerProps> = (props) => {
             list: { options: ["unordered", "ordered"] },
           }}
           toolbarHidden={!showToolbar}
-          toolbarClassName="border-b px-2"
-          editorClassName="px-2 py-2 min-h-[120px]"
+           toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+          editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
+            } placeholder:text-gray-500 `}
           wrapperClassName=""
+          placeholder="Write here..."
         />
       </div>
     </div>

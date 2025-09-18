@@ -1,5 +1,6 @@
 import { Task } from "@/lib/generated/prisma";
 import { CheckIcon } from "lucide-react";
+import { useState } from "react";
 
 interface VideoTodoProps {
   todo: Task;
@@ -13,6 +14,10 @@ export default function VideoTodo({
   markAsComplete,
 }: VideoTodoProps) {
   console.log("todo>>", todo);
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const contentLength = todo.task_description?.length || 0;
+  const needsShowMore = contentLength > 200;
 
   return (
     <li
@@ -41,12 +46,29 @@ export default function VideoTodo({
         </span>
       </div>
       <div className="flex flex-col gap-5 pl-[0px]">
-        <h3
-          className={`text-[14px] font-medium text-[#2E3545] pl-12 break-words overflow-wrap-anywhere ${
-            isCompleted ? "line-through" : ""
-          }`}
-          dangerouslySetInnerHTML={{ __html: todo.task_description || "" }}
-        />
+        <div className="relative pl-12">
+          <div
+            data-todo-content
+            className={`text-[14px] font-medium text-[#2E3545] break-words overflow-wrap-anywhere ${
+              isCompleted ? "line-through" : ""
+            }`}
+            dangerouslySetInnerHTML={{ 
+              __html: todo.task_description || "" 
+            }}
+            style={{
+              maxHeight: !isExpanded && needsShowMore ? "4.5rem" : "none",
+              overflow: !isExpanded && needsShowMore ? "hidden" : "visible"
+            }}
+          />
+          {needsShowMore && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-[12px] text-[#6A35FF] font-medium hover:text-[#5A2BC7] mt-1 transition-colors"
+            >
+              {isExpanded ? "Show less" : "Show more"}
+            </button>
+          )}
+        </div>
       </div>
       {todo.task_url?.includes("youtube.com") ? (
         <div className="w-full aspect-video rounded-[8px] overflow-hidden px-[12px] py-[12px]">
