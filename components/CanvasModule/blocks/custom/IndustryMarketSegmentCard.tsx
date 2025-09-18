@@ -218,7 +218,7 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
           editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
             } placeholder:text-gray-500 `}
           wrapperClassName=""
-          placeholder="Write here..."
+          placeholder="Type your text here..."
         />
       </div>
     </div>

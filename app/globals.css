@@ -121,11 +121,35 @@
     @apply bg-background text-foreground;
   }
   
-  a {
+  /* Style for a tags to look like traditional blue underlined links, but exclude navigation */
+  a:not([data-sidebar-link]) {
     @apply text-blue-600 underline hover:text-blue-800 transition-colors;
   }
   
+  /* Ensure links in todo descriptions are properly styled */
   [data-todo-content] a {
     @apply text-blue-600 underline hover:text-blue-800 transition-colors;
+  }
+  
+    /* Ensure navigation links don't get underlined */
+  [data-sidebar-link] {
+    @apply no-underline;
+  }
+  
+  /* Remove gap between toolbar and editor in react-draft-wysiwyg */
+  .rdw-editor-wrapper .rdw-editor-toolbar {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    border-bottom: 0 !important;
+  }
+  
+  .rdw-editor-wrapper .rdw-editor-main {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-radius: 0 !important;
+  }
+  
+  .rdw-editor-wrapper .rdw-editor-toolbar + .rdw-editor-main {
+    margin-top: 0 !important;
   }
 }

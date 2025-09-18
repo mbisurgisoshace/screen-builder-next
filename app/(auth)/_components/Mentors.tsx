@@ -86,9 +86,9 @@ export default function Mentors({ isOpen, onClose }: MentorsProps) {
             {mentors.map((mentor) => (
               <div
                 key={mentor.id}
-                className="bg-[#EEF0FA] border border-gray-300 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+                className="bg-[#EEF0FA] border border-gray-300 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="flex justify-center mb-4">
+                <div className="flex justify-center mb-3">
                   <div className="w-30 h-30 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                     <img
                       src={mentor.image}
@@ -100,12 +100,17 @@ export default function Mentors({ isOpen, onClose }: MentorsProps) {
                 <h3 className="text-lg font-bold text-gray-800 text-center mb-2">
                   {mentor.name}
                 </h3>
-                <p className="text-sm text-gray-600 text-center mb-4">
-                  {mentor.title}
-                </p>
-                <p className="text-sm text-gray-700 line-clamp-5 leading-[1.2]">
-                  {mentor.description}
-                </p>
+                <div className="text-sm text-gray-600 text-center mb-3">
+                  <span>{mentor.title}</span>
+                  <a 
+                    href={mentor.description}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-1 text-blue-600 underline hover:text-blue-800 transition-colors"
+                  >
+                    Bio
+                  </a>
+                </div>
               </div>
             ))}
           </div>

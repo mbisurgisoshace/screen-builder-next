@@ -128,7 +128,7 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
         const raw = JSON.parse(shape.draftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch {}
+    } catch { }
     return EditorState.createEmpty();
   }, []);
 
@@ -173,8 +173,8 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
         <div className="mb-4">
           <input
             type="text"
-            placeholder="Type in a Pain Reliever"
-            className="w-full bg-transparent border-none outline-none text-[14px] font-extrabold text-[#111827] placeholder:text-[#2E3545]"
+            placeholder={"Type your title here.."}
+            className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
             defaultValue={shape.cardTitle || ""}
             onBlur={(e) => {
               if (e.target.value !== shape.cardTitle) {
@@ -232,12 +232,12 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
             onBlur={() => {
               setShowToolbar(false);
               setEditingBody(false);
-                const contentState = editorState.getCurrentContent();
-                const hasText = contentState.hasText();
-                if (!hasText) {
-                  setEditorState(EditorState.createEmpty());
-                  commit({ draftRaw: undefined });
-                }
+              const contentState = editorState.getCurrentContent();
+              const hasText = contentState.hasText();
+              if (!hasText) {
+                setEditorState(EditorState.createEmpty());
+                commit({ draftRaw: undefined });
+              }
             }}
             onFocus={() => {
               setShowToolbar(true);
@@ -253,10 +253,10 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
               list: { options: ["unordered", "ordered"] },
             }}
             toolbarHidden={!showToolbar}
-            toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-            editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
-            wrapperClassName=""
-            placeholder="Write here..."
+            toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+            editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+            wrapperClassName="rdw-editor-wrapper"
+            placeholder="Type your text here..."
           />
         )}
       </div>

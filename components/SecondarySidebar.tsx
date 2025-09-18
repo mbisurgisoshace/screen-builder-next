@@ -37,7 +37,7 @@ export default function SecondarySidebar({
                   letterSpacing: "0%",
                 }}
               >
-                <Link href={"/startups"}>
+                <Link href={"/startups"} data-sidebar-link>
                   <span>{`Startups`}</span>
                 </Link>
               </SidebarMenuButton>
@@ -60,7 +60,7 @@ export default function SecondarySidebar({
                   letterSpacing: "0%",
                 }}
               >
-                <Link href={item.url}>
+                <Link href={item.url} data-sidebar-link>
                   <span>{item.name}</span>
                 </Link>
               </SidebarMenuButton>

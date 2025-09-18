@@ -169,8 +169,8 @@ export function AppSidebar({
               className="flex flex-row gap-2.5 items-center w-full"
             >
               <Image
-                width={24}
-                height={24}
+                width={32}
+                height={32}
                 src={"/icons8-startup-64.png"}
                 alt="Startup"
               />
@@ -191,8 +191,8 @@ export function AppSidebar({
           ) : (
             <>
               <Image
-                width={24}
-                height={24}
+                width={32}
+                height={32}
                 src={"/icons8-startup-64.png"}
                 alt="Startup"
               />
