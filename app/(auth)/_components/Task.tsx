@@ -5,6 +5,7 @@ import LinkTodo from "./LinkTodo";
 import ImageTodo from "./ImageTodo";
 import VideoTodo from "./VideoTodo";
 import ModalTodo from "./ModalTodo";
+import TextTodo from "./TextTodo";
 import { updateTask } from "@/services/tasks";
 import ScheduleTodo from "./ScheduleTodo";
 
@@ -26,8 +27,14 @@ export default function TaskCard({ task, data, isCompleted }: TaskProps) {
 
   const renderTodo = (todo: Task) => {
     if (todo.task_type === "text") {
-      //return <span key={todo.id}>Text</span>;
-      return null;
+      return (
+        <TextTodo
+          key={todo.id}
+          todo={todo}
+          markAsComplete={markAsComplete}
+          isCompleted={isCompleted}
+        />
+      );
     }
 
     if (todo.task_type === "schedule") {

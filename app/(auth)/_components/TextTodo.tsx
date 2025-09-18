@@ -1,18 +1,17 @@
 import { Task } from "@/lib/generated/prisma";
 import { CheckIcon } from "lucide-react";
-import Image from "next/image";
 
-interface ImageTodoProps {
+interface TextTodoProps {
   todo: Task;
   isCompleted: boolean;
   markAsComplete: (id: number, complete: boolean) => Promise<void>;
 }
 
-export default function ImageTodo({
+export default function TextTodo({
   todo,
   isCompleted,
   markAsComplete,
-}: ImageTodoProps) {
+}: TextTodoProps) {
   return (
     <li
       key={todo.id}
@@ -47,11 +46,6 @@ export default function ImageTodo({
           dangerouslySetInnerHTML={{ __html: todo.task_description || "" }}
         />
       </div>
-      <img
-        src={todo.task_url!}
-        alt={todo.task_description || ""}
-        className="w-full bg-contain rounded-[10px]"
-      />
     </li>
   );
 }
