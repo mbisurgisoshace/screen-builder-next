@@ -28,6 +28,7 @@ export default function TaskCard({ task, data, isCompleted }: TaskProps) {
   const renderTodo = (todo: Task) => {
     if (todo.task_type === "text") {
       return (
+        // For text render
         <TextTodo
           key={todo.id}
           todo={todo}
