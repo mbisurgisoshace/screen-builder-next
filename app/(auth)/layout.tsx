@@ -10,8 +10,10 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
+  console.log("###### check role ######")
   const isAdminOrMentor =
     (await checkRole("admin")) || (await checkRole("mentor"));
+    console.log("###### check role is admin or mentor ######", isAdminOrMentor)
 
   return (
     <SidebarProvider>
