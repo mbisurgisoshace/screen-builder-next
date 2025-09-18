@@ -40,7 +40,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
         const raw = JSON.parse(shape.draftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch { }
+    } catch {}
     return EditorState.createEmpty();
   }, []);
 
@@ -51,7 +51,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
         const raw = JSON.parse(shape.featureIdeaDraftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch { }
+    } catch {}
     return EditorState.createEmpty();
   }, []);
 
@@ -86,7 +86,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
       } else {
         setFeatureIdeaEditorState(EditorState.createEmpty());
       }
-    } catch { }
+    } catch {}
   }, [shape.featureIdeaDraftRaw]);
 
   useEffect(() => {
@@ -110,68 +110,160 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
   return (
     <CardFrame
       {...props}
+      headerBg="#DDE1F2"
+      headerTextColor="#697288"
       useAttachments={true}
       header="Feature Idea"
       body={
-        <div className="h-full flex flex-row rounded-xl  bg-white">
-          <div className="w-full h-full flex flex-col overflow-hidden px-8 py-6 gap-4 border-r ">
-            <h3 className="text-[14px] font-bold text-black">Feature Idea</h3>
-            {/* Body */}
-            <div className="flex-1 overflow-auto">
-              <div
-                className="rounded-[8px] "
-                onMouseDown={(e) => e.stopPropagation()}
-              >
-                <RteEditor
-                  onBlur={() => setShowToolbarFeature(false)}
-                  onFocus={() => setShowToolbarFeature(true)}
-                  editorState={editorState}
-                  onEditorStateChange={setEditorState}
-                  toolbar={{
-                    options: ["inline", "list", "link", "history"],
-                    inline: {
-                      options: ["bold", "italic", "underline", "strikethrough"],
-                    },
-                    list: { options: ["unordered", "ordered"] },
-                  }}
-                  toolbarHidden={!showToolbarFeature}
-                  toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-                  editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
-                  wrapperClassName="rdw-editor-wrapper"
-                  placeholder="Type your text here..."
-                />
+        // <div className="h-full flex flex-row rounded-xl  bg-white">
+        //   <div className="w-full h-full flex flex-col overflow-hidden px-8 py-6 gap-4 border-r ">
+        //     <h3 className="text-[14px] font-bold text-black">Feature Idea</h3>
+        //     {/* Body */}
+        //     <div className="flex-1 overflow-auto">
+        //       <div
+        //         className="rounded-[8px] "
+        //         onMouseDown={(e) => e.stopPropagation()}
+        //       >
+        //         <RteEditor
+        //           onBlur={() => setShowToolbarFeature(false)}
+        //           onFocus={() => setShowToolbarFeature(true)}
+        //           editorState={editorState}
+        //           onEditorStateChange={setEditorState}
+        //           toolbar={{
+        //             options: ["inline", "list", "link", "history"],
+        //             inline: {
+        //               options: ["bold", "italic", "underline", "strikethrough"],
+        //             },
+        //             list: { options: ["unordered", "ordered"] },
+        //           }}
+        //           toolbarHidden={!showToolbarFeature}
+        //           toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+        //             editingBody ? "bg-white" : "bg-transparent"
+        //           }`}
+        //           editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+        //             editingBody ? "bg-white rounded" : "bg-transparent"
+        //           }`}
+        //           wrapperClassName="rdw-editor-wrapper"
+        //           placeholder="Type your text here..."
+        //         />
+        //       </div>
+        //     </div>
+        //   </div>
+        //   <div className="w-full h-full flex flex-col overflow-hidden px-8 py-6 gap-4">
+        //     <h3 className="text-[14px] font-bold text-black">
+        //       Why we need this feature
+        //     </h3>
+        //     {/* Body */}
+        //     <div className="flex-1 overflow-auto">
+        //       <div
+        //         className="rounded-[8px] "
+        //         onMouseDown={(e) => e.stopPropagation()}
+        //       >
+        //         <RteEditor
+        //           onBlur={() => setShowToolbarWhyFeature(false)}
+        //           onFocus={() => setShowToolbarWhyFeature(true)}
+        //           editorState={featureIdeaEditorState}
+        //           onEditorStateChange={setFeatureIdeaEditorState}
+        //           toolbar={{
+        //             options: ["inline", "list", "link", "history"],
+        //             inline: {
+        //               options: ["bold", "italic", "underline", "strikethrough"],
+        //             },
+        //             list: { options: ["unordered", "ordered"] },
+        //           }}
+        //           toolbarHidden={!showToolbarWhyFeature}
+        //           toolbarClassName={`border-b px-2 text-[14px] ${
+        //             editingBody ? "bg-white" : "bg-transparent"
+        //           }`}
+        //           editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${
+        //             editingBody ? "bg-white rounded" : "bg-transparent"
+        //           } placeholder:text-gray-500 `}
+        //           wrapperClassName=""
+        //           placeholder="Type your text here..."
+        //         />
+        //       </div>
+        //     </div>
+        //   </div>
+        // </div>
+        <div className="flex-1 overflow-auto">
+          <div
+            className="shadow-lg bg-[#DDE1F2]"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-row">
+              <div className="flex-1 border-r-[#B4B9C9] border-r-[0.5px] px-3 py-2">
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder={"Type your title here.."}
+                    className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
+                    defaultValue={shape.featureIdeaTitle1 || ""}
+                    onBlur={(e) => {
+                      if (e.target.value !== shape.featureIdeaTitle1) {
+                        commit({ featureIdeaTitle1: e.target.value });
+                      }
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <RteEditor
+                    onBlur={() => {
+                      //setShowToolbar(false);
+                      setEditingBody(false);
+                      const contentState = editorState.getCurrentContent();
+                      const hasText = contentState.hasText();
+                      if (!hasText) {
+                        setEditorState(EditorState.createEmpty());
+                        commit({ draftRaw: undefined });
+                      }
+                    }}
+                    onFocus={() => {
+                      //setShowToolbar(true);
+                      setEditingBody(true);
+                    }}
+                    editorState={editorState}
+                    onEditorStateChange={setEditorState}
+                    toolbar={{
+                      options: ["inline", "list", "link", "history"],
+                      inline: {
+                        options: [
+                          "bold",
+                          "italic",
+                          "underline",
+                          "strikethrough",
+                        ],
+                      },
+                      list: { options: ["unordered", "ordered"] },
+                    }}
+                    //toolbarHidden={!showToolbar}
+                    toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+                      editingBody ? "bg-white" : "bg-transparent"
+                    }`}
+                    editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+                      editingBody ? "bg-[white] rounded" : "bg-[white]"
+                    }`}
+                    wrapperClassName="rdw-editor-wrapper"
+                    placeholder="Type your text here..."
+                  />
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="w-full h-full flex flex-col overflow-hidden px-8 py-6 gap-4">
-            <h3 className="text-[14px] font-bold text-black">
-              Why we need this feature
-            </h3>
-            {/* Body */}
-            <div className="flex-1 overflow-auto">
-              <div
-                className="rounded-[8px] "
-                onMouseDown={(e) => e.stopPropagation()}
-              >
-                <RteEditor
-                  onBlur={() => setShowToolbarWhyFeature(false)}
-                  onFocus={() => setShowToolbarWhyFeature(true)}
-                  editorState={featureIdeaEditorState}
-                  onEditorStateChange={setFeatureIdeaEditorState}
-                  toolbar={{
-                    options: ["inline", "list", "link", "history"],
-                    inline: {
-                      options: ["bold", "italic", "underline", "strikethrough"],
-                    },
-                    list: { options: ["unordered", "ordered"] },
-                  }}
-                  toolbarHidden={!showToolbarWhyFeature}
-                  toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-                  editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
-                    } placeholder:text-gray-500 `}
-                  wrapperClassName=""
-                  placeholder="Type your text here..."
-                />
+              <div className="flex-1 px-3 py-2">
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder={"Type your title here.."}
+                    className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
+                    defaultValue={shape.featureIdeaTitle2 || ""}
+                    onBlur={(e) => {
+                      if (e.target.value !== shape.featureIdeaTitle2) {
+                        commit({ featureIdeaTitle2: e.target.value });
+                      }
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  />
+                </div>
               </div>
             </div>
           </div>

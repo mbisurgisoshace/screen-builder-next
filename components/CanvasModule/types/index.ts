@@ -67,6 +67,8 @@ export interface Shape {
   // feature idea
   featureIdeaTags?: string[];
   featureIdeaDraftRaw?: string;
+  featureIdeaTitle1?: string;
+  featureIdeaTitle2?: string;
 
   cardTags?: string[];
 
