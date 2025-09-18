@@ -9,6 +9,8 @@ export async function getSegments() {
 
   if (!orgId || !userId) return redirect("/sign-in");
 
+  const room = await liveblocks.getRoom(`segments-${orgId}`);
+  if (!room) return [];
   const segmentsData = await liveblocks.getStorageDocument(`segments-${orgId}`);
 
   //@ts-ignore
