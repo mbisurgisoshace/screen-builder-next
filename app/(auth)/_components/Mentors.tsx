@@ -19,24 +19,31 @@ interface MentorsProps {
 const mentors: Mentor[] = [
   {
     id: "1",
-    name: "Peter Pen",
-    title: "UX/UI designer",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    image: "/image 9.png"
+    name: "Andrew Zimbroff",
+    title: "Associate Professor and Extension Specialist-Textiles and Apparel Entrepreneurship",
+    description: "https://cehs.unl.edu/tmfd/person/andrew-zimbroff/",
+    image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/andrew-zimbroff.png"
   },
   {
     id: "2", 
-    name: "Alice Wellington",
-    title: "Frontend Developer",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    image: "/image 9 (1).png"
+    name: "Josh Nichol-Caddy",
+    title: "Technology Commercialization Director, NBDC",
+    description: "https://www.unomaha.edu/nebraska-business-development-center/about/consultant-directory/josh-nichol-caddy.php",
+    image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/josh-nichol-caddy.png"
   },
   {
     id: "3",
-    name: "Anastasia Winter", 
-    title: "UX/UI designer",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-    image: "/image 9 (2).png"
+    name: "Joy Eakin", 
+    title: "Entrepreneurship Program Manager, NUtech Ventures",
+    description: "https://www.nutechventures.org/joy-eakin/",
+    image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/joy-eakin.png"
+  },
+  {
+    id: "4",
+    name: "Nick Alder", 
+    title: "Entrepreneurship Catalyst, NUtech Ventures",
+    description: "https://www.nutechventures.org/nicholas-alder/",
+    image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/nick-alder.png"
   }
 ];
 
@@ -52,7 +59,7 @@ export default function Mentors({ isOpen, onClose }: MentorsProps) {
     >
       <div className="bg-[#EEF0FA] rounded-xl shadow-lg max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-gray-300">
-          <h2 className="text-xl font-bold text-gray-800">Mentors</h2>
+          <h2 className="text-xl font-bold text-gray-800">Lead Instructors</h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-200 rounded-full transition-colors"
