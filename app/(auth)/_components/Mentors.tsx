@@ -20,7 +20,7 @@ const mentors: Mentor[] = [
   {
     id: "1",
     name: "Andrew Zimbroff (Lead)",
-    title: "Associate Professor and Extension Specialist-Textiles and Apparel Entrepreneurship",
+    title: "Associate Professor and Extension Specialist-Textiles and Apparel Entrepreneurship, UNL",
     description: "https://cehs.unl.edu/tmfd/person/andrew-zimbroff/",
     image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/andrew-zimbroff.png"
   },
