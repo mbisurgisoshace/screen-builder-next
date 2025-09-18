@@ -160,12 +160,14 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
-  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const hasContent =
+    shape.cardTitle ||
+    (shape.draftRaw && editorState.getCurrentContent().hasText());
   const isEmpty = !hasContent && !editingBody;
 
   return (
     <div className="flex-1 overflow-auto">
-      <div
+      {/* <div
         className="mt-1 rounded-lg shadow-lg bg-[#DDF5B5] border border-[#B4B9C9]"
         onMouseDown={(e) => e.stopPropagation()}
       >
@@ -245,63 +247,116 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
             placeholder="Type your text here..."
           />
         )}
-      </div>
+      </div> */}
 
-      {/* <div className="px-8 flex items-center justify-center">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleCollapsed();
-          }}
-          data-nodrag="true"
-          className="inline-flex items-center gap-2 text-[12px] text-gray-700 bg-white border rounded-md px-2 py-1 hover:bg-gray-50"
-        >
-          <ChevronDown
-            className={`w-4 h-4 transition-transform ${
-              collapsed ? "-rotate-90" : "rotate-0"
-            }`}
-          />
-          {collapsed ? "Show questions" : "Hide questions"}
-          <span className="ml-2 text-gray-400">
-            ({answeredCount}/{fiQuestions.length})
-          </span>
-        </button>
-      </div>
+      <div
+        className="shadow-lg bg-[#DDF5B5]"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 pt-0">
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder={"Type your title here.."}
+              className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
+              defaultValue={shape.cardTitle || ""}
+              onBlur={(e) => {
+                if (e.target.value !== shape.cardTitle) {
+                  commit({ cardTitle: e.target.value });
+                }
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+            />
+          </div>
 
-      {!collapsed && (
-        <div
-          ref={questionsRef}
-          className="px-8 py-5 bg-[#F0EDF9] h-full flex flex-col gap-6 mt-3 rounded-md"
-        >
-          {fiQuestions.map((q, idx) => (
-            <div className="flex flex-col gap-3" key={q.id}>
-              <h3 className="font-bold text-[14px] text-[#111827]">
-                {q.question}
-              </h3>
-
-              <div
-                data-nodrag="true"
-                onMouseDown={(e) => e.stopPropagation()}
-                className="w-full"
-              >
-                <Select value={tags[idx] ?? ""} onValueChange={addTag}>
-                  <SelectTrigger className="w-full bg-white">
-                    <SelectValue placeholder="Select an option" />
-                  </SelectTrigger>
-                  <SelectContent onMouseDown={(e) => e.stopPropagation()}>
-                    {q.question_options.map((option) => (
-                      <SelectItem value={option} key={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <div className="mb-6">
+            {isEmpty ? (
+              <div className="flex items-center">
+                <button
+                  onClick={() => {
+                    setEditingBody(true);
+                    setShowToolbar(true);
+                  }}
+                  className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                >
+                  + add more details
+                </button>
               </div>
+            ) : (
+              <RteEditor
+                onBlur={() => {
+                  setShowToolbar(false);
+                  setEditingBody(false);
+                  const contentState = editorState.getCurrentContent();
+                  const hasText = contentState.hasText();
+                  if (!hasText) {
+                    setEditorState(EditorState.createEmpty());
+                    commit({ draftRaw: undefined });
+                  }
+                }}
+                onFocus={() => {
+                  setShowToolbar(true);
+                  setEditingBody(true);
+                }}
+                editorState={editorState}
+                onEditorStateChange={setEditorState}
+                toolbar={{
+                  options: ["inline", "list", "link", "history"],
+                  inline: {
+                    options: ["bold", "italic", "underline", "strikethrough"],
+                  },
+                  list: { options: ["unordered", "ordered"] },
+                }}
+                toolbarHidden={!showToolbar}
+                toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+                  editingBody ? "bg-white" : "bg-transparent"
+                }`}
+                editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+                  editingBody ? "bg-white rounded" : "bg-transparent"
+                }`}
+                wrapperClassName="rdw-editor-wrapper"
+                placeholder="Type your text here..."
+              />
+            )}
+          </div>
+          {/* <div className="pt-4">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleCollapsed();
+              }}
+              data-nodrag="true"
+              className="w-full flex items-center justify-between text-sm text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
+                {collapsed
+                  ? `Subquestions (${fiQuestions.length})`
+                  : `Subquestions (${fiQuestions.length})`}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform text-[#80889D] ${
+                    collapsed ? "-rotate-90" : "rotate-0"
+                  }`}
+                />
+              </span>
+            </button>
+          </div> */}
+
+          {/* {tags.length > 0 && (
+            <div className="mt-4 flex flex-row gap-2 items-center">
+              <span className="text-sm text-gray-600">Significance Score:</span>
+              {tags.map((t) => (
+                <span
+                  key={t}
+                  className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200"
+                >
+                  {t}
+                </span>
+              ))}
             </div>
-          ))}
+          )} */}
         </div>
-      )} */}
+      </div>
     </div>
   );
 };
