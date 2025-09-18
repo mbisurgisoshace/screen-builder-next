@@ -249,7 +249,7 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
                 editingBody ? "bg-white" : "bg-transparent"
               }`}
               editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
-                editingBody ? "bg-white rounded" : "bg-transparent"
+                editingBody ? "bg-[#E6FBE7] rounded" : "bg-[#E6FBE7]"
               }`}
               wrapperClassName="rdw-editor-wrapper"
               placeholder="Type your text here..."

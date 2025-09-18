@@ -160,7 +160,9 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
-  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const hasContent =
+    shape.cardTitle ||
+    (shape.draftRaw && editorState.getCurrentContent().hasText());
   const isEmpty = !hasContent && !editingBody;
 
   return (
@@ -169,8 +171,8 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
         className="shadow-lg bg-[#DDF5B5]"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="p-6 pt-0">  
-        {isEmpty ? (
+        <div className="p-6 pt-0">
+          {isEmpty ? (
             <div className="flex items-center">
               <button
                 onClick={() => {
@@ -182,41 +184,45 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
                 + add more details
               </button>
             </div>
-        ) : (
-          <RteEditor
-            onBlur={() => {
-              setShowToolbar(false);
-              setEditingBody(false);
+          ) : (
+            <RteEditor
+              onBlur={() => {
+                setShowToolbar(false);
+                setEditingBody(false);
                 const contentState = editorState.getCurrentContent();
                 const hasText = contentState.hasText();
                 if (!hasText) {
                   setEditorState(EditorState.createEmpty());
                   commit({ draftRaw: undefined });
                 }
-            }}
-            onFocus={() => {
-              setShowToolbar(true);
-              setEditingBody(true);
-            }}
-            editorState={editorState}
-            onEditorStateChange={setEditorState}
-            toolbar={{
-              options: ["inline", "list", "link", "history"],
-              inline: {
-                options: ["bold", "italic", "underline", "strikethrough"],
-              },
-              list: { options: ["unordered", "ordered"] },
-            }}
-            toolbarHidden={!showToolbar}
-            toolbarClassName={`border-b px-2 text-[14px]  ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-            editorClassName={`px-2 py-2 min-h-[120px]  text-[14px]  ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
-            wrapperClassName=""
-            placeholder="Type your text here..."
-          />
-        )}
-      </div>
+              }}
+              onFocus={() => {
+                setShowToolbar(true);
+                setEditingBody(true);
+              }}
+              editorState={editorState}
+              onEditorStateChange={setEditorState}
+              toolbar={{
+                options: ["inline", "list", "link", "history"],
+                inline: {
+                  options: ["bold", "italic", "underline", "strikethrough"],
+                },
+                list: { options: ["unordered", "ordered"] },
+              }}
+              //toolbarHidden={!showToolbar}
+              toolbarClassName={`border-b px-2 text-[14px]  ${
+                editingBody ? "bg-white" : "bg-transparent"
+              }`}
+              editorClassName={`px-2 py-2 min-h-[120px]  text-[14px]  ${
+                editingBody ? "bg-[#EBF9D3] rounded" : "bg-[#EBF9D3]"
+              }`}
+              wrapperClassName=""
+              placeholder="Type your text here..."
+            />
+          )}
+        </div>
 
-      {/* <div className="px-8 flex items-center justify-center">
+        {/* <div className="px-8 flex items-center justify-center">
         <button
           type="button"
           onClick={(e) => {
@@ -271,7 +277,7 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
           ))}
         </div>
       )} */}
-      {tags.length > 0 && (
+        {tags.length > 0 && (
           <div className="mt-4 flex flex-row gap-2 items-center">
             <span className="text-sm text-gray-600">Significance Score:</span>
             {tags.map((t) => (

@@ -1,6 +1,12 @@
 "use client";
 
-import { ChevronDown, Ellipsis, EllipsisIcon, MicIcon, MoreVertical } from "lucide-react";
+import {
+  ChevronDown,
+  Ellipsis,
+  EllipsisIcon,
+  MicIcon,
+  MoreVertical,
+} from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 
@@ -254,6 +260,7 @@ export const Card: React.FC<CardProps> = (props) => {
           <DropdownMenuItem
             onClick={() => {
               onCommitStyle?.(shape.id, {
+                width: 550,
                 subtype: "summary_card",
               });
             }}
@@ -316,12 +323,14 @@ export const Card: React.FC<CardProps> = (props) => {
       useAttachments={useAttachments()}
       header={
         <div className="w-full flex flex-row items-center justify-between">
-          <span className="font-manrope font-semibold font-weight-600  text-[13px] text-[#2D63E6]" >{getTitle()}</span>
+          <span className="font-manrope font-semibold font-weight-600  text-[13px] text-[#2D63E6]">
+            {getTitle()}
+          </span>
           <DropdownMenu defaultOpen={subtype === "select_subtype"}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open</span>
-                <Ellipsis className="h-10 w-10"/>
+                <Ellipsis className="h-10 w-10" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
