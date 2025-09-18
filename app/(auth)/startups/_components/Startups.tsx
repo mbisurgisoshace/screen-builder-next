@@ -10,7 +10,7 @@ export default function Startups() {
   const { userMemberships, setActive, isLoaded } = useOrganizationList({
     userMemberships: {
       infinite: true,
-      pageSize: 100
+      pageSize: 100,
     },
   });
 
@@ -31,6 +31,7 @@ export default function Startups() {
       );
 
       data.push({
+        org_id: startup.id,
         name: startup.name,
         org_id: startup.id,
         createdAt: startup.createdAt,
