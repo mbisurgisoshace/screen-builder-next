@@ -45,6 +45,7 @@ import NextImage from "next/image";
 import { HelperQuestions } from "./CanvasModule/HelperQuestions";
 import { HelperValueProp } from "./CanvasModule/HelperValueProp";
 import { HelperAnalysis } from "./CanvasModule/HelperAnalysis";
+import Image from "next/image";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -103,6 +104,7 @@ export default function InfiniteCanvas({
 
   const isAnalysisCanvas = pathname.includes("/analysis");
   const isQuestionsCanvas = pathname.includes("/questions");
+  const isMarketSegmentsCanvas = pathname.includes("segments");
   const isValuePropCanvas = pathname.includes("/value-proposition");
 
   const [problems, setProblems] = useState(true);
@@ -1243,6 +1245,18 @@ export default function InfiniteCanvas({
         </div>
       )}
 
+      {isMarketSegmentsCanvas && (
+        <Image
+          width={700}
+          height={300}
+          alt="Market Segments Template"
+          className="absolute top-10 left-10 pointer-events-none"
+          src={
+            "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/Screenshot%202025-09-18%20at%202.14.09%20PM.png"
+          }
+        />
+      )}
+
       {/* Canvas */}
       <div
         ref={canvasRef}
@@ -1389,6 +1403,7 @@ export default function InfiniteCanvas({
             .map((shape) => {
               const Component = shapeRegistry[shape.type];
               if (!Component) return null;
+              console.log("rendering shape", shape);
 
               return (
                 <Component
