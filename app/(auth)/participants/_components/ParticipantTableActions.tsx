@@ -94,7 +94,7 @@ export default function ParticipantTableActions({
       blocking_issues: participant.blocking_issues || "",
       hypothesis_to_validate: participant.hypothesis_to_validate || "",
       learnings: participant.learnings || "",
-      scheduled_date: participant.scheduled_date || undefined,
+      scheduled_date: participant.scheduled_date || new Date(),
     },
   });
 
@@ -135,7 +135,7 @@ export default function ParticipantTableActions({
             Edit Participant
           </SheetTitle>
         </SheetHeader>
-        <div className="h-full flex flex-col gap-8 overflow-auto">
+        <div className="h-full flex flex-col gap-8">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -176,18 +176,6 @@ export default function ParticipantTableActions({
                         <SelectItem value="End-User">End-User</SelectItem>
                         <SelectItem value="Both Customer & End-User">
                           Both Customer & End-User
-                        </SelectItem>
-                        <SelectItem value="Payer">
-                         Payer
-                        </SelectItem>
-                        <SelectItem value="Influencer">
-                         Influencer
-                        </SelectItem>
-                        <SelectItem value="Recommender">
-                         Recommender
-                        </SelectItem>
-                        <SelectItem value="Saboteur">
-                         Saboteur
                         </SelectItem>
                         <SelectItem value="Additional Decision Maker">
                           Additional Decision Maker

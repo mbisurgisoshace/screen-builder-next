@@ -66,7 +66,7 @@ export default function StartupsTable({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className="text-sm font-medium text-[#111827] hover:cursor-pointer"
+                    className="text-sm font-medium text-[#111827]"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>

@@ -45,16 +45,6 @@ import NextImage from "next/image";
 import { HelperQuestions } from "./CanvasModule/HelperQuestions";
 import { HelperValueProp } from "./CanvasModule/HelperValueProp";
 import { HelperAnalysis } from "./CanvasModule/HelperAnalysis";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -131,7 +121,6 @@ export default function InfiniteCanvas({
     fromDirection: "top" | "right" | "bottom" | "left";
     fromPosition: { x: number; y: number };
   } | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string[]>([]);
 
   // const [connections, setConnections] = useState<
   //   {
@@ -325,8 +314,7 @@ export default function InfiniteCanvas({
         // Otherwise, delete shapes (and their connections)
         if (selectedShapeIds.length > 0) {
           e.preventDefault();
-          // deleteSelectedShapes();
-          setShowDeleteConfirm(selectedShapeIds);
+          deleteSelectedShapes();
           return;
         }
       }
@@ -790,9 +778,7 @@ export default function InfiniteCanvas({
   }
 
   const deleteSelectedShapes = () => {
-    // if (selectedShapeIds.length === 0) return;
-    if (showDeleteConfirm.length === 0) return;
-    const selectedShapeIds = showDeleteConfirm;
+    if (selectedShapeIds.length === 0) return;
 
     // 1) Remove all arrows attached to any of these shapes
     removeConnectionsByIds(selectedShapeIds);
@@ -982,32 +968,6 @@ export default function InfiniteCanvas({
         {isQuestionsCanvas && <HelperQuestions />}
         {isValuePropCanvas && <HelperValueProp />}
       </div>
-
-      <AlertDialog
-        open={showDeleteConfirm.length > 0}
-        onOpenChange={() => setShowDeleteConfirm([])}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              shape.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                deleteSelectedShapes();
-                setShowDeleteConfirm([]);
-              }}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <div className="absolute bottom-4 left-4 z-20 flex items-center flex-row gap-2">
         <Button

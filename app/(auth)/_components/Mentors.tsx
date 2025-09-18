@@ -41,14 +41,14 @@ const mentors: Mentor[] = [
   {
     id: "4",
     name: "Michael Loes", 
-    title: "Technology Manager, NUtech Ventures",
+    title: "Entrepreneurship Catalyst, NUtech Ventures",
     description: "https://www.nutechventures.org/michael-loes/",
     image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/Michael-Loes-headshot_Dec-2024_final-scaled-e1743702795223-1058x1324.jpg"
   },
   {
     id: "5",
     name: "Nick Alder (Lead)", 
-    title: "Entrepreneurship Catalyst, NUtech Ventures",
+    title: "Technology Manager, NUtech Ventures",
     description: "https://www.nutechventures.org/nicholas-alder/",
     image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/nick-alder.png"
   },

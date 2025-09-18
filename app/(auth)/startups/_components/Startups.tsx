@@ -10,7 +10,6 @@ export default function Startups() {
   const { userMemberships, setActive, isLoaded } = useOrganizationList({
     userMemberships: {
       infinite: true,
-      pageSize: 100,
     },
   });
 
@@ -31,7 +30,6 @@ export default function Startups() {
       );
 
       data.push({
-        org_id: startup.id,
         name: startup.name,
         createdAt: startup.createdAt,
         founders: founders.map(
@@ -59,7 +57,7 @@ export default function Startups() {
         if (setActive) {
           setActive({
             redirectUrl: "/",
-            organization: organization.org_id,
+            organization,
           });
         }
       }}

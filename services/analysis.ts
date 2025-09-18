@@ -34,9 +34,6 @@ export async function generateAnalysisRoom(roomId: string) {
   });
 
   const roomStorage: any = await liveblocks.getStorageDocument(roomId);
-  await liveblocks.getOrCreateRoom(`questions-${orgId}`, {
-    defaultAccesses: [],
-  });
   const questionStorage: any = await liveblocks.getStorageDocument(
     `questions-${orgId}`
   );

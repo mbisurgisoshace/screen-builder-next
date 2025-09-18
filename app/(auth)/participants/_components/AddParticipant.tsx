@@ -69,7 +69,7 @@ export default function AddParticipant({
       hypothesis_to_validate: "",
       learnings: "",
       market_segment: "",
-      scheduled_date: undefined,
+      scheduled_date: new Date(),
     },
   });
 
@@ -91,7 +91,7 @@ export default function AddParticipant({
             New Participant
           </SheetTitle>
         </SheetHeader>
-        <div className="h-full flex flex-col gap-8 overflow-auto">
+        <div className="h-full flex flex-col gap-8">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -132,18 +132,6 @@ export default function AddParticipant({
                         <SelectItem value="End-User">End-User</SelectItem>
                         <SelectItem value="Both Customer & End-User">
                           Both Customer & End-User
-                        </SelectItem>
-                        <SelectItem value="Payer">
-                         Payer
-                        </SelectItem>
-                        <SelectItem value="Influencer">
-                         Influencer
-                        </SelectItem>
-                        <SelectItem value="Recommender">
-                         Recommender
-                        </SelectItem>
-                        <SelectItem value="Saboteur">
-                         Saboteur
                         </SelectItem>
                         <SelectItem value="Additional Decision Maker">
                           Additional Decision Maker
