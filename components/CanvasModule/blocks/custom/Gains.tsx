@@ -20,6 +20,7 @@ import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useQuestions } from "../../questions/QuestionsProvider";
 import { CardFrame } from "../CardFrame";
 import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
 
 type GainsProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -40,7 +41,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
       question:
         "What sort of Gain is it? Required (basic expectation without which the solution wouldn't work), Expected (common expectation set by current competitor solutions), Desired (great to have), Unexpected (goes beyond stakeholder expectations and desires)",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-      question_type: "dropdown"
+      question_type: "dropdown",
     },
     {
       id: "gain_question_2",
@@ -48,8 +49,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
       question:
         "How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-            question_type: "text-area"
-
+      question_type: "text-area",
     },
     {
       id: "gain_question_3",
@@ -57,8 +57,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
       question:
         "How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-            question_type: "text-area"
-
+      question_type: "text-area",
     },
     {
       id: "gain_question_4",
@@ -66,23 +65,23 @@ export const Gains: React.FC<GainsProps> = (props) => {
       question:
         "On a scale of 1-10, 10 being highest, what is the significance of this Gain to the customer/user?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-            question_type: "slider"
-
+      question_type: "slider",
     },
   ];
   const { shape, onCommitStyle } = props;
 
   const tags: string[] = Array.isArray((shape as any).cardTags)
     ? ((shape as any).cardTags as string[])
-    : [];
+    : ["", "", "", ""];
 
   const commit = (patch: Partial<IShape>) => {
     onCommitStyle?.(shape.id, patch);
   };
 
-  function addTag(name: string) {
+  function addTag(name: string, idx: number) {
     if (!name) return;
-    const next = [name];
+    const next = [...tags];
+    next[idx] = name;
     commit({ cardTags: next });
   }
 
@@ -259,7 +258,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
                   editingBody ? "bg-white" : "bg-transparent"
                 }`}
                 editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
-                  editingBody ? "bg-white rounded" : "bg-transparent"
+                  editingBody ? "bg-[#FFE5D6] rounded" : "bg-[#FFE5D6]"
                 }`}
                 wrapperClassName="rdw-editor-wrapper"
                 placeholder="Type your text here..."
@@ -295,45 +294,105 @@ export const Gains: React.FC<GainsProps> = (props) => {
             {!collapsed && (
               <div
                 ref={questionsRef}
-                className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
+                className="mt-4 p-4 rounded-lg  bg-[#FFE5D6]"
               >
                 {fiQuestions.map((q, idx) => (
-                  <div className="flex flex-col gap-3" key={q.id}>
-                    <h3 className="font-semibold text-sm text-gray-800">
-                      {q.question}
-                    </h3>
+                  // <div className="flex flex-col gap-3" key={q.id}>
+                  //   <h3 className="font-semibold text-sm text-gray-800">
+                  //     {q.question}
+                  //   </h3>
 
-                    <div
-                      data-nodrag="true"
-                      onMouseDown={(e) => e.stopPropagation()}
-                      className="w-full"
-                    >
-                      {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
-                    <SelectTrigger className="w-full bg-white">
-                      <SelectValue placeholder="Select an option" />
-                    </SelectTrigger>
-                    <SelectContent onMouseDown={(e) => e.stopPropagation()}>
-                      {q.question_options.map((option) => (
-                        <SelectItem value={option} key={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select> */}
-                      <div className="flex flex-col gap-2 items-center">
-                        <Slider
-                          min={0}
-                          max={10}
-                          step={1}
-                          defaultValue={[parseInt(tags[idx]) || 0]}
-                          value={currentValue ? [currentValue] : undefined}
-                          onValueCommit={(value) => addTag(value[0].toString())}
-                          onValueChange={(value) => setCurrentValue(value[0])}
-                          className="w-full"
-                        />
-                        <span className="text-xs font-medium text-gray-700">
-                          {currentValue || 0}
-                        </span>
+                  //   <div
+                  //     data-nodrag="true"
+                  //     onMouseDown={(e) => e.stopPropagation()}
+                  //     className="w-full"
+                  //   >
+                  //     {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
+                  //   <SelectTrigger className="w-full bg-white">
+                  //     <SelectValue placeholder="Select an option" />
+                  //   </SelectTrigger>
+                  //   <SelectContent onMouseDown={(e) => e.stopPropagation()}>
+                  //     {q.question_options.map((option) => (
+                  //       <SelectItem value={option} key={option}>
+                  //         {option}
+                  //       </SelectItem>
+                  //     ))}
+                  //   </SelectContent>
+                  // </Select> */}
+                  //     <div className="flex flex-col gap-2 items-center">
+                  //       <Slider
+                  //         min={0}
+                  //         max={10}
+                  //         step={1}
+                  //         defaultValue={[parseInt(tags[idx]) || 0]}
+                  //         value={currentValue ? [currentValue] : undefined}
+                  //         onValueCommit={(value) => addTag(value[0].toString())}
+                  //         onValueChange={(value) => setCurrentValue(value[0])}
+                  //         className="w-full"
+                  //       />
+                  //       <span className="text-xs font-medium text-gray-700">
+                  //         {currentValue || 0}
+                  //       </span>
+                  //     </div>
+                  //   </div>
+                  // </div>
+                  <div className="flex flex-col mb-4" key={q.id}>
+                    <div className="flex flex-col gap-4">
+                      <h3 className="font-semibold text-sm text-gray-800">
+                        {q.question}
+                      </h3>
+
+                      <div
+                        data-nodrag="true"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        className="w-full"
+                      >
+                        {q.question_type === "text-area" && (
+                          <Textarea
+                            value={tags[idx] ?? ""}
+                            onChange={(e) => addTag(e.target.value, idx)}
+                          />
+                        )}
+                        {q.question_type === "dropdown" && (
+                          <Select
+                            value={tags[idx] ?? ""}
+                            onValueChange={(value) => addTag(value, idx)}
+                          >
+                            <SelectTrigger className="w-full bg-white">
+                              <SelectValue placeholder="Select an option" />
+                            </SelectTrigger>
+                            <SelectContent
+                              onMouseDown={(e) => e.stopPropagation()}
+                            >
+                              {q.question_options!.map((option) => (
+                                <SelectItem value={option} key={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                        {q.question_type === "slider" && (
+                          <div className="flex flex-col gap-2 items-center">
+                            <Slider
+                              min={0}
+                              max={10}
+                              step={1}
+                              defaultValue={[parseInt(tags[idx]) || 0]}
+                              value={currentValue ? [currentValue] : undefined}
+                              onValueCommit={(value) =>
+                                addTag(value[0].toString(), idx)
+                              }
+                              onValueChange={(value) =>
+                                setCurrentValue(value[0])
+                              }
+                              className="w-full"
+                            />
+                            <span className="text-xs font-medium text-gray-700">
+                              {currentValue || 0}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -343,7 +402,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
           </div>
 
           {/* Significance Score Display */}
-          {tags.length > 0 && (
+          {/* {tags.length > 0 && (
             <div className="mt-4 flex flex-row gap-2 items-center">
               <span className="text-sm text-gray-600">Significance Score:</span>
               {tags.map((t) => (
@@ -355,7 +414,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
                 </span>
               ))}
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

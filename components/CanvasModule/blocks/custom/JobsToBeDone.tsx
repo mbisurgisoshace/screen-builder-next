@@ -258,7 +258,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                   editingBody ? "bg-white" : "bg-transparent"
                 }`}
                 editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
-                  editingBody ? "bg-white rounded" : "bg-transparent"
+                  editingBody ? "bg-[#FEEDD3] rounded" : "bg-[#FEEDD3]"
                 }`}
                 wrapperClassName="rdw-editor-wrapper"
                 placeholder="Type your text here..."

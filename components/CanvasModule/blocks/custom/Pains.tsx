@@ -258,7 +258,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
                   editingBody ? "bg-white" : "bg-transparent"
                 }`}
                 editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${
-                  editingBody ? "bg-white rounded" : "bg-transparent"
+                  editingBody ? "bg-[#FFE0E0] rounded" : "bg-[#FFE0E0]"
                 } placeholder:text-gray-500 `}
                 wrapperClassName=""
                 placeholder="Type your text here..."
@@ -293,7 +293,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
             {!collapsed && (
               <div
                 ref={questionsRef}
-                className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
+                className="mt-4 p-4 rounded-lg  bg-[#FFE0E0]"
               >
                 {fiQuestions.map((q, idx) => (
                   // <div className="flex flex-col gap-3" key={q.id}>
