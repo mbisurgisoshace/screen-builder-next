@@ -1287,8 +1287,8 @@ export default function InfiniteCanvas({
 
       {isMarketSegmentsCanvas && (
         <NextImage
-          width={1000}
-          height={500}
+          width={650}
+          height={350}
           alt="Market Segments Template"
           className="absolute top-10 left-30 pointer-events-none opacity-100 z-50"
           src={
