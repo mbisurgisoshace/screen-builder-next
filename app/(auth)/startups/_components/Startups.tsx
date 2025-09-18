@@ -33,7 +33,6 @@ export default function Startups() {
       data.push({
         org_id: startup.id,
         name: startup.name,
-        org_id: startup.id,
         createdAt: startup.createdAt,
         founders: founders.map(
           (founder) =>
