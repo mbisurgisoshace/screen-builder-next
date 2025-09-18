@@ -33,14 +33,13 @@ export async function generateAnalysisRoom(roomId: string) {
     defaultAccesses: [],
   });
 
-  let questionStorage: any = [];
-
   const roomStorage: any = await liveblocks.getStorageDocument(roomId);
-  const questionsRoom = await liveblocks.getRoom(`questions-${orgId}`);
-
-  if (questionsRoom) {
-    questionStorage = await liveblocks.getStorageDocument(`questions-${orgId}`);
-  }
+  await liveblocks.getOrCreateRoom(`questions-${orgId}`, {
+    defaultAccesses: [],
+  });
+  const questionStorage: any = await liveblocks.getStorageDocument(
+    `questions-${orgId}`
+  );
 
   const questions =
     questionStorage.data.shapes?.data.map((shape: any) => shape.data) || [];
