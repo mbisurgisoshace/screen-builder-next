@@ -42,7 +42,7 @@ const mentors: Mentor[] = [
     id: "4",
     name: "Michael Loes", 
     title: "Entrepreneurship Catalyst, NUtech Ventures",
-    description: "https://www.nutechventures.org/nicholas-alder/",
+    description: "https://www.nutechventures.org/michael-loes/",
     image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/Michael-Loes-headshot_Dec-2024_final-scaled-e1743702795223-1058x1324.jpg"
   },
   {
@@ -56,7 +56,7 @@ const mentors: Mentor[] = [
     id: "6",
     name: "Scott Shaver", 
     title: "Technology Manager, NUtech Ventures",
-    description: "https://www.nutechventures.org/nicholas-alder/",
+    description: "https://www.nutechventures.org/scott-shaver/",
     image: "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/Scott-Shaver_headshot_May-2022_final.jpg"
   }
 ];

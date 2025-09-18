@@ -20,7 +20,7 @@ export default function AboutProgram({ isOpen, onClose }: AboutProgramProps) {
     >
       <div className="bg-[#EEF0FA] rounded-xl shadow-lg max-w-xl w-full mx-4 max-h-[90vh] overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-gray-300">
-          <h2 className="text-xl font-bold text-gray-800">About the program</h2>
+          <h2 className="text-xl font-bold text-gray-800">ABOUT THIS COURSE</h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-200 rounded-full transition-colors"
@@ -31,36 +31,36 @@ export default function AboutProgram({ isOpen, onClose }: AboutProgramProps) {
         <div className="p-6 bg-white">
           <div className="mb-6">
             <img
-              src="/Rectangle 2035.png"
+              src="https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/NSF_ICORPS_Logo_Lockup_RGB-TIP%20(1)%20(1).png"
               alt="Program overview"
               className="w-full h-30 object-cover rounded-lg"
             />
           </div>
-          <h3 className="text-lg font-bold text-gray-800 mb-4">
-            Program title example
-          </h3>
+          {/* <h3 className="text-lg font-bold text-gray-800 mb-4">
+            ABOUT THIS COURSE
+          </h3> */}
           <div className="mb-6 space-y-4">
             <p className="text-sm text-gray-700 leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              Nebraska I-Corps: Introduction to Customer Discovery (ICD) is based on the National Science Foundation (NSF) Innovation Corps™ (I-Corps) curriculum, offering a methodology to help teams discover the commercial potential of their technology or innovation. During this non-credit course, you will learn how to talk to customers/stakeholders and gain insight from experienced leaders. The ICD course captures the foundation of I-Corps™ so that eligible university deep tech teams may be better equipped to go on to the NSF I-Corps™ national program.  
             </p>
             <p className="text-sm text-gray-700 leading-relaxed">
-              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+              This program is <u>not</u> focused on how to write a research paper, business plan or NSF grant; rather the entire team will be engaged by getting out of the lab/building and discovering the value of their technology/innovation. Along the way, the ICD instructors will be guiding the teams through the course concepts, but the bulk of the work must come from teams engaging with real stakeholders.
             </p>
           </div>
           <div className="bg-[#EEF0FA] border border-gray-200 rounded-lg p-6">
-            <h4 className="text-lg font-bold text-gray-800 mb-4">Program include</h4>
+            <h4 className="text-lg font-bold text-gray-800 mb-4">SUMMARY OF COURSE REQUIREMENTS</h4>
             <ul className="space-y-3">
               <li className="flex items-start">
                 <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <span className="text-sm text-gray-700">Lorem ipsum dolor sit amet</span>
+                <span className="text-sm text-gray-700">Attend and actively participate in all four (4) main sessions</span>
               </li>
               <li className="flex items-start">
                 <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <span className="text-sm text-gray-700">Duis aute irure dolor in reprehenderit</span>
+                <span className="text-sm text-gray-700">Attend at least three (3) office hour sessions with an instructor (at least one between each main session)</span>
               </li>
               <li className="flex items-start">
                 <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <span className="text-sm text-gray-700">Cillum dolore eu fugiat nulla pariatur</span>
+                <span className="text-sm text-gray-700">Conduct a minimum of 25 customer discovery interviews during the course and record findings in the app provided.</span>
               </li>
             </ul>
           </div>
