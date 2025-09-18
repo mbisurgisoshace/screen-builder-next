@@ -18,31 +18,32 @@ export default function LinkTodo({
   return (
     <li
       key={todo.id}
-      className={`text-[#B5BCCB] border-[0.5px] border-[#B5BCCC] rounded-[8px] px-[12px] py-[12px] flex flex-col gap-3.5 ${
+      className={`text-[#B5BCCB] border-[0.5px] border-[#B5BCCC] rounded-[8px] px-[12px] py-[12px] flex flex-row gap-3.5 items-center ${
         isCompleted ? "bg-[#E4E5ED66]" : ""
       }`}
     >
-      <div className="flex  gap-3.5 items-center">
-        <div
-          className={`size-4 min-w-[16px] rounded-full text-[#B5BCCC] border border-[#B5BCCC] flex items-center justify-center ${
-            isCompleted ? "bg-[#42BC5C] border-[#42BC5C]" : "border"
-          }`}
-          onClick={() => {
-            markAsComplete(todo.id, !isCompleted);
-          }}
-        >
-          {isCompleted && <CheckIcon className="size-2 text-white " />}
-        </div>
-
-        <span
-          className={`w-full rounded-lg border-[1.5px] px-[12px] py-[12px] border-[#E4E5ED] text-[14px] font-medium text-[#6A35FF] ${
-            isCompleted ? "line-through" : ""
-          }`}
-        >
-          {todo.task_url}
-        </span>
+      <div
+        className={`size-4 min-w-[16px] rounded-full text-[#B5BCCC] border border-[#B5BCCC] flex items-center justify-center ${
+          isCompleted ? "bg-[#42BC5C] border-[#42BC5C]" : "border"
+        }`}
+        onClick={() => {
+          markAsComplete(todo.id, !isCompleted);
+        }}
+      >
+        {isCompleted && <CheckIcon className="size-2 text-white " />}
       </div>
-      <div className="flex ml-7">
+
+      <Link
+        href={todo.task_url!}
+        target="_blank"
+        className={`text-[14px] font-medium text-[#6A35FF] hover:text-[#6A35FF] transition-colors cursor-pointer ${
+          isCompleted ? "line-through" : "underline"
+        }`}
+      >
+        {todo.task_url}
+      </Link>
+      
+      {/* <div className="flex ml-7">
         <Link
           href={todo.task_url!}
           target="_blank"
@@ -63,7 +64,7 @@ export default function LinkTodo({
             <CopyIcon className="text-[#8B93A1]" />
           </Button>
         </span>
-      </div>
+      </div> */}
     </li>
   );
 }
