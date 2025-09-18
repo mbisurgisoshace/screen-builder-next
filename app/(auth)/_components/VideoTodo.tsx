@@ -23,7 +23,7 @@ export default function VideoTodo({
     >
       <div className="flex flex-row gap-3.5 items-center px-[12px] py-[12px]">
         <div
-          className={`size-5 rounded-full text-[#B5BCCC] border border-[#B5BCCC] flex items-center justify-center ${
+          className={`size-4 min-w-4 rounded-full text-[#B5BCCC] border border-[#B5BCCC] flex items-center justify-center ${
             isCompleted ? "bg-[#42BC5C] border-[#42BC5C]" : "border"
           }`}
           onClick={() => {
@@ -42,21 +42,31 @@ export default function VideoTodo({
       </div>
       <div className="flex flex-col gap-5 pl-[0px]">
         <h3
-          className={`text-[14px] font-medium text-[#2E3545] pl-12 ${
+          className={`text-[14px] font-medium text-[#2E3545] pl-12 break-words overflow-wrap-anywhere ${
             isCompleted ? "line-through" : ""
           }`}
-        >
-          {todo.task_description}
-        </h3>
+          dangerouslySetInnerHTML={{ __html: todo.task_description || "" }}
+        />
       </div>
       {todo.task_url?.includes("youtube.com") ? (
-        <div className="w-full aspect-video rounded-[8px] overflow-hidden">
+        <div className="w-full aspect-video rounded-[8px] overflow-hidden px-[12px] py-[12px]">
           <iframe
-            className="w-full h-full"
+            className="w-full h-full rounded-[8px]"
             src={todo.task_url?.replace("watch?v=", "embed/")}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      ) : todo.task_url?.includes("vimeo.com") ? (
+        <div className="w-full aspect-video rounded-[8px] overflow-hidden px-[12px] py-[12px]">
+          <iframe
+            className="w-full h-full rounded-[8px]"
+            src={`https://player.vimeo.com/video/${todo.task_url?.split('/').pop()}`}
+            title="Vimeo video player"
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
             allowFullScreen
           />
         </div>
