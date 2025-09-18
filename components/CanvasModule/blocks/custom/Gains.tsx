@@ -129,7 +129,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
         const raw = JSON.parse(shape.draftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch { }
+    } catch {}
     return EditorState.createEmpty();
   }, []);
 
@@ -162,7 +162,9 @@ export const Gains: React.FC<GainsProps> = (props) => {
   }, [editorState, editingBody]);
   const [currentValue, setCurrentValue] = useState<number>(0);
 
-  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const hasContent =
+    shape.cardTitle ||
+    (shape.draftRaw && editorState.getCurrentContent().hasText());
   const isEmpty = !hasContent && !editingBody;
 
   return (
@@ -171,7 +173,6 @@ export const Gains: React.FC<GainsProps> = (props) => {
         className="shadow-lg bg-[#FFCBAF]"
         onMouseDown={(e) => e.stopPropagation()}
       >
-
         <div className="p-6 pt-0">
           <div className="mb-4">
             <input
@@ -225,9 +226,13 @@ export const Gains: React.FC<GainsProps> = (props) => {
                   },
                   list: { options: ["unordered", "ordered"] },
                 }}
-                toolbarHidden={!showToolbar}
-                toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-                editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+                //toolbarHidden={!showToolbar}
+                toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+                  editingBody ? "bg-white" : "bg-transparent"
+                }`}
+                editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+                  editingBody ? "bg-white rounded" : "bg-transparent"
+                }`}
                 wrapperClassName="rdw-editor-wrapper"
                 placeholder="Type your text here..."
               />
@@ -245,10 +250,13 @@ export const Gains: React.FC<GainsProps> = (props) => {
               className="w-full flex items-center justify-between text-sm text-gray-700 hover:text-gray-900 transition-colors"
             >
               <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
-                {collapsed ? `Subquestions (${fiQuestions.length})` : `Subquestions (${fiQuestions.length})`}
+                {collapsed
+                  ? `Subquestions (${fiQuestions.length})`
+                  : `Subquestions (${fiQuestions.length})`}
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform text-[#80889D] ${collapsed ? "-rotate-0" : "rotate-180"
-                    }`}
+                  className={`w-4 h-4 transition-transform text-[#80889D] ${
+                    collapsed ? "-rotate-0" : "rotate-180"
+                  }`}
                 />
               </span>
               {/* <span className="text-gray-400">
@@ -295,7 +303,9 @@ export const Gains: React.FC<GainsProps> = (props) => {
                           onValueChange={(value) => setCurrentValue(value[0])}
                           className="w-full"
                         />
-                        <span className="text-xs font-medium text-gray-700">{currentValue || 0}</span>
+                        <span className="text-xs font-medium text-gray-700">
+                          {currentValue || 0}
+                        </span>
                       </div>
                     </div>
                   </div>

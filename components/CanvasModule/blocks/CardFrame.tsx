@@ -192,7 +192,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
   return (
     <ShapeFrame
       {...props}
-      resizable={true}
+      resizable={false}
       interactive={props.interactive ?? true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
@@ -447,11 +447,11 @@ function AttachmentTile({
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 B';
+    if (bytes === 0) return "0 B";
     const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
   return (
@@ -490,7 +490,7 @@ function AttachmentTile({
           {att.name}
         </div>
         <div className="text-xs text-gray-500">
-          {att.size ? formatFileSize(att.size) : 'Unknown size'}
+          {att.size ? formatFileSize(att.size) : "Unknown size"}
         </div>
       </div>
 

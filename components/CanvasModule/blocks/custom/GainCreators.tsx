@@ -128,7 +128,7 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
         const raw = JSON.parse(shape.draftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch { }
+    } catch {}
     return EditorState.createEmpty();
   }, []);
 
@@ -160,7 +160,9 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
-  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const hasContent =
+    shape.cardTitle ||
+    (shape.draftRaw && editorState.getCurrentContent().hasText());
   const isEmpty = !hasContent && !editingBody;
 
   return (
@@ -170,21 +172,21 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="p-6 pt-0">
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder={"Type your title here.."}
-            className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
-            defaultValue={shape.cardTitle || ""}
-            onBlur={(e) => {
-              if (e.target.value !== shape.cardTitle) {
-                commit({ cardTitle: e.target.value });
-              }
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-          />
-        </div>
-        {isEmpty ? (
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder={"Type your title here.."}
+              className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
+              defaultValue={shape.cardTitle || ""}
+              onBlur={(e) => {
+                if (e.target.value !== shape.cardTitle) {
+                  commit({ cardTitle: e.target.value });
+                }
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+            />
+          </div>
+          {isEmpty ? (
             <div className="flex items-center">
               <button
                 onClick={() => {
@@ -196,51 +198,55 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
                 + add more details
               </button>
             </div>
-        ) : (
-          <RteEditor
-            onBlur={() => {
-              setShowToolbar(false);
-              setEditingBody(false);
-              const contentState = editorState.getCurrentContent();
-              const hasText = contentState.hasText();
-              if (!hasText) {
-                setEditorState(EditorState.createEmpty());
-                commit({ draftRaw: undefined });
-              }
-            }}
-            onFocus={() => {
-              setShowToolbar(true);
-              setEditingBody(true);
-            }}
-            editorState={editorState}
-            onEditorStateChange={setEditorState}
-            toolbar={{
-              options: ["inline", "list", "link", "history"],
-              inline: {
-                options: ["bold", "italic", "underline", "strikethrough"],
-              },
-              list: { options: ["unordered", "ordered"] },
-            }}
-            toolbarHidden={!showToolbar}
-            toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-            editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
-            wrapperClassName="rdw-editor-wrapper"
-            placeholder="Type your text here..."
-          />
-        )}
-        {tags.length > 0 && (
-          <div className="mt-4 flex flex-row gap-2 items-center">
-            <span className="text-sm text-gray-600">Significance Score:</span>
-            {tags.map((t) => (
-              <span
-                key={t}
-                className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        )}
+          ) : (
+            <RteEditor
+              onBlur={() => {
+                setShowToolbar(false);
+                setEditingBody(false);
+                const contentState = editorState.getCurrentContent();
+                const hasText = contentState.hasText();
+                if (!hasText) {
+                  setEditorState(EditorState.createEmpty());
+                  commit({ draftRaw: undefined });
+                }
+              }}
+              onFocus={() => {
+                setShowToolbar(true);
+                setEditingBody(true);
+              }}
+              editorState={editorState}
+              onEditorStateChange={setEditorState}
+              toolbar={{
+                options: ["inline", "list", "link", "history"],
+                inline: {
+                  options: ["bold", "italic", "underline", "strikethrough"],
+                },
+                list: { options: ["unordered", "ordered"] },
+              }}
+              //toolbarHidden={!showToolbar}
+              toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+                editingBody ? "bg-white" : "bg-transparent"
+              }`}
+              editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+                editingBody ? "bg-white rounded" : "bg-transparent"
+              }`}
+              wrapperClassName="rdw-editor-wrapper"
+              placeholder="Type your text here..."
+            />
+          )}
+          {tags.length > 0 && (
+            <div className="mt-4 flex flex-row gap-2 items-center">
+              <span className="text-sm text-gray-600">Significance Score:</span>
+              {tags.map((t) => (
+                <span
+                  key={t}
+                  className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

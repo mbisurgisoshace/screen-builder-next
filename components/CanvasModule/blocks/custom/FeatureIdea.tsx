@@ -47,7 +47,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
         const raw = JSON.parse(shape.draftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch { }
+    } catch {}
     return EditorState.createEmpty();
   }, []);
 
@@ -58,7 +58,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
         const raw = JSON.parse(shape.featureIdeaDraftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch { }
+    } catch {}
     return EditorState.createEmpty();
   }, []);
 
@@ -93,7 +93,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
       } else {
         setFeatureIdeaEditorState(EditorState.createEmpty());
       }
-    } catch { }
+    } catch {}
   }, [shape.featureIdeaDraftRaw]);
 
   useEffect(() => {
@@ -114,13 +114,15 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
   const [showToolbarFeature, setShowToolbarFeature] = useState(false);
   const [showToolbarWhyFeature, setShowToolbarWhyFeature] = useState(false);
 
-
-  const hasContent = shape.cardTitle || (shape.draftRaw && featureIdeaEditorState.getCurrentContent().hasText());
+  const hasContent =
+    shape.cardTitle ||
+    (shape.draftRaw && featureIdeaEditorState.getCurrentContent().hasText());
   const isEmpty = !hasContent && !editingBody;
 
   return (
     <CardFrame
       {...props}
+      resizable={false}
       useAttachments={true}
       headerTextColor={"#DDE1F2"}
       headerBg={"#DDE1F2"}
@@ -142,18 +144,11 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
               <DropdownMenuContent
                 align="end"
                 className="absolute -top-11 left-5 p-1.5 w-[216px]"
-              >
-              </DropdownMenuContent>
+              ></DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-
-
-
       }
-
-
-
       body={
         <div className="h-full flex flex-row bg-[#DDE1F2]">
           <div className="w-full h-full flex flex-col overflow-hidden px-8 py-6 gap-4 border-r border-[#B4B9C9] ">
@@ -161,7 +156,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
             <div className="mb-4">
               <input
                 type="text"
-                placeholder={"Type your title here.."}
+                placeholder={"Type a feature idea.."}
                 className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
                 // defaultValue={shape.cardTitle || ""}
                 // onBlur={(e) => {
@@ -200,15 +195,24 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                       toolbar={{
                         options: ["inline", "list", "link", "history"],
                         inline: {
-                          options: ["bold", "italic", "underline", "strikethrough"],
+                          options: [
+                            "bold",
+                            "italic",
+                            "underline",
+                            "strikethrough",
+                          ],
                         },
                         list: { options: ["unordered", "ordered"] },
                       }}
-                      toolbarHidden={!showToolbarFeature}
-                      toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-                      editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+                      //toolbarHidden={!showToolbarFeature}
+                      toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+                        editingBody ? "bg-white" : "bg-transparent"
+                      }`}
+                      editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+                        editingBody ? "bg-white rounded" : "bg-transparent"
+                      }`}
                       wrapperClassName="rdw-editor-wrapper"
-                      placeholder="Type your text here..."
+                      placeholder="Add more details..."
                     />
                   )}
                 </div>
@@ -219,7 +223,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
             <div className="mb-4">
               <input
                 type="text"
-                placeholder={"Type your title here.."}
+                placeholder={"Why is this feature necessary.."}
                 className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
                 // defaultValue={shape.cardTitle || ""}
                 // onBlur={(e) => {
@@ -258,16 +262,24 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                       toolbar={{
                         options: ["inline", "list", "link", "history"],
                         inline: {
-                          options: ["bold", "italic", "underline", "strikethrough"],
+                          options: [
+                            "bold",
+                            "italic",
+                            "underline",
+                            "strikethrough",
+                          ],
                         },
                         list: { options: ["unordered", "ordered"] },
                       }}
-                      toolbarHidden={!showToolbarWhyFeature}
-                      toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-                      editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
-                        } placeholder:text-gray-500 `}
+                      //toolbarHidden={!showToolbarWhyFeature}
+                      toolbarClassName={`border-b px-2 text-[14px] ${
+                        editingBody ? "bg-white" : "bg-transparent"
+                      }`}
+                      editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${
+                        editingBody ? "bg-white rounded" : "bg-transparent"
+                      } placeholder:text-gray-500 `}
                       wrapperClassName=""
-                      placeholder="Type your text here..."
+                      placeholder="Add more details..."
                     />
                   )}
                 </div>
