@@ -1,5 +1,5 @@
 const vocabularyData = {
-  title: "Great Lakes I-Corps Common Vocabulary",
+  title: "I-Corps Common Vocabulary",
   terms: [
     {
       id: 1,
@@ -11,7 +11,7 @@ const vocabularyData = {
       id: 2,
       term: "Business Model Canvas (BMC)",
       definition:
-        "The <strong>Business Model Canvas</strong> includes 9 elements for organizing business hypotheses. Focus on Customer Segments and Value Proposition for Product Market fit. Need clear, quantified answers before execution.",
+        "The Business Model Canvas includes 9 elements used to organize our business hypothesis. Nebraska I-Corps focuses primarily on the Customer Segments and Value Proposition which result in the Product-Market fit. Ideally you should have clear and quantified answers to each of the 9 boxes before entering the execution phase.",
     },
     {
       id: 3,
@@ -21,22 +21,72 @@ const vocabularyData = {
     },
     {
       id: 4,
-      term: "Business Thesis",
+      term: "Hypothesis-Design-Test-Insight Loop",
       definition:
-        'A short statement capturing the <strong>"PRIMARY"</strong> value proposition and beachhead market. Should be quantifiable, relatable, specific, and testable (<strong>QRST</strong>) through customer discovery, addressing who will buy, what they will buy, and why.',
+        "I-Corps methodology requires participants to take guesses and then use the scientific method to conduct repeatable, testable, and evidence-based experiments that will validate or invalidate their hypotheses.",
     },
     {
       id: 5,
-      term: "QRST",
+      term: "Market Segment",
       definition:
-        "Stands for <strong>Quantitative, Relatable, Specific & Testable</strong>. Serves as a reminder to quantify, use stakeholder language, identify key metrics, and develop testable questions for customer discovery.",
+        "A large industrial segment based on the industry and type of product being offered. These segments reflect how the existing industry subdivides its efforts. NAICS codes* are a classic way to subdivide a market..<br><br>Examples: Transportation -&gt; Ground Transportation -&gt; Trucks -&gt; Light Duty Trucks -&gt; Light Duty Passenger (non-commercial) Trucks Healthcare -&gt;<br><br>Healthcare Suppliers -&gt; Medical Devices -&gt; Implantable Medical Devices -&gt; Cardiovascular Implanted Medical Devices<br><br>*https://www.naics.com/search/",
     },
     {
       id: 6,
       term: "Value Proposition",
       definition:
-        'Answers "What pain are you solving, what gain are you creating, and for who?". Value Propositions should be benefits to specific stakeholders, <strong>"NOT FEATURES"</strong>. Watch out for words ending in "-er" (e.g., <em>faster, stronger, safer</em>).',
+        "Answers the question &quot;What pain are you solving, what gain are you creating, and for who?&quot; Value Propositions should be stated as a benefit to a specific stakeholder, NOT FEATURES. Watch out for the words that end in -er (faster, stronger, safer...).",
     },
+    {
+      id: 7,
+      term: "Stakeholder",
+      definition:
+        "Anyone who might have an interest (direct or indirect, positive or negative) in your product/service/innovation and the benefits it provides. A way to describe the Customer Segment box on the BMC considering roles beyond End User customers.",
+    },
+    {
+      id: 8,
+      term: "Beachhead Market",
+      definition:
+        "The Beachhead Market is the first and best market to generate traction for a given innovation. It should be a stepping stone for additional success in your overall Target Market. The ideal beachhead is rarely the biggest or most lucrative market, instead beachheads should be those markets with highest margins, biggest need, fastest time to market, offer immediate access, etc.",
+    },
+    {
+      id: 9,
+      term: "Customer Job",
+      definition:
+        "The task(s) conducted by your primary stakeholder(s) as they utilize your product or service. In I-Corps context, jobs are not titles or positions, but rather tasks/activities a customer conducts to complete a desired outcome.",
+    },
+    {
+      id: 10,
+      term: "Customer Role",
+      definition:
+        "Defining customer roles encourages teams to look beyond their end user when interviewing. Roles are designed to help innovators expand understanding of their ecosystem map. Innovators should be able to identify at least one end user, buyer, payer, recommender, influencer, saboteur, etc. for their eco-system. The teaching points are: 1) every ecosystem has people playing these roles, who are they in your eco-system? and 2) adoption/buying decisions are made by collections of people with different motivations and degrees of influence.",
+    },{
+      id: 11,
+      term: "Pain Reliever",
+      definition:
+        "Pains represent issues a customer is aware of and actively seeking solutions for. An innovator should be able to link from one side of the VP canvas to the other. 1) Articulate their customer&#39;s Job to Be Done, 2) Quantify the Pain they experience while doing that job(s). 3) Quantify how much of that pain is relieved by their innovative Pain Reliever. 4) What feature/tech provides the Pain Reliever. Customers are most motivated to solve their pain points. Any gains provided by the innovation are further incentive.",
+    },{
+      id: 12,
+      term: "Gain Creator",
+      definition:
+        "A gain creator addresses an issue or opportunity that isn&#39;t &quot;top of mind&quot; for the customer, yet can add significant value.",
+    },{
+      id: 13,
+      term: "Product-Market Fit",
+      definition:
+        "A specific, quantified, and compelling Who (Customer Segment) and Why (Value Proposition).",
+    },{
+      id: 14,
+      term: "Pivot",
+      definition:
+        "Any change to the elements of the business model based on data coming from the customer/stakeholder interviews.",
+    },{
+      id: 15,
+      term: "Ecosystem Map",
+      definition:
+        "A visual depiction of the various stakeholders involved in the use, adoption, implementation, or purchase of a new product or service and how they relate to each other. The flow between stakeholders could be information, money, materials or other relationships. The purpose of the map is to expand our knowledge of the stakeholders, who is influencing them, and understand their motivations, as well as to identify gaps in our knowledge.",
+    },
+    
   ],
 };
 

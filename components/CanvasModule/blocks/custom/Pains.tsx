@@ -176,8 +176,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
           <div className="mb-4">
             <input
               type="text"
-              placeholder={isEmpty ? "Title of the video text example" : "Type in a Pain"}
-              className="w-full bg-transparent border-none outline-none text-lg font-manrope font-bold text-[24px] placeholder:text-[#2E3545] placeholder:font-medium"
+              placeholder={"Type your title here.."}
+              className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
                 if (e.target.value !== shape.cardTitle) {
@@ -230,7 +230,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
                 editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
                   } placeholder:text-gray-500 `}
                 wrapperClassName=""
-                placeholder="Write here..."
+                placeholder="Type your text here..."
               />
             )}
           </div>

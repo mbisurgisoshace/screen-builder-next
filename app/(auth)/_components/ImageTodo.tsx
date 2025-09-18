@@ -1,5 +1,5 @@
 import { Task } from "@/lib/generated/prisma";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -60,12 +60,24 @@ export default function ImageTodo({
             }}
           />
           {needsShowMore && (
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-[12px] text-[#6A35FF] font-medium hover:text-[#5A2BC7] mt-1 transition-colors"
-            >
-              {isExpanded ? "Show less" : "Show more"}
-            </button>
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="flex items-center gap-1 text-[12px] text-[#6A35FF] font-medium hover:text-[#5A2BC7] transition-colors"
+              >
+                {isExpanded ? (
+                  <>
+                    <span>Show less</span>
+                    <ChevronUp className="w-3 h-3" />
+                  </>
+                ) : (
+                  <>
+                    <span>Show more</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </>
+                )}
+              </button>
+            </div>
           )}
         </div>
       </div>

@@ -242,7 +242,7 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
             toolbarClassName={`border-b px-2 text-[14px]  ${editingBody ? 'bg-white' : 'bg-transparent'}`}
             editorClassName={`px-2 py-2 min-h-[120px]  text-[14px]  ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
             wrapperClassName=""
-            placeholder="Write here..."
+            placeholder="Type your text here..."
           />
         )}
       </div>

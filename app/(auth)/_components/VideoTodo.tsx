@@ -1,5 +1,5 @@
 import { Task } from "@/lib/generated/prisma";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 interface VideoTodoProps {
@@ -61,19 +61,31 @@ export default function VideoTodo({
             }}
           />
           {needsShowMore && (
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-[12px] text-[#6A35FF] font-medium hover:text-[#5A2BC7] mt-1 transition-colors"
-            >
-              {isExpanded ? "Show less" : "Show more"}
-            </button>
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="flex items-center gap-1 text-[12px] text-[#6A35FF] font-medium hover:text-[#5A2BC7] transition-colors"
+              >
+                {isExpanded ? (
+                  <>
+                    <span>Show less</span>
+                    <ChevronUp className="w-3 h-3" />
+                  </>
+                ) : (
+                  <>
+                    <span>Show more</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </>
+                )}
+              </button>
+            </div>
           )}
         </div>
       </div>
       {todo.task_url?.includes("youtube.com") ? (
-        <div className="w-full aspect-video rounded-[8px] overflow-hidden px-[12px] py-[12px]">
+        <div className="w-full aspect-video rounded-[8px] overflow-hidden">
           <iframe
-            className="w-full h-full rounded-[8px]"
+            className="w-full h-full rounded-[8px] px-[6px] py-[6px]"
             src={todo.task_url?.replace("watch?v=", "embed/")}
             title="YouTube video player"
             frameBorder="0"
@@ -82,9 +94,9 @@ export default function VideoTodo({
           />
         </div>
       ) : todo.task_url?.includes("vimeo.com") ? (
-        <div className="w-full aspect-video rounded-[8px] overflow-hidden px-[12px] py-[12px]">
+        <div className="w-full aspect-video rounded-[8px] overflow-hidden">
           <iframe
-            className="w-full h-full rounded-[8px]"
+            className="w-full h-full rounded-[8px] px-[6px] py-[6px]"
             src={`https://player.vimeo.com/video/${todo.task_url?.split('/').pop()}`}
             title="Vimeo video player"
             frameBorder="0"
@@ -96,7 +108,7 @@ export default function VideoTodo({
         <video
           controls
           src={todo.task_url!}
-          className="w-full aspect-video object-cover rounded-[10px] px-[12px] py-[12px]"
+          className="w-full aspect-video object-cover rounded-[10px] px-[6px] py-[6px]"
         />
       )}
     </li>

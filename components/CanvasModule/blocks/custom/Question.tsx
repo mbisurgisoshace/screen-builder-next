@@ -307,8 +307,8 @@ export const Question: React.FC<QuestionProps> = (props) => {
         {/* Body */}
         {isEmpty && !editingBody && (
           <div className="mt-4 p-4 bg-white border border-red-200 rounded-lg">
-            <LoadingText 
-              text="Click to add interview notes..." 
+            <LoadingText
+              text="Click to add interview notes..."
               showLoader={false}
               centered={true}
             />
@@ -331,10 +331,10 @@ export const Question: React.FC<QuestionProps> = (props) => {
               list: { options: ["unordered", "ordered"] },
             }}
             toolbarHidden={!showToolbar}
-            toolbarClassName={`border-b px-2 text-[24px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-            editorClassName={`px-2 py-2 min-h-[120px] text-[24px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
-            wrapperClassName=""
-            placeholder="Write here..."
+            toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
+            editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+            wrapperClassName="rdw-editor-wrapper"
+            placeholder="Type your text here..."
           />
         </div>
 
@@ -350,9 +350,8 @@ export const Question: React.FC<QuestionProps> = (props) => {
           >
             <span className="flex items-center gap-2">
               <ChevronDown
-                className={`w-4 h-4 transition-transform ${
-                  collapsed ? "-rotate-90" : "rotate-0"
-                }`}
+                className={`w-4 h-4 transition-transform ${collapsed ? "-rotate-90" : "rotate-0"
+                  }`}
               />
               Subquestions ({firtQuestionsOrder.length + secondQuestionsOrder.length})
             </span>

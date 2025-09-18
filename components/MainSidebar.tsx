@@ -76,7 +76,7 @@ export default function CollapsibleSidebar({ items }: CollapsibleSidebarProps) {
                             letterSpacing: "0%",
                           }}
                         >
-                          <Link href={subItem.url}>
+                          <Link href={subItem.url} data-sidebar-link>
                             <span>{subItem.title}</span>
                           </Link>
                         </SidebarMenuSubButton>
