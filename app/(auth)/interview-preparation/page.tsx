@@ -1,6 +1,6 @@
-export default function CustomerDiscoveryPage() {
+export default function InterviewPreparationPage() {
   return (
-    <div>
+     <div>
       <div className="flex h-full">
         <div className="flex-1 bg-[#6A35FF] p-8 flex flex-col justify-center">
           <div className="max-w-3xl">

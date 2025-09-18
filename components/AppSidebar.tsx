@@ -99,6 +99,10 @@ const data = {
           url: "/customer-discovery",
         },
         {
+          title: "Interview Prep",
+          url: "/interview-preparation",
+        },
+        {
           title: "Common Vocabulary",
           url: "/common-vocabulary",
         },
