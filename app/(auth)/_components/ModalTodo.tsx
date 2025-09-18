@@ -30,9 +30,9 @@ export default function ModalTodo({
 
   const getDisplayText = () => {
     if (todo.task_url === "mentors") {
-      return "View Mentors";
+      return "Meet your Instructors";
     } else if (todo.task_url === "about_program") {
-      return "View About Program";
+      return "Check out the I-Corps Program";
     }
     return todo.task_url || "Open Modal";
   };
