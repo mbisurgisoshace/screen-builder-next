@@ -166,41 +166,11 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
   return (
     <div className="flex-1 overflow-auto">
       <div
-        className="mt-1 rounded-lg shadow-lg bg-[#DDF5B5] border border-[#B4B9C9]"
+        className="shadow-lg bg-[#DDF5B5]"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-row gap-2 p-2">
-          <span>Significance Score:</span>
-          {tags.map((t) => (
-            <button
-              key={t}
-              title="Remove"
-              data-nodrag="true"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                //removeTag(t);
-              }}
-              className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200"
-            >
-              {t}
-              <svg
-                className="w-3 h-3 opacity-70"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  d="M6 6l8 8M14 6l-8 8"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
-          ))}
-        </div>
+        <div className="p-6 pt-0">  
         {isEmpty ? (
-          <div className="p-4">
             <div className="flex items-center">
               <button
                 onClick={() => {
@@ -212,7 +182,6 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
                 + add more details
               </button>
             </div>
-          </div>
         ) : (
           <RteEditor
             onBlur={() => {
@@ -302,6 +271,20 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
           ))}
         </div>
       )} */}
+      {tags.length > 0 && (
+          <div className="mt-4 flex flex-row gap-2 items-center">
+            <span className="text-sm text-gray-600">Significance Score:</span>
+            {tags.map((t) => (
+              <span
+                key={t}
+                className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

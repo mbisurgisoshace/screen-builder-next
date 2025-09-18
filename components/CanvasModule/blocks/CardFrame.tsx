@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Download,
   FileTextIcon,
+  Paperclip,
   Play,
   PlayIcon,
   PlusIcon,
@@ -210,44 +211,36 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
         {/* Attachments */}
         {useAttachments && (
           <>
-            <div className="bg-white h-full px-10 mt-6">
-              <span className="opacity-50 text-[#2B2B2C] text-xs font-semibold">
-                Attachments
-              </span>
-              {/* <div className="mt-4 flex flex-row gap-3">
-            <div className="bg-[#EEF4FB] w-[125px] h-[130px] flex items-center justify-center">
-              <PlusIcon />
-            </div>
-            <div></div>
-          </div> */}
-              <div className="mt-4 flex flex-wrap gap-3 items-start">
-                {/* Add tile */}
+            <div className="bg-[#DDE1F2] h-full px-10 pt-6 pb-6 border-t-1 border-[#B4B9C9]">
+              <div className="flex items-center justify-center mb-8">
                 <button
                   type="button"
                   onClick={onPickClick}
-                  className="bg-[#EEF4FB] w-[125px] h-[130px] rounded-md flex items-center justify-center hover:opacity-90 transition cursor-pointer"
+                  className="flex items-center gap-2 text-[#6B46C1] hover:text-[#5B21B6] transition-colors cursor-pointer"
                   title="Add attachment"
                 >
-                  <PlusIcon />
+                  <span className="text-sm font-medium">+ add attachment</span>
+                  <Paperclip className="w-4 h-4" />
                 </button>
+              </div>
 
-                {/* Hidden input */}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  //accept="image/*"
-                  accept="image/*,video/*,application/pdf,*/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = e.target.files;
-                    if (files && files.length) handleFiles(files);
-                    // reset so picking the same file again still fires change
-                    e.currentTarget.value = "";
-                  }}
-                />
+              {/* Hidden input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,video/*,application/pdf,*/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length) handleFiles(files);
+                  // reset so picking the same file again still fires change
+                  e.currentTarget.value = "";
+                }}
+              />
 
-                {/* Thumbnails */}
+              {/* Attachments list */}
+              <div className="space-y-3 flex flex-wrap">
                 {(attachments ?? []).map((att) => (
                   <AttachmentTile
                     key={att.id}
@@ -255,7 +248,6 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
                     onOpen={openPreviewById}
                     onRemove={() => removeAttachment(att.id)}
                   />
-                  // <AttachmentTileDialog key={att.id} attachment={att} />
                 ))}
               </div>
             </div>
@@ -454,75 +446,85 @@ function AttachmentTile({
     onOpen(att.id);
   };
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
   return (
     <div
-      className="relative w-[125px] h-[130px] rounded-md overflow-hidden border bg-white group"
+      className="relative bg-[#F0F3FD] rounded-lg shadow-sm border border-gray-200 p-2 flex items-center gap-2 hover:shadow-md transition-shadow cursor-pointer w-78 h-16 mr-2"
       onMouseDown={(e) => e.stopPropagation()}
       onClick={open}
     >
-      {/* Click-through link */}
-      {/* <a
-        href={src}
-        target="_blank"
-        rel="noreferrer"
-        className="block w-full h-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {renderThumb(att)}
-      </a> */}
-      {/* Thumbnail / label (no anchors here) */}
-      {isImage(att.mime) ? (
-        <img
-          src={att.preview || att.url}
-          alt={att.name}
-          className="object-cover w-full h-full"
-          draggable={false}
-        />
-      ) : isVideo(att.mime) ? (
-        <div className="w-full h-full grid place-items-center bg-black/5">
-          <Play className="w-7 h-7 opacity-70" />
-        </div>
-      ) : isPdf(att.mime) ? (
-        <div className="w-full h-full grid place-items-center text-xs p-2 text-center">
-          📄 {att.name}
-        </div>
-      ) : (
-        <div className="w-full h-full grid place-items-center text-xs p-2 text-center">
-          ⬇︎ {att.name}
-        </div>
-      )}
+      {/* Thumbnail */}
+      <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+        {isImage(att.mime) ? (
+          <img
+            src={att.preview || att.url}
+            alt={att.name}
+            className="object-cover w-full h-full"
+            draggable={false}
+          />
+        ) : isVideo(att.mime) ? (
+          <div className="w-full h-full grid place-items-center bg-gray-200">
+            <Play className="w-5 h-5 text-gray-600" />
+          </div>
+        ) : isPdf(att.mime) ? (
+          <div className="w-full h-full grid place-items-center bg-red-100">
+            <FileTextIcon className="w-6 h-6 text-red-600" />
+          </div>
+        ) : (
+          <div className="w-full h-full grid place-items-center bg-gray-200">
+            <FileTextIcon className="w-6 h-6 text-gray-600" />
+          </div>
+        )}
+      </div>
 
-      {/* Tiny Download button that DOESN'T open the modal */}
+      {/* File info */}
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-gray-900 truncate">
+          {att.name}
+        </div>
+        <div className="text-xs text-gray-500">
+          {att.size ? formatFileSize(att.size) : 'Unknown size'}
+        </div>
+      </div>
+
+      {/* Download button */}
       <a
         href={att.url}
         target="_blank"
         rel="noreferrer"
         download
         title="Download"
-        className="absolute bottom-1 right-1 p-1 rounded bg-black/40 hover:bg-black/60 text-white"
-        onClick={(e) => e.stopPropagation()} // <- prevent modal open
+        className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+        onClick={(e) => e.stopPropagation()}
       >
-        <Download className="w-4 h-4" />
+        <Download className="w-4 h-4 text-gray-600" />
       </a>
 
-      {/* Remove */}
+      {/* Remove button */}
       <button
         title="Remove"
-        className="absolute top-1 right-1 p-1 rounded bg-white/90 hover:bg-white shadow"
+        className="p-2 rounded-md hover:bg-gray-100 transition-colors"
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
         }}
       >
-        <XIcon className="w-3 h-3" />
+        <XIcon className="w-4 h-4 text-gray-600" />
       </button>
 
       {/* Progress */}
       {att.uploading && (
-        <div className="absolute inset-0 bg-black/10 grid place-items-end">
-          <div className="w-full h-1 bg-white/50">
+        <div className="absolute inset-0 bg-white/80 grid place-items-end rounded-lg">
+          <div className="w-full h-1 bg-gray-200 rounded-b-lg">
             <div
-              className="h-1 bg-indigo-500 transition-[width]"
+              className="h-1 bg-indigo-500 transition-[width] rounded-b-lg"
               style={{ width: `${Math.round((att.progress ?? 0) * 100)}%` }}
             />
           </div>
