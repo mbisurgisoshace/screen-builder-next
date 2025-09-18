@@ -307,12 +307,12 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
                   },
                   list: { options: ["unordered", "ordered"] },
                 }}
-                toolbarHidden={!showToolbar}
+                //toolbarHidden={!showToolbar}
                 toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
                   editingBody ? "bg-white" : "bg-transparent"
                 }`}
                 editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
-                  editingBody ? "bg-white rounded" : "bg-transparent"
+                  editingBody ? "bg-[#EBF9D3] rounded" : "bg-[#EBF9D3] rounded"
                 }`}
                 wrapperClassName="rdw-editor-wrapper"
                 placeholder="Type your text here..."

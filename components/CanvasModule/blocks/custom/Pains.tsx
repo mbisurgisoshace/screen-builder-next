@@ -129,7 +129,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
         const raw = JSON.parse(shape.draftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch { }
+    } catch {}
     return EditorState.createEmpty();
   }, []);
 
@@ -163,15 +163,14 @@ export const Pains: React.FC<PainsProps> = (props) => {
 
   const [currentValue, setCurrentValue] = useState<number>(0);
 
-  const hasContent = shape.cardTitle || (shape.draftRaw && editorState.getCurrentContent().hasText());
+  const hasContent =
+    shape.cardTitle ||
+    (shape.draftRaw && editorState.getCurrentContent().hasText());
   const isEmpty = !hasContent && !editingBody;
 
   return (
     <div className="flex-1">
-      <div
-        className="bg-[#FFBCBC]"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
+      <div className="bg-[#FFBCBC]" onMouseDown={(e) => e.stopPropagation()}>
         <div className="p-6 pt-0">
           <div className="mb-4">
             <input
@@ -205,12 +204,12 @@ export const Pains: React.FC<PainsProps> = (props) => {
                 onBlur={() => {
                   setShowToolbar(false);
                   setEditingBody(false);
-                    const contentState = editorState.getCurrentContent();
-                    const hasText = contentState.hasText();
-                    if (!hasText) {
-                      setEditorState(EditorState.createEmpty());
-                      commit({ draftRaw: undefined });
-                    }
+                  const contentState = editorState.getCurrentContent();
+                  const hasText = contentState.hasText();
+                  if (!hasText) {
+                    setEditorState(EditorState.createEmpty());
+                    commit({ draftRaw: undefined });
+                  }
                 }}
                 onFocus={() => {
                   setShowToolbar(true);
@@ -225,10 +224,13 @@ export const Pains: React.FC<PainsProps> = (props) => {
                   },
                   list: { options: ["unordered", "ordered"] },
                 }}
-                toolbarHidden={!showToolbar}
-                toolbarClassName={`border-b px-2 text-[14px] ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-                editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${editingBody ? "bg-white rounded" : "bg-transparent"
-                  } placeholder:text-gray-500 `}
+                //toolbarHidden={!showToolbar}
+                toolbarClassName={`border-b px-2 text-[14px] ${
+                  editingBody ? "bg-white" : "bg-transparent"
+                }`}
+                editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${
+                  editingBody ? "bg-[#FFE0E0] rounded" : "bg-[#FFE0E0]"
+                } placeholder:text-gray-500 `}
                 wrapperClassName=""
                 placeholder="Type your text here..."
               />
@@ -245,10 +247,13 @@ export const Pains: React.FC<PainsProps> = (props) => {
               className="w-full flex items-center justify-between text-sm hover:text-gray-900 transition-colors"
             >
               <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
-                {collapsed ? `Subquestions (${fiQuestions.length})` : `Subquestions (${fiQuestions.length})`}
+                {collapsed
+                  ? `Subquestions (${fiQuestions.length})`
+                  : `Subquestions (${fiQuestions.length})`}
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform text-[#80889D] ${collapsed ? "-rotate-90" : "rotate-0"
-                    }`}
+                  className={`w-4 h-4 transition-transform text-[#80889D] ${
+                    collapsed ? "-rotate-90" : "rotate-0"
+                  }`}
                 />
               </span>
               {/* <span className="text-gray-400">
@@ -259,7 +264,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
             {!collapsed && (
               <div
                 ref={questionsRef}
-                className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
+                className="mt-4 p-4 rounded-lg  bg-[#FFE0E0]"
               >
                 {fiQuestions.map((q, idx) => (
                   <div className="flex flex-col gap-3" key={q.id}>
@@ -295,7 +300,9 @@ export const Pains: React.FC<PainsProps> = (props) => {
                           onValueChange={(value) => setCurrentValue(value[0])}
                           className="w-full"
                         />
-                        <span className="text-xs font-medium text-gray-700">{currentValue || 0}</span>
+                        <span className="text-xs font-medium text-gray-700">
+                          {currentValue || 0}
+                        </span>
                       </div>
                     </div>
                   </div>
