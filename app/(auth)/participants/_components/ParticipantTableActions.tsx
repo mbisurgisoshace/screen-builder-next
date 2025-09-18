@@ -177,6 +177,18 @@ export default function ParticipantTableActions({
                         <SelectItem value="Both Customer & End-User">
                           Both Customer & End-User
                         </SelectItem>
+                        <SelectItem value="Payer">
+                         Payer
+                        </SelectItem>
+                        <SelectItem value="Influencer">
+                         Influencer
+                        </SelectItem>
+                        <SelectItem value="Recommender">
+                         Recommender
+                        </SelectItem>
+                        <SelectItem value="Saboteur">
+                         Saboteur
+                        </SelectItem>
                         <SelectItem value="Additional Decision Maker">
                           Additional Decision Maker
                         </SelectItem>
