@@ -191,7 +191,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
   return (
     <ShapeFrame
       {...props}
-      resizable={true}
+      resizable={false}
       interactive={props.interactive ?? true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
