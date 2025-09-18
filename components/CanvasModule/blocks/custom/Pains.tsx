@@ -38,7 +38,28 @@ export const Pains: React.FC<PainsProps> = (props) => {
       id: "pains_question_1",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, what is the significance of this to the customer/user?",
+        "What sort of Pain is this? Takes too much time, Costs too much money, Requires substantial efforts, Makes them feel a negative emotion",
+      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    },
+    {
+      id: "pains_question_2",
+      card_type: "card",
+      question:
+        "What sort of emotions does the stakeholder feel when they experience this Pain?",
+      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    },
+    {
+      id: "pains_question_3",
+      card_type: "card",
+      question:
+        "What are the negative risks/consequences when the stakeholder experiences this Pain?",
+      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    },
+    {
+      id: "pains_question_4",
+      card_type: "card",
+      question:
+        "On a scale of 1-10, 10 being highest, what is the significance of this Pain to the stakeholder?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
     },
   ];
