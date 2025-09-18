@@ -94,7 +94,7 @@ export default function ParticipantTableActions({
       blocking_issues: participant.blocking_issues || "",
       hypothesis_to_validate: participant.hypothesis_to_validate || "",
       learnings: participant.learnings || "",
-      scheduled_date: participant.scheduled_date || new Date(),
+      scheduled_date: participant.scheduled_date || undefined,
     },
   });
 
@@ -135,7 +135,7 @@ export default function ParticipantTableActions({
             Edit Participant
           </SheetTitle>
         </SheetHeader>
-        <div className="h-full flex flex-col gap-8">
+        <div className="h-full flex flex-col gap-8 overflow-auto">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
