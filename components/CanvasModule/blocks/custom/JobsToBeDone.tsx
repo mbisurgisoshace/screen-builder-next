@@ -59,6 +59,13 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
       id: "jobs_to_be_done_question_3",
       card_type: "card",
       question:
+        "What are some barriers preventing the stakeholder from getting this Job done?",
+      question_type: "text-area",
+    },
+    {
+      id: "jobs_to_be_done_question_4",
+      card_type: "card",
+      question:
         "On a scale of 1-10, 10 being highest, how significant is this Job to the stakeholder?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
@@ -68,7 +75,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
 
   const tags: string[] = Array.isArray((shape as any).cardTags)
     ? ((shape as any).cardTags as string[])
-    : ["", "", ""];
+    : ["", "", "", ""];
 
   const commit = (patch: Partial<IShape>) => {
     onCommitStyle?.(shape.id, patch);
