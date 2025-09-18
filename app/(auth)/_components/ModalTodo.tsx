@@ -57,8 +57,8 @@ export default function ModalTodo({
         </div>
 
         <span
-          className={`text-[14px] font-medium text-[#6A35FF] underline hover:text-[#6A35FF] transition-colors cursor-pointer ${
-            isCompleted ? "line-through" : ""
+          className={`text-[14px] font-medium text-[#6A35FF] hover:text-[#6A35FF] transition-colors cursor-pointer ${
+            isCompleted ? "line-through" : "underline"
           }`}
           onClick={handleClick}
         >
