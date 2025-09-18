@@ -97,7 +97,6 @@ export const Question: React.FC<QuestionProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
-
   const hasContent = shape.draftRaw;
   const isEmpty = !hasContent;
 
@@ -330,9 +329,13 @@ export const Question: React.FC<QuestionProps> = (props) => {
               },
               list: { options: ["unordered", "ordered"] },
             }}
-            toolbarHidden={!showToolbar}
-            toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-            editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+            //toolbarHidden={!showToolbar}
+            toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+              editingBody ? "bg-white" : "bg-transparent"
+            }`}
+            editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+              editingBody ? "bg-white rounded" : "bg-transparent"
+            }`}
             wrapperClassName="rdw-editor-wrapper"
             placeholder="Type your text here..."
           />
@@ -350,10 +353,12 @@ export const Question: React.FC<QuestionProps> = (props) => {
           >
             <span className="flex items-center gap-2">
               <ChevronDown
-                className={`w-4 h-4 transition-transform ${collapsed ? "-rotate-90" : "rotate-0"
-                  }`}
+                className={`w-4 h-4 transition-transform ${
+                  collapsed ? "-rotate-90" : "rotate-0"
+                }`}
               />
-              Subquestions ({firtQuestionsOrder.length + secondQuestionsOrder.length})
+              Subquestions (
+              {firtQuestionsOrder.length + secondQuestionsOrder.length})
             </span>
             {/* <span className="ml-2 text-gray-400">
               ({answeredCount}/{fiQuestions.length})
@@ -371,7 +376,9 @@ export const Question: React.FC<QuestionProps> = (props) => {
 
               return (
                 <div key={key} className="mb-4 ">
-                  <h3 className="font-semibold text-sm text-gray-800 mb-3">{getTitle(key)}</h3>
+                  <h3 className="font-semibold text-sm text-gray-800 mb-3">
+                    {getTitle(key)}
+                  </h3>
                   <div className="flex flex-col gap-2">
                     {valueProp.map((item: any) => {
                       if (!item.draftRaw) return null;
@@ -380,6 +387,8 @@ export const Question: React.FC<QuestionProps> = (props) => {
                         convertFromRaw(raw)
                       );
                       const text = editor.getCurrentContent().getPlainText();
+
+                      if (text.trim().length === 0) return null;
 
                       return (
                         <div className="flex items-center gap-3" key={item.id}>
@@ -393,7 +402,9 @@ export const Question: React.FC<QuestionProps> = (props) => {
                               updateCheckTags(`${key}::${text}`, !!checked);
                             }}
                           />
-                          <Label className="text-sm text-gray-700">{text}</Label>
+                          <Label className="text-sm text-gray-700">
+                            {text}
+                          </Label>
                         </div>
                       );
                     })}
@@ -409,7 +420,9 @@ export const Question: React.FC<QuestionProps> = (props) => {
 
               return (
                 <div key={key} className="mb-5">
-                  <h3 className="font-semibold text-sm text-gray-800 mb-3">{getTitle(key)}</h3>
+                  <h3 className="font-semibold text-sm text-gray-800 mb-3">
+                    {getTitle(key)}
+                  </h3>
                   <div className="flex flex-col gap-2">
                     {valueProp.map((item: any) => {
                       if (!item.draftRaw) return null;
@@ -418,6 +431,8 @@ export const Question: React.FC<QuestionProps> = (props) => {
                         convertFromRaw(raw)
                       );
                       const text = editor.getCurrentContent().getPlainText();
+
+                      if (text.trim().length === 0) return null;
 
                       return (
                         <div className="flex items-center gap-3" key={item.id}>
@@ -431,7 +446,9 @@ export const Question: React.FC<QuestionProps> = (props) => {
                               updateCheckTags(`${key}::${text}`, !!checked);
                             }}
                           />
-                          <Label className="text-sm text-gray-700">{text}</Label>
+                          <Label className="text-sm text-gray-700">
+                            {text}
+                          </Label>
                         </div>
                       );
                     })}
