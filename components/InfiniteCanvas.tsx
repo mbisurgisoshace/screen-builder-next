@@ -45,7 +45,6 @@ import NextImage from "next/image";
 import { HelperQuestions } from "./CanvasModule/HelperQuestions";
 import { HelperValueProp } from "./CanvasModule/HelperValueProp";
 import { HelperAnalysis } from "./CanvasModule/HelperAnalysis";
-import Image from "next/image";
 
 type RelativeAnchor = {
   x: number; // valor entre 0 y 1, representa el porcentaje del ancho
@@ -1246,7 +1245,7 @@ export default function InfiniteCanvas({
       )}
 
       {isMarketSegmentsCanvas && (
-        <Image
+        <NextImage
           width={1000}
           height={500}
           alt="Market Segments Template"
