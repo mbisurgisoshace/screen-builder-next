@@ -20,6 +20,7 @@ import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useQuestions } from "../../questions/QuestionsProvider";
 import { CardFrame } from "../CardFrame";
 import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
 
 type PainsProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -37,23 +38,28 @@ export const Pains: React.FC<PainsProps> = (props) => {
     {
       id: "pains_question_1",
       card_type: "card",
-      question:
-        "What sort of Pain is this? Takes too much time, Costs too much money, Requires substantial efforts, Makes them feel a negative emotion",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+      question: "What sort of Pain is this?",
+      question_options: [
+        "Takes too much time",
+        "Costs too much money",
+        "Requires substantial efforts",
+        "Makes them feel a negative emotion",
+      ],
+      question_type: "dropdown",
     },
     {
       id: "pains_question_2",
       card_type: "card",
       question:
         "What sort of emotions does the stakeholder feel when they experience this Pain?",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+      question_type: "text-area",
     },
     {
       id: "pains_question_3",
       card_type: "card",
       question:
         "What are the negative risks/consequences when the stakeholder experiences this Pain?",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+      question_type: "text-area",
     },
     {
       id: "pains_question_4",
@@ -61,21 +67,23 @@ export const Pains: React.FC<PainsProps> = (props) => {
       question:
         "On a scale of 1-10, 10 being highest, what is the significance of this Pain to the stakeholder?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+      question_type: "slider",
     },
   ];
   const { shape, onCommitStyle } = props;
 
   const tags: string[] = Array.isArray((shape as any).cardTags)
     ? ((shape as any).cardTags as string[])
-    : [];
+    : ["", "", "", ""];
 
   const commit = (patch: Partial<IShape>) => {
     onCommitStyle?.(shape.id, patch);
   };
 
-  function addTag(name: string) {
+  function addTag(name: string, idx: number) {
     if (!name) return;
-    const next = [name];
+    const next = [...tags];
+    next[idx] = name;
     commit({ cardTags: next });
   }
 
@@ -288,42 +296,102 @@ export const Pains: React.FC<PainsProps> = (props) => {
                 className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
               >
                 {fiQuestions.map((q, idx) => (
-                  <div className="flex flex-col gap-3" key={q.id}>
-                    <h3 className="font-semibold text-sm text-gray-800">
-                      {q.question}
-                    </h3>
+                  // <div className="flex flex-col gap-3" key={q.id}>
+                  //   <h3 className="font-semibold text-sm text-gray-800">
+                  //     {q.question}
+                  //   </h3>
 
-                    <div
-                      data-nodrag="true"
-                      onMouseDown={(e) => e.stopPropagation()}
-                      className="w-full"
-                    >
-                      {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
-                    <SelectTrigger className="w-full bg-white">
-                      <SelectValue placeholder="Select an option" />
-                    </SelectTrigger>
-                    <SelectContent onMouseDown={(e) => e.stopPropagation()}>
-                      {q.question_options.map((option) => (
-                        <SelectItem value={option} key={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select> */}
-                      <div className="flex flex-col gap-2 items-center">
-                        <Slider
-                          min={0}
-                          max={10}
-                          step={1}
-                          defaultValue={[parseInt(tags[idx]) || 0]}
-                          value={currentValue ? [currentValue] : undefined}
-                          onValueCommit={(value) => addTag(value[0].toString())}
-                          onValueChange={(value) => setCurrentValue(value[0])}
-                          className="w-full"
-                        />
-                        <span className="text-xs font-medium text-gray-700">
-                          {currentValue || 0}
-                        </span>
+                  //   <div
+                  //     data-nodrag="true"
+                  //     onMouseDown={(e) => e.stopPropagation()}
+                  //     className="w-full"
+                  //   >
+                  //     {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
+                  //   <SelectTrigger className="w-full bg-white">
+                  //     <SelectValue placeholder="Select an option" />
+                  //   </SelectTrigger>
+                  //   <SelectContent onMouseDown={(e) => e.stopPropagation()}>
+                  //     {q.question_options.map((option) => (
+                  //       <SelectItem value={option} key={option}>
+                  //         {option}
+                  //       </SelectItem>
+                  //     ))}
+                  //   </SelectContent>
+                  // </Select> */}
+                  //     <div className="flex flex-col gap-2 items-center">
+                  //       <Slider
+                  //         min={0}
+                  //         max={10}
+                  //         step={1}
+                  //         defaultValue={[parseInt(tags[idx]) || 0]}
+                  //         value={currentValue ? [currentValue] : undefined}
+                  //         onValueCommit={(value) => addTag(value[0].toString())}
+                  //         onValueChange={(value) => setCurrentValue(value[0])}
+                  //         className="w-full"
+                  //       />
+                  //       <span className="text-xs font-medium text-gray-700">
+                  //         {currentValue || 0}
+                  //       </span>
+                  //     </div>
+                  //   </div>
+                  // </div>
+                  <div className="flex flex-col mb-4" key={q.id}>
+                    <div className="flex flex-col gap-4">
+                      <h3 className="font-semibold text-sm text-gray-800">
+                        {q.question}
+                      </h3>
+
+                      <div
+                        data-nodrag="true"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        className="w-full"
+                      >
+                        {q.question_type === "text-area" && (
+                          <Textarea
+                            value={tags[idx] ?? ""}
+                            onChange={(e) => addTag(e.target.value, idx)}
+                          />
+                        )}
+                        {q.question_type === "dropdown" && (
+                          <Select
+                            value={tags[idx] ?? ""}
+                            onValueChange={(value) => addTag(value, idx)}
+                          >
+                            <SelectTrigger className="w-full bg-white">
+                              <SelectValue placeholder="Select an option" />
+                            </SelectTrigger>
+                            <SelectContent
+                              onMouseDown={(e) => e.stopPropagation()}
+                            >
+                              {q.question_options!.map((option) => (
+                                <SelectItem value={option} key={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                        {q.question_type === "slider" && (
+                          <div className="flex flex-col gap-2 items-center">
+                            <Slider
+                              min={0}
+                              max={10}
+                              step={1}
+                              defaultValue={[parseInt(tags[idx]) || 0]}
+                              value={currentValue ? [currentValue] : undefined}
+                              onValueCommit={(value) =>
+                                addTag(value[0].toString(), idx)
+                              }
+                              onValueChange={(value) =>
+                                setCurrentValue(value[0])
+                              }
+                              className="w-full"
+                            />
+                            <span className="text-xs font-medium text-gray-700">
+                              {currentValue || 0}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -331,7 +399,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
               </div>
             )}
           </div>
-          {tags.length > 0 && (
+          {/* {tags.length > 0 && (
             <div className="mt-4 flex flex-row gap-2 items-center">
               <span className="text-sm text-gray-600">Significance Score:</span>
               {tags.map((t) => (
@@ -343,7 +411,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
                 </span>
               ))}
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

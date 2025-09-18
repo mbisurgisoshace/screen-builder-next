@@ -293,7 +293,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
             {!collapsed && (
               <div
                 ref={questionsRef}
-                className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
+                className="mt-4 p-4 rounded-lg bg-[#FEEDD3]"
               >
                 {fiQuestions.map((q, idx) => (
                   <div className="flex flex-col mb-4" key={q.id}>
