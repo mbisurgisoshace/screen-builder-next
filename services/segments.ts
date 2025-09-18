@@ -13,6 +13,9 @@ export async function getSegments() {
     defaultAccesses: [],
   });
 
+  const room = await liveblocks.getRoom(`segments-${orgId}`);
+  if (!room) return [];
+
   const segmentsData = await liveblocks.getStorageDocument(`segments-${orgId}`);
 
   //@ts-ignore
