@@ -9,9 +9,6 @@ export async function getSegments() {
 
   if (!orgId || !userId) return redirect("/sign-in");
 
-  const room = await liveblocks.getRoom(`segments-${orgId}`);
-  if (!room) return [];
-
   await liveblocks.getOrCreateRoom(`segments-${orgId}`, {
     defaultAccesses: [],
   });
