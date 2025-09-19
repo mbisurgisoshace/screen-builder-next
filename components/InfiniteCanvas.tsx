@@ -118,7 +118,8 @@ export default function InfiniteCanvas({
   const isValuePropCanvas = pathname.includes("/value-proposition");
 
   const [problems, setProblems] = useState(true);
-  const [solutions, setSolutions] = useState(false);
+  const [examples, setExamples] = useState(true);
+  const [solutions, setSolutions] = useState(true);
   const [valueArea, setValueArea] = useState(false);
 
   const undo = useUndo();
@@ -942,6 +943,20 @@ export default function InfiniteCanvas({
 
   return (
     <div className="w-full h-full overflow-hidden bg-[#EFF0F4] relative flex">
+      <div className="absolute top-4 right-4 z-20 flex flex-row gap-6 bg-black p-2 rounded-md text-white">
+        <div className="flex items-center gap-3 ">
+          <Checkbox
+            id="example"
+            checked={examples}
+            onCheckedChange={() => setExamples(!examples)}
+            className={
+              "data-[state=checked]:bg-white data-[state=checked]:text-black"
+            }
+          />
+          <Label htmlFor="example">Examples</Label>
+        </div>
+      </div>
+
       {isValuePropCanvas && (
         <div className="absolute top-4 left-4 z-20 flex flex-row gap-6 bg-black p-2 rounded-md text-white">
           <div className="flex items-center gap-3 ">
@@ -1403,6 +1418,12 @@ export default function InfiniteCanvas({
           {shapes
             .filter((shape) => {
               if (!shape) return false;
+              if (
+                !examples &&
+                (shape.type.includes("example") ||
+                  shape.subtype?.includes("example"))
+              )
+                return false;
               if (isValuePropCanvas) {
                 if (
                   shape.type === "text" ||
