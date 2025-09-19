@@ -100,7 +100,7 @@ export function useRealtimeShapes() {
             : type === "question_answer"
             ? 320
             : 112,
-        color: "bg-blue-500",
+        color: "#EAFBE3",
         cardTitle: "",
         text: type === "text" ? "New text" : undefined,
       };

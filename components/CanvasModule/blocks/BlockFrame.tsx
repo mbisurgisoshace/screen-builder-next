@@ -213,6 +213,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
         width: shape.width,
         // height: shape.height,
         height: "min-content",
+        minHeight: 120,
         zIndex: isSelected ? 50 : 45,
         pointerEvents: canInteract ? "auto" : "none",
       }}

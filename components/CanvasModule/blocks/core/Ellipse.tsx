@@ -113,8 +113,11 @@ export const Ellipse: React.FC<EllipseBlockProps> = (props) => {
     >
       <div
         onDoubleClick={beginEdit}
-        className={` w-full h-full rounded-full shadow`}
-        style={{ backgroundColor: shape.color || "#dcfce7" }}
+        className={` w-full rounded-full shadow`}
+        style={{
+          backgroundColor: shape.color || "#EAFBE3",
+          height: shape.height,
+        }}
       >
         {/* View mode: centered display (no caret) */}
         {!isEditing && (

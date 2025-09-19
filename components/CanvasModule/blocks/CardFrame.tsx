@@ -589,8 +589,6 @@ export function AttachmentPreviewModal({
   setIndex: (i: number) => void;
 }) {
   const att = items[index];
-  console.log("items", items);
-  console.log("att", att);
 
   // Keyboard nav
   useEffect(() => {
