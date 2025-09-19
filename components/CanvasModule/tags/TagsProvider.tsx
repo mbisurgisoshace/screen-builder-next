@@ -9,6 +9,7 @@ import React, {
   useState,
 } from "react";
 import { getBrowserSupabase } from "@/lib/supabase-browser";
+import { useAuth } from "@clerk/nextjs";
 
 export type Tag = { name: string; color: string | null };
 
@@ -27,6 +28,7 @@ const norm = (s: string) => s.trim().toLowerCase();
 export const TagsProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
+  const { orgId } = useAuth();
   const [tags, setTags] = useState<Tag[]>([]);
   const [ready, setReady] = useState(false);
 
@@ -70,6 +72,8 @@ export const TagsProvider: React.FC<React.PropsWithChildren> = ({
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "tags" },
         (payload) => {
+          if (payload.new.org_id !== orgId) return;
+
           const t: Tag = {
             name: payload.new.name,
             color: payload.new.color ?? null,
@@ -81,6 +85,8 @@ export const TagsProvider: React.FC<React.PropsWithChildren> = ({
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "tags" },
         (payload) => {
+          if (payload.new.org_id !== orgId) return;
+
           const t: Tag = {
             name: payload.new.name,
             color: payload.new.color ?? null,
@@ -91,7 +97,9 @@ export const TagsProvider: React.FC<React.PropsWithChildren> = ({
       .on(
         "postgres_changes",
         { event: "DELETE", schema: "public", table: "tags" },
+
         (payload) => {
+          if (payload.old.org_id !== orgId) return;
           setTags((prev) => removeByName(prev, payload.old.name));
         }
       )

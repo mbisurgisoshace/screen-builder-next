@@ -19,6 +19,7 @@ model Tag {
   id         String   @id @default(uuid())
   name       String   @unique
   color      String?
+  org_id     String?
   created_at DateTime @default(now()) // optional: user id/email later
 
   @@index([name])
