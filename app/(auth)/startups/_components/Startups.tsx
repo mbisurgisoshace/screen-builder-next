@@ -34,10 +34,21 @@ export default function Startups() {
         org_id: startup.id,
         name: startup.name,
         createdAt: startup.createdAt,
-        founders: founders.map(
-          (founder) =>
-            `${founder.publicUserData?.firstName} ${founder.publicUserData?.lastName}`
-        ),
+        founders: founders.map((founder) => {
+          if (
+            founder.publicUserData?.firstName &&
+            founder.publicUserData?.lastName
+          )
+            return `${founder.publicUserData?.firstName} ${founder.publicUserData?.lastName}`;
+
+          if (founder.publicUserData?.firstName)
+            return founder.publicUserData?.firstName;
+
+          if (founder.publicUserData?.lastName)
+            return founder.publicUserData?.lastName;
+
+          return founder.publicUserData?.identifier;
+        }),
         mentors: mentors.map(
           (mentor) =>
             `${mentor.publicUserData?.firstName} ${mentor.publicUserData?.lastName}`
