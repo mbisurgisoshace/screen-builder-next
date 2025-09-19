@@ -116,11 +116,14 @@ const columns: ColumnDef<any>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex flex-col gap-1">
-          {row.original.mentors.map((founder: string, index: number) => (
+          {/* {row.original.mentors.map((founder: string, index: number) => (
             <Badge className="bg-[#F4F0FF] text-[#6A35FF]" key={index}>
               {founder}
             </Badge>
-          ))}
+          ))} */}
+          <Badge className="bg-[#F4F0FF] text-[#6A35FF]">
+            {row.original.mentors}
+          </Badge>
         </div>
       );
     },

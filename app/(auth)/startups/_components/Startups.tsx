@@ -30,6 +30,8 @@ export default function Startups() {
         (membership) => membership.role === "org:mentor"
       );
 
+      console.log("startup", startup.publicMetadata.lead_instructor);
+
       data.push({
         org_id: startup.id,
         name: startup.name,
@@ -49,10 +51,12 @@ export default function Startups() {
 
           return founder.publicUserData?.identifier;
         }),
-        mentors: mentors.map(
-          (mentor) =>
-            `${mentor.publicUserData?.firstName} ${mentor.publicUserData?.lastName}`
-        ),
+        // mentors: mentors.map((mentor) => {
+        //   console.log("mentor");
+
+        //   return `${mentor.publicUserData?.firstName} ${mentor.publicUserData?.lastName}`;
+        // }),
+        mentors: startup.publicMetadata?.lead_instructor || "",
       });
     }
 
