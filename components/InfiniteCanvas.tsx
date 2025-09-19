@@ -327,7 +327,16 @@ export default function InfiniteCanvas({
         if (selectedShapeIds.length > 0) {
           e.preventDefault();
           //deleteSelectedShapes();
-          setShowDeleteConfirm(selectedShapeIds);
+          const exampleShapeIds = shapes
+            .filter(
+              (shape) =>
+                shape.type.includes("example") ||
+                shape.subtype?.includes("example")
+            )
+            .map((s) => s.id);
+          setShowDeleteConfirm(
+            selectedShapeIds.filter((id) => !exampleShapeIds.includes(id))
+          );
           return;
         }
       }

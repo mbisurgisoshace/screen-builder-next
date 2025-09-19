@@ -48,6 +48,7 @@ import { usePathname } from "next/navigation";
 import { IndustryMarketSegment } from "./IndustryMarketSegmentCard";
 import { Customer } from "./CustomerCard";
 import { EndUser } from "./EndUserCard";
+import { ExampleBrainstormCard } from "./ExampleBrainstormCard";
 
 type CardProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -93,6 +94,8 @@ export const Card: React.FC<CardProps> = (props) => {
         return "Summary";
       case "select_subtype":
         return "Select Card Type";
+      case "example_brainstorm_card":
+        return "Example Brainstorm Card";
       default:
         return "Unknown";
     }
@@ -120,6 +123,8 @@ export const Card: React.FC<CardProps> = (props) => {
         return <GainCreators {...props} />;
       case "summary_card":
         return <Summary {...props} />;
+      case "example_brainstorm_card":
+        return <ExampleBrainstormCard {...props} />;
       case "select_subtype":
         return <span>Please select a card type from the menu.</span>;
     }
@@ -154,6 +159,8 @@ export const Card: React.FC<CardProps> = (props) => {
         return false;
       case "select_subtype":
         return false;
+      case "example_brainstorm_card":
+        return false;
       default:
         return true;
     }
@@ -176,6 +183,8 @@ export const Card: React.FC<CardProps> = (props) => {
         return "#CCF6EA";
       case "gain_creators_card":
         return "#D5F9D7";
+      case "example_brainstorm_card":
+        return "#DDE1F2";
       case "summary_card":
         return "#6A35FF";
       default:

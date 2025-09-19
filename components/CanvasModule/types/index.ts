@@ -25,7 +25,9 @@ export type CardType =
   | "industry_market_segment_card"
   | "customer_card"
   | "end_user_card"
-  | "summary_card";
+  | "summary_card"
+  | "example_segment_card"
+  | "example_brainstorm_card";
 
 export type Kind = "image" | "video" | "pdf" | "file";
 

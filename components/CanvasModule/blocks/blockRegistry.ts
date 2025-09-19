@@ -11,6 +11,7 @@ import { Interview } from "./custom/Interview";
 import { FeatureIdea } from "./custom/FeatureIdea";
 import { ProblemStatement } from "./custom/ProblemStatement";
 import { QuestionAnswer } from "./custom/QuestionAnswer";
+import { ExampleBrainstormCard } from "./custom/ExampleBrainstormCard";
 
 // Registry maps type to corresponding component
 export const shapeRegistry: Record<string, ShapeComponent> = {
@@ -24,4 +25,5 @@ export const shapeRegistry: Record<string, ShapeComponent> = {
   interview: Interview,
   feature_idea: FeatureIdea,
   question_answer: QuestionAnswer,
+  example_brainstorm_card: ExampleBrainstormCard,
 };

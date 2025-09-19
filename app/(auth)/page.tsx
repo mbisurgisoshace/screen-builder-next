@@ -32,8 +32,6 @@ export default async function Home({
   const completedTasks = await getCompletedTasks();
   const groupedTasks = groupTasksByListAndSection(tasks || []);
 
-  console.log("completedTasks", completedTasks);
-
   return (
     <div className="flex flex-row p-10 gap-6 w-full pb-20">
       {groupedTasks.map((taskList) => {
