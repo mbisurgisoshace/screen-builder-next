@@ -57,7 +57,7 @@ export default function AppHeader() {
       <div className="flex items-center flex-row gap-2.5">
         <UserButton />
         <span className="text-xs font-bold text-[#111827]">
-          {user?.fullName}
+          {user?.fullName || user?.primaryEmailAddress?.emailAddress}
         </span>
       </div>
     </header>
