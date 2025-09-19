@@ -1294,18 +1294,6 @@ export default function InfiniteCanvas({
         </div>
       )}
 
-      {isMarketSegmentsCanvas && (
-        <NextImage
-          width={100}
-          height={50}
-          alt="Market Segments Template"
-          className="absolute top-10 left-30 pointer-events-none opacity-100 z-50"
-          src={
-            "https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/Screenshot%202025-09-18%20at%202.19.42%20PM.png"
-          }
-        />
-      )}
-
       {/* Canvas */}
       <div
         ref={canvasRef}
