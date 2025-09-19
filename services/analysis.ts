@@ -20,6 +20,8 @@ export async function generateAnalysisRoom(roomId: string) {
 
   if (!userId) redirect("/sign-in");
 
+  if (!orgId) redirect("/pick-startup");
+
   const participants = await prisma.participant.findMany({
     where: {
       org_id: orgId,
@@ -38,8 +40,10 @@ export async function generateAnalysisRoom(roomId: string) {
   });
 
   const roomStorage: any = await liveblocks.getStorageDocument(roomId);
-  const questionStorage:any = await liveblocks.getStorageDocument(`questions-${orgId}`);
-  
+  const questionStorage: any = await liveblocks.getStorageDocument(
+    `questions-${orgId}`
+  );
+
   const questions =
     questionStorage.data.shapes?.data.map((shape: any) => shape.data) || [];
 

@@ -27,7 +27,9 @@ export async function getValuePropositionVersions() {
 export async function createValuePropositionVersion() {
   const { orgId, userId } = await auth();
 
-  if (!orgId || !userId) return redirect("/sign-in");
+  if (!userId) redirect("/sign-in");
+
+  if (!orgId) redirect("/pick-startup");
 
   const versions = await prisma.valuePropositionVersion.count();
 

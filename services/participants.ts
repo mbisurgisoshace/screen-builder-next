@@ -12,7 +12,9 @@ import { participantFormSchema } from "@/schemas/participant";
 export async function getParticipant(participantId: string) {
   const { orgId, userId } = await auth();
 
-  if (!orgId || !userId) return redirect("/sign-in");
+  if (!userId) redirect("/sign-in");
+
+  if (!orgId) redirect("/pick-startup");
 
   const participant = await prisma.participant.findFirst({
     where: { id: participantId, org_id: orgId },
@@ -24,7 +26,9 @@ export async function getParticipant(participantId: string) {
 export async function getParticipants() {
   const { orgId, userId } = await auth();
 
-  if (!orgId || !userId) return redirect("/sign-in");
+  if (!userId) redirect("/sign-in");
+
+  if (!orgId) redirect("/pick-startup");
 
   const participants = await prisma.participant.findMany({
     where: { org_id: orgId },
@@ -39,7 +43,9 @@ export async function createParticipant(
   const participantId = uuidv4();
   const { orgId, userId } = await auth();
 
-  if (!orgId || !userId) return redirect("/sign-in");
+  if (!userId) redirect("/sign-in");
+
+  if (!orgId) redirect("/pick-startup");
 
   const newParticipant = await prisma.participant.create({
     data: {

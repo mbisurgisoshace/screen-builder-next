@@ -4,6 +4,7 @@ import { Prisma } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export type TaskWithListAndSection = Prisma.TaskGetPayload<{
   include: { task_list: true; section_title: true };
@@ -11,6 +12,10 @@ export type TaskWithListAndSection = Prisma.TaskGetPayload<{
 
 export async function getTasks() {
   const { orgId, userId } = await auth();
+
+  if (!userId) redirect("/sign-in");
+
+  if (!orgId) redirect("/pick-startup");
 
   const tasks = await prisma.task.findMany({
     include: {
@@ -25,7 +30,9 @@ export async function getTasks() {
 export async function getCompletedTasks() {
   const { orgId, userId } = await auth();
 
-  if (!orgId || !userId) throw new Error("Unauthorized");
+  if (!userId) redirect("/sign-in");
+
+  if (!orgId) redirect("/pick-startup");
 
   const completedTasks = await prisma.orgTask.findMany({
     where: {
@@ -46,7 +53,9 @@ export async function updateTask(
 ) {
   const { orgId, userId } = await auth();
 
-  if (!orgId || !userId) throw new Error("Unauthorized");
+  if (!userId) redirect("/sign-in");
+
+  if (!orgId) redirect("/pick-startup");
 
   const updateTask = await prisma.orgTask.upsert({
     where: {

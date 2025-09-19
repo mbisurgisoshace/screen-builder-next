@@ -7,7 +7,9 @@ import { redirect } from "next/navigation";
 export async function getSegments() {
   const { orgId, userId } = await auth();
 
-  if (!orgId || !userId) return redirect("/sign-in");
+  if (!userId) redirect("/sign-in");
+
+  if (!orgId) redirect("/pick-startup");
 
   await liveblocks.getOrCreateRoom(`segments-${orgId}`, {
     defaultAccesses: [],
