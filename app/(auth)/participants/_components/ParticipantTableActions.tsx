@@ -218,7 +218,7 @@ export default function ParticipantTableActions({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {marketSegments?.map((segment: string) => (
+                        {marketSegments?.filter( (segment: string)=>segment.trim.length>0 ).map((segment: string) => (
                           <SelectItem key={segment} value={segment}>
                             {segment}
                           </SelectItem>
