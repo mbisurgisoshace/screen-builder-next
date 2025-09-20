@@ -142,7 +142,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div className="w-full h-full bg-[#DDE1F2] border border-[#B4B9C9] rounded-lg shadow-lg flex flex-row overflow-hidden">
-        <div className="flex-1/2 h-full flex flex-col overflow-hidden px-6 py-6 gap-4 border-r border-[#B4B9C9]">
+        <div className="flex-[8] h-full flex flex-col overflow-hidden px-6 py-6 gap-4 border-r border-[#B4B9C9]">
           <h3 className="text-sm font-medium text-blue-600">Question</h3>
           <h2 className="text-lg font-bold text-gray-900">
             {shape.questionTitle}
@@ -180,7 +180,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
             </div>
           </div>
         </div>
-        <div className="w-full h-full flex flex-col overflow-hidden px-6 py-6 gap-4">
+        <div className="flex-[8] h-full flex flex-col overflow-hidden px-6 py-6 gap-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium text-blue-600">Answers</h3>
             <div className="flex items-center gap-2">

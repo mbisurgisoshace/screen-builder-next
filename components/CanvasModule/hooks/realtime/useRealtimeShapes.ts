@@ -84,11 +84,11 @@ export function useRealtimeShapes() {
           type === "text"
             ? 120
             : type === "interview"
-            ? 580
+            ? 700
             : type === "question"
-            ? 440
+            ? 600
             : type === "question_answer"
-            ? 880
+            ? 1800
             : 160,
         height:
           type === "text"

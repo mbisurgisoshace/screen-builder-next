@@ -66,7 +66,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
 
   const [editorState, setEditorState] =
     useState<EditorState>(initialEditorState);
-  const [editingBody, setEditingBody] = useState(true);
+  const [editingBody, setEditingBody] = useState(false);
 
   const [featureIdeaEditorState, setFeatureIdeaEditorState] =
     useState<EditorState>(initialFeatureIdeaEditorState);
@@ -116,9 +116,27 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
   const [showToolbarFeature, setShowToolbarFeature] = useState(false);
   const [showToolbarWhyFeature, setShowToolbarWhyFeature] = useState(false);
 
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (editingBody) {
+      const target = e.target as HTMLElement;
+      const isEditorClick = target.closest('.rdw-editor-wrapper') || 
+                           target.closest('.rdw-editor-toolbar') ||
+                           target.closest('button[class*="text-purple"]');
+      
+      if (!isEditorClick) {
+        setEditingBody(false);
+        setShowToolbarFeature(false);
+        setShowToolbarWhyFeature(false);
+      }
+    }
+  };
+
+  const editorText = featureIdeaEditorState.getCurrentContent().getPlainText().trim();
   const hasContent =
     shape.cardTitle ||
-    (shape.draftRaw && featureIdeaEditorState.getCurrentContent().hasText());
+    (shape.draftRaw && editorText.length > 0) ||
+    (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;
 
   return (
@@ -128,6 +146,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
       useAttachments={false}
       headerTextColor={"#DDE1F2"}
       headerBg={"#DDE1F2"}
+      onClick={handleCardClick}
       header={
         <div className="w-full grid grid-cols-12 items-center">
           <div className="col-span-6 flex items-center justify-start pl-5 border-r border-[#B4B9C9] pr-3">
@@ -188,7 +207,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                         + add more details
                       </button>
                     </div>
-                  ) : (
+                  ) : editingBody ? (
                     <RteEditor
                       onBlur={() => setShowToolbarFeature(false)}
                       onFocus={() => setShowToolbarFeature(true)}
@@ -206,7 +225,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                         },
                         list: { options: ["unordered", "ordered"] },
                       }}
-                      //toolbarHidden={!showToolbarFeature}
+                      toolbarHidden={!showToolbarFeature}
                       toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
                         editingBody ? "bg-white" : "bg-transparent"
                       }`}
@@ -216,6 +235,16 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                       wrapperClassName="rdw-editor-wrapper"
                       placeholder="Add more details..."
                     />
+                  ) : (
+                    <div 
+                      className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
+                      onClick={() => {
+                        setEditingBody(true);
+                        setShowToolbarFeature(true);
+                      }}
+                    >
+                      {editorState.getCurrentContent().getPlainText()}
+                    </div>
                   )}
                 </div>
               </div>
@@ -255,7 +284,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                         + add more details
                       </button>
                     </div>
-                  ) : (
+                  ) : editingBody ? (
                     <RteEditor
                       onBlur={() => setShowToolbarWhyFeature(false)}
                       onFocus={() => setShowToolbarWhyFeature(true)}
@@ -273,7 +302,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                         },
                         list: { options: ["unordered", "ordered"] },
                       }}
-                      //toolbarHidden={!showToolbarWhyFeature}
+                      toolbarHidden={!showToolbarWhyFeature}
                       toolbarClassName={`border-b px-2 text-[14px] ${
                         editingBody ? "bg-white" : "bg-transparent"
                       }`}
@@ -283,6 +312,16 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                       wrapperClassName=""
                       placeholder="Add more details..."
                     />
+                  ) : (
+                    <div 
+                      className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
+                      onClick={() => {
+                        setEditingBody(true);
+                        setShowToolbarWhyFeature(true);
+                      }}
+                    >
+                      {featureIdeaEditorState.getCurrentContent().getPlainText()}
+                    </div>
                   )}
                 </div>
               </div>

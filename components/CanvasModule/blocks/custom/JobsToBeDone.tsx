@@ -193,9 +193,25 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
 
   const [currentValue, setCurrentValue] = useState<number>(0);
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (editingBody) {
+      const target = e.target as HTMLElement;
+      const isEditorClick = target.closest('.rdw-editor-wrapper') || 
+                           target.closest('.rdw-editor-toolbar') ||
+                           target.closest('button[class*="text-purple"]');
+      
+      if (!isEditorClick) {
+        setEditingBody(false);
+        setShowToolbar(false);
+      }
+    }
+  };
+
+  const editorText = editorState.getCurrentContent().getPlainText().trim();
   const hasContent =
     shape.cardTitle ||
-    (shape.draftRaw && editorState.getCurrentContent().hasText());
+    (shape.draftRaw && editorText.length > 0) ||
+    (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;
 
   console.log("tags", tags);
@@ -205,13 +221,13 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
       <div
         className="shadow-lg bg-[#FDE1B5]"
         onMouseDown={(e) => e.stopPropagation()}
+        onClick={handleCardClick}
       >
         <div className="p-6 pt-0">
           <div className="mb-4">
-            <input
-              type="text"
+            <textarea
               placeholder={"Type your title here.."}
-              className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%]"
+              className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%] resize-none overflow-hidden"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
                 if (e.target.value !== shape.cardTitle) {
@@ -219,6 +235,12 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                 }
               }}
               onMouseDown={(e) => e.stopPropagation()}
+              rows={1}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = target.scrollHeight + 'px';
+              }}
             />
           </div>
 
@@ -235,7 +257,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                   + add more details
                 </button>
               </div>
-            ) : (
+            ) : editingBody ? (
               <RteEditor
                 onBlur={() => {
                   setShowToolbar(false);
@@ -260,16 +282,26 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                   },
                   list: { options: ["unordered", "ordered"] },
                 }}
-                //toolbarHidden={!showToolbar}
+                toolbarHidden={!showToolbar}
                 toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
                   editingBody ? "bg-white" : "bg-transparent"
                 }`}
                 editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
-                  editingBody ? "bg-[#FEEDD3] rounded" : "bg-[#FEEDD3]"
+                  editingBody ? "bg-[#FEEDD3] rounded" : "bg-transparent"
                 }`}
                 wrapperClassName="rdw-editor-wrapper"
                 placeholder="Type your text here..."
               />
+            ) : (
+              <div 
+                className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
+                onClick={() => {
+                  setEditingBody(true);
+                  setShowToolbar(true);
+                }}
+              >
+                {editorState.getCurrentContent().getPlainText()}
+              </div>
             )}
           </div>
           <div className="pt-4">

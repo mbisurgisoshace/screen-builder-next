@@ -28,6 +28,7 @@ type CardFrame = Omit<ShapeFrameProps, "children" | "shape"> & {
   headerTextColor?: string;
   useAttachments?: boolean;
   onCommitStyle?: (id: string, patch: Partial<Shape>) => void;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export const CardFrame: React.FC<CardFrame> = (props) => {
@@ -39,6 +40,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
     useAttachments = true,
     headerBg = "#6A35FF",
     headerTextColor = "#FFFFFF",
+    onClick,
   } = props;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -196,7 +198,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
       interactive={props.interactive ?? true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
-      <div className="w-fullbg-white border-1 border-[white] rounded-xl flex flex-col overflow-hidden shadow-[0px_4px_33.3px_0px_rgba(30,39,143,0.2)]">
+      <div className="w-fullbg-white border-1 border-[#B4B9C9] rounded-xl flex flex-col overflow-hidden shadow-[0px_4px_33.3px_0px_rgba(30,39,143,0.2)]" onClick={onClick}>
         {/* Header */}
         <div
           className={`px-3 py-2 font-semibold text-[14px] flex items-center justify-between`}
