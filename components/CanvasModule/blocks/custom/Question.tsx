@@ -35,6 +35,7 @@ const RteEditor = dynamic(
 
 export const Question: React.FC<QuestionProps> = (props) => {
   const { shape, onCommitInterview } = props;
+  console.log("shape", shape);
 
   const fallbackTitle = "Double click to edit the question.";
   const title = (shape as any).questionTitle ?? fallbackTitle;
