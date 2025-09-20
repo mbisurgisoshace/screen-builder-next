@@ -322,6 +322,131 @@ export const Card: React.FC<CardProps> = (props) => {
         </>
       );
     }
+
+    if (pathname.includes("/examples/laptop")) {
+      return (
+        <>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "industry_market_segment_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "industry_market_segment_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Industry/Market Segment
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "customer_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "customer_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Customer
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "end_user_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "end_user_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            End-User
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "jobs_to_be_done_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "jobs_to_be_done_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Jobs To Be Done
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, { subtype: "pains_card" });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "pains_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Pains
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, { subtype: "gains_card" });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "gains_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Gains
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="h-[1px] bg-gray-200" />
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "products_services_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "products_services_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Products & Services
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "pain_relievers_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "pain_relievers_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Pain Relievers
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "gain_creators_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "gain_creators_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Gain Creators
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="h-[1px] bg-gray-200" />
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                width: 550,
+                subtype: "summary_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 `}
+          >
+            Ad-Lib
+          </DropdownMenuItem>
+        </>
+      );
+    }
+
   };
 
   return (
