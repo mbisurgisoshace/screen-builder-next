@@ -13,6 +13,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { LoadingText } from "@/components/ui/loader";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type QuestionProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -248,6 +255,32 @@ export const Question: React.FC<QuestionProps> = (props) => {
     },
   ];
 
+  const onAddDropdownTag = (value: string) => {
+    if (value === "Basic fact-finding / understand context") {
+      const hasTag = shape.questionTags?.some(
+        (tag) => tag === "Basic fact-finding / understand context"
+      );
+      if (!hasTag) {
+        const nextTags = shape.questionTags ? [...shape.questionTags] : [];
+        nextTags.filter((tag) => tag === "Validate my hypothesis");
+        commit({ questionTags: nextTags });
+      }
+    }
+
+    if (value === "Validate my hypothesis") {
+      const hasTag = shape.questionTags?.some(
+        (tag) => tag === "Validate my hypothesis"
+      );
+      if (!hasTag) {
+        const nextTags = shape.questionTags ? [...shape.questionTags] : [];
+        nextTags.filter(
+          (tag) => tag === "Basic fact-finding / understand context"
+        );
+        commit({ questionTags: nextTags });
+      }
+    }
+  };
+
   return (
     <ShapeFrame
       {...props}
@@ -358,7 +391,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
                 }`}
               />
               Subquestions (
-              {firtQuestionsOrder.length + secondQuestionsOrder.length})
+              {firtQuestionsOrder.length + secondQuestionsOrder.length + 1})
             </span>
             {/* <span className="ml-2 text-gray-400">
               ({answeredCount}/{fiQuestions.length})
@@ -371,6 +404,32 @@ export const Question: React.FC<QuestionProps> = (props) => {
             ref={questionsRef}
             className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
           >
+            {/* <Select
+              //value={tags[idx] ?? ""}
+              value={
+                shape.questionTags?.find(
+                  (tag) =>
+                    tag === "Basic fact-finding / understand context" ||
+                    tag === "Validate my hypothesis"
+                ) ?? ""
+              }
+              onValueChange={onAddDropdownTag}
+            >
+              <SelectTrigger className="w-full bg-white">
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent onMouseDown={(e) => e.stopPropagation()}>
+                <SelectItem value={"Basic fact-finding / understand context"}>
+                  Basic fact-finding / understand context
+                </SelectItem>
+                <SelectItem value={"Validate my hypothesis"}>
+                  Validate my hypothesis
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="border-t border-gray-300 my-4" /> */}
+
             {firtQuestionsOrder.map(({ key, label }) => {
               const valueProp = formattedValuePropData[key];
 
