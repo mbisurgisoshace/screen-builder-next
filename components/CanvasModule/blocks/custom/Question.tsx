@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { text } from "stream/consumers";
 
 type QuestionProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -404,31 +405,47 @@ export const Question: React.FC<QuestionProps> = (props) => {
             ref={questionsRef}
             className="mt-4 p-4 rounded-lg border border-[#B4B9C9] bg-[#EDEBFE]"
           >
-            {/* <Select
-              //value={tags[idx] ?? ""}
-              value={
-                shape.questionTags?.find(
-                  (tag) =>
-                    tag === "Basic fact-finding / understand context" ||
-                    tag === "Validate my hypothesis"
-                ) ?? ""
-              }
-              onValueChange={onAddDropdownTag}
-            >
-              <SelectTrigger className="w-full bg-white">
-                <SelectValue placeholder="Select an option" />
-              </SelectTrigger>
-              <SelectContent onMouseDown={(e) => e.stopPropagation()}>
-                <SelectItem value={"Basic fact-finding / understand context"}>
-                  Basic fact-finding / understand context
-                </SelectItem>
-                <SelectItem value={"Validate my hypothesis"}>
-                  Validate my hypothesis
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="mb-4 ">
+              <h3 className="font-semibold text-sm text-gray-800 mb-3">
+                Why do you want to ask this question?
+              </h3>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    checked={shape.questionTags?.includes(
+                      "Basic fact-finding / understand context"
+                    )}
+                    className="bg-white border-gray-300"
+                    onCheckedChange={(checked) => {
+                      updateCheckTags(
+                        "Basic fact-finding / understand context",
+                        !!checked
+                      );
+                    }}
+                  />
+                  <Label className="text-sm text-gray-700">
+                    Basic fact-finding / understand context
+                  </Label>
+                </div>
 
-            <div className="border-t border-gray-300 my-4" /> */}
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    checked={shape.questionTags?.includes(
+                      "Validate my hypothesis"
+                    )}
+                    className="bg-white border-gray-300"
+                    onCheckedChange={(checked) => {
+                      updateCheckTags("Validate my hypothesis", !!checked);
+                    }}
+                  />
+                  <Label className="text-sm text-gray-700">
+                    Validate my hypothesis
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-300 my-4" />
 
             {firtQuestionsOrder.map(({ key, label }) => {
               const valueProp = formattedValuePropData[key];
