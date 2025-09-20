@@ -380,7 +380,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
                     {getTitle(key)}
                   </h3>
                   <div className="flex flex-col gap-2">
-                    {valueProp.map((item: any) => {
+                    {valueProp?.map((item: any) => {
                       if (!item.draftRaw) return null;
                       const raw = JSON.parse(item.draftRaw);
                       const editor = EditorState.createWithContent(
@@ -424,7 +424,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
                     {getTitle(key)}
                   </h3>
                   <div className="flex flex-col gap-2">
-                    {valueProp.map((item: any) => {
+                    {valueProp?.map((item: any) => {
                       if (!item.draftRaw) return null;
                       const raw = JSON.parse(item.draftRaw);
                       const editor = EditorState.createWithContent(
