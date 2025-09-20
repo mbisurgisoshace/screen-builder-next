@@ -39,8 +39,8 @@ export const Gains: React.FC<GainsProps> = (props) => {
       id: "gain_question_1",
       card_type: "card",
       question:
-        "What sort of Gain is it? Required (basic expectation without which the solution wouldn't work), Expected (common expectation set by current competitor solutions), Desired (great to have), Unexpected (goes beyond stakeholder expectations and desires)",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+        "What sort of Gain is it?",
+      question_options: ["Required (basic expectation without which the solution wouldn't work)", "Expected (common expectation set by current competitor solutions)", "Desired (great to have)", "Unexpected (goes beyond stakeholder expectations and desires)"],
       question_type: "dropdown",
     },
     {
@@ -48,7 +48,6 @@ export const Gains: React.FC<GainsProps> = (props) => {
       card_type: "card",
       question:
         "How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "text-area",
     },
     {
@@ -56,7 +55,6 @@ export const Gains: React.FC<GainsProps> = (props) => {
       card_type: "card",
       question:
         "How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "text-area",
     },
     {
