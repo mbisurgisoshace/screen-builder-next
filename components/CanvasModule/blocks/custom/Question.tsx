@@ -392,8 +392,8 @@ export const Question: React.FC<QuestionProps> = (props) => {
                   collapsed ? "-rotate-90" : "rotate-0"
                 }`}
               />
-              Subquestions (
-              {firtQuestionsOrder.length + secondQuestionsOrder.length + 1})
+              Subquestions 
+              {/* firtQuestionsOrder.length + secondQuestionsOrder.length + 1 */} 
             </span>
             {/* <span className="ml-2 text-gray-400">
               ({answeredCount}/{fiQuestions.length})
@@ -432,15 +432,15 @@ export const Question: React.FC<QuestionProps> = (props) => {
                 <div className="flex items-center gap-3">
                   <Checkbox
                     checked={shape.questionTags?.includes(
-                      "Validate my hypothesis"
+                      "Validate my Hypothesis"
                     )}
                     className="bg-white border-gray-300"
                     onCheckedChange={(checked) => {
-                      updateCheckTags("Validate my hypothesis", !!checked);
+                      updateCheckTags("Validate my Hypothesis", !!checked);
                     }}
                   />
                   <Label className="text-sm text-gray-700">
-                    Validate my hypothesis
+                    Validate my Hypothesis
                   </Label>
                 </div>
               </div>
@@ -448,6 +448,9 @@ export const Question: React.FC<QuestionProps> = (props) => {
 
             <div className="border-t border-gray-300 my-4" />
 
+            <h3 className="font-semibold text-sm text-gray-800 mb-3">
+                If relevant, please pick from your Value Proposition assumptions. If you have not added any on the Value Prop canvas yet, they will show up here as empty for now.
+              </h3>        
             {firtQuestionsOrder.map(({ key, label }) => {
               const valueProp = formattedValuePropData[key];
 
