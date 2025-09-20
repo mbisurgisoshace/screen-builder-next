@@ -134,7 +134,7 @@ export const EndUser: React.FC<EndUserProps> = (props) => {
 
   const [editorState, setEditorState] =
     useState<EditorState>(initialEditorState);
-  const [editingBody, setEditingBody] = useState(true);
+  const [editingBody, setEditingBody] = useState(false);
   const [showToolbar, setShowToolbar] = useState(false);
 
   useEffect(() => {
@@ -160,13 +160,37 @@ export const EndUser: React.FC<EndUserProps> = (props) => {
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (editingBody) {
+      const target = e.target as HTMLElement;
+      const isEditorClick = target.closest('.rdw-editor-wrapper') || 
+                           target.closest('.rdw-editor-toolbar') ||
+                           target.closest('button[class*="text-purple"]');
+      
+      if (!isEditorClick) {
+        setEditingBody(false);
+        setShowToolbar(false);
+      }
+    }
+  };
+
+  const editorText = editorState.getCurrentContent().getPlainText().trim();
+  const hasContent =
+    shape.cardTitle ||
+    (shape.draftRaw && editorText.length > 0) ||
+    (!shape.draftRaw && editorText.length > 0);
+  const isEmpty = !hasContent && !editingBody;
+
   return (
     <div className="flex-1 overflow-auto">
       <div
-        className="rounded-[8px] "
+        className="shadow-lg bg-[#FDE1B5]"
         onMouseDown={(e) => e.stopPropagation()}
+        onClick={handleCardClick}
       >
-        {/* <div className="flex flex-row gap-2 p-2">
+        <div className="p-6 pt-0">
+           {/* <div className="flex flex-row gap-2 p-2">
           <span>Significance Score:</span>
           {tags.map((t) => (
             <button
@@ -196,24 +220,68 @@ export const EndUser: React.FC<EndUserProps> = (props) => {
             </button>
           ))}
         </div> */}
-        <RteEditor
-          onBlur={() => setShowToolbar(false)}
-          onFocus={() => setShowToolbar(true)}
-          editorState={editorState}
-          onEditorStateChange={setEditorState}
-          toolbar={{
-            options: ["inline", "list", "link", "history"],
-            inline: {
-              options: ["bold", "italic", "underline", "strikethrough"],
-            },
-            list: { options: ["unordered", "ordered"] },
-          }}
-          toolbarHidden={!showToolbar}
-          toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-          editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
-          wrapperClassName="rdw-editor-wrapper"
-          placeholder="Type your text here..."
-        />
+
+          <div className="mb-6">
+            {isEmpty ? (
+              <div className="flex items-center">
+                <button
+                  onClick={() => {
+                    setEditingBody(true);
+                    setShowToolbar(true);
+                  }}
+                  className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                >
+                  + add more details
+                </button>
+              </div>
+            ) : editingBody ? (
+              <RteEditor
+                onBlur={() => {
+                  setShowToolbar(false);
+                  setEditingBody(false);
+                  const contentState = editorState.getCurrentContent();
+                  const hasText = contentState.hasText();
+                  if (!hasText) {
+                    setEditorState(EditorState.createEmpty());
+                    commit({ draftRaw: undefined });
+                  }
+                }}
+                onFocus={() => {
+                  setShowToolbar(true);
+                  setEditingBody(true);
+                }}
+                editorState={editorState}
+                onEditorStateChange={setEditorState}
+                toolbar={{
+                  options: ["inline", "list", "link", "history"],
+                  inline: {
+                    options: ["bold", "italic", "underline", "strikethrough"],
+                  },
+                  list: { options: ["unordered", "ordered"] },
+                }}
+                toolbarHidden={!showToolbar}
+                toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+                  editingBody ? "bg-white" : "bg-transparent"
+                }`}
+                editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+                  editingBody ? "bg-[#FEEDD3] rounded" : "bg-transparent"
+                }`}
+                wrapperClassName="rdw-editor-wrapper"
+                placeholder="Type your text here..."
+              />
+            ) : (
+              <div 
+                className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
+                onClick={() => {
+                  setEditingBody(true);
+                  setShowToolbar(true);
+                }}
+              >
+                {editorState.getCurrentContent().getPlainText()}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

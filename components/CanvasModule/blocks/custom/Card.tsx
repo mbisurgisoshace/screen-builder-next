@@ -457,7 +457,7 @@ export const Card: React.FC<CardProps> = (props) => {
       useAttachments={useAttachments()}
       header={
         <div className="w-full flex flex-row items-center justify-between">
-          <span className="font-manrope font-semibold font-weight-600  text-[13px] text-[#2D63E6]">
+          <span className="font-manrope font-semibold font-weight-600  text-[13px] text-[#111827]">
             {getTitle()}
           </span>
           <DropdownMenu defaultOpen={subtype === "select_subtype"}>

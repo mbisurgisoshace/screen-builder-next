@@ -364,7 +364,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
               },
               list: { options: ["unordered", "ordered"] },
             }}
-            //toolbarHidden={!showToolbar}
+            toolbarHidden={!showToolbar}
             toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
               editingBody ? "bg-white" : "bg-transparent"
             }`}
@@ -376,7 +376,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
           />
         </div>
 
-        <div className="border-t border-[#B4B9C9] pt-4">
+        <div className="pt-4">
           <button
             type="button"
             onClick={(e) => {
