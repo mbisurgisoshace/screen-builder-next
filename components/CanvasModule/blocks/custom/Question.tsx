@@ -358,7 +358,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
             editorState={editorState}
             onEditorStateChange={setEditorState}
             toolbar={{
-              options: ["inline", "list", "link", "history"],
+              options: ["inline", "list", "link"],
               inline: {
                 options: ["bold", "italic", "underline", "strikethrough"],
               },

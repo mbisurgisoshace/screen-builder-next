@@ -252,7 +252,7 @@ export const EndUser: React.FC<EndUserProps> = (props) => {
                 editorState={editorState}
                 onEditorStateChange={setEditorState}
                 toolbar={{
-                  options: ["inline", "list", "link", "history"],
+                  options: ["inline", "list", "link"],
                   inline: {
                     options: ["bold", "italic", "underline", "strikethrough"],
                   },

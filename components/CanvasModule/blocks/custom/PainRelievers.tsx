@@ -239,7 +239,7 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
               editorState={editorState}
               onEditorStateChange={setEditorState}
               toolbar={{
-                options: ["inline", "list", "link", "history"],
+                options: ["inline", "list", "link"],
                 inline: {
                   options: ["bold", "italic", "underline", "strikethrough"],
                 },

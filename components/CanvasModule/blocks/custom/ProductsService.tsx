@@ -189,6 +189,25 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
         onClick={handleCardClick}
       >
         <div className="p-6 pt-0">
+          <div className="mb-4">
+            <textarea
+              placeholder={"Type Products/Services here.."}
+              className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%] resize-none overflow-hidden"
+              defaultValue={shape.cardTitle || ""}
+              onBlur={(e) => {
+                if (e.target.value !== shape.cardTitle) {
+                  commit({ cardTitle: e.target.value });
+                }
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+              rows={1}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = target.scrollHeight + 'px';
+              }}
+            />
+          </div>
           {isEmpty ? (
             <div className="flex items-center">
               <button
@@ -220,7 +239,7 @@ export const ProductsService: React.FC<ProductsServiceProps> = (props) => {
               editorState={editorState}
               onEditorStateChange={setEditorState}
               toolbar={{
-                options: ["inline", "list", "link", "history"],
+                options: ["inline", "list", "link"],
                 inline: {
                   options: ["bold", "italic", "underline", "strikethrough"],
                 },

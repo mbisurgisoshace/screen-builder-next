@@ -213,7 +213,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                       editorState={editorState}
                       //onEditorStateChange={setEditorState}
                       toolbar={{
-                        options: ["inline", "list", "link", "history"],
+                        options: ["inline", "list", "link"],
                         inline: {
                           options: [
                             "bold",
@@ -290,7 +290,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                       editorState={featureIdeaEditorState}
                       //onEditorStateChange={setFeatureIdeaEditorState}
                       toolbar={{
-                        options: ["inline", "list", "link", "history"],
+                        options: ["inline", "list", "link"],
                         inline: {
                           options: [
                             "bold",

@@ -166,7 +166,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                 editorState={editorState}
                 onEditorStateChange={setEditorState}
                 toolbar={{
-                  options: ["inline", "list", "link", "history"],
+                  options: ["inline", "list", "link"],
                   inline: {
                     options: ["bold", "italic", "underline", "strikethrough"],
                   },
@@ -243,7 +243,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                     editorState={answerEditorState}
                     //onEditorStateChange={setAnswerEditorState}
                     toolbar={{
-                      options: ["inline", "list", "link", "history"],
+                      options: ["inline", "list", "link"],
                       inline: {
                         options: [
                           "bold",
@@ -340,7 +340,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                         )}
                         //onEditorStateChange={setAnswerEditorState}
                         toolbar={{
-                          options: ["inline", "list", "link", "history"],
+                          options: ["inline", "list", "link"],
                           inline: {
                             options: [
                               "bold",
