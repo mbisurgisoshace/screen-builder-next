@@ -177,7 +177,6 @@ export const EndUser: React.FC<EndUserProps> = (props) => {
 
   const editorText = editorState.getCurrentContent().getPlainText().trim();
   const hasContent =
-    shape.cardTitle ||
     (shape.draftRaw && editorText.length > 0) ||
     (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;

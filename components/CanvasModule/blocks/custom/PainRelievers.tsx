@@ -177,7 +177,6 @@ export const PainRelievers: React.FC<PainRelieversProps> = (props) => {
 
   const editorText = editorState.getCurrentContent().getPlainText().trim();
   const hasContent =
-    shape.cardTitle ||
     (shape.draftRaw && editorText.length > 0) ||
     (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;

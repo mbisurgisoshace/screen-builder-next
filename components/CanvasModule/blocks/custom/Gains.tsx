@@ -201,7 +201,6 @@ export const Gains: React.FC<GainsProps> = (props) => {
 
   const editorText = editorState.getCurrentContent().getPlainText().trim();
   const hasContent =
-    shape.cardTitle ||
     (shape.draftRaw && editorText.length > 0) ||
     (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;
@@ -379,6 +378,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
                           <Textarea
                             value={tags[idx] ?? ""}
                             onChange={(e) => addTag(e.target.value, idx)}
+                            className="border-[#B4B9C9] rounded-lg"
                           />
                         )}
                         {q.question_type === "dropdown" && (

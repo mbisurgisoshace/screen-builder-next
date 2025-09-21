@@ -207,8 +207,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
   };
 
   const editorText = editorState.getCurrentContent().getPlainText().trim();
-  const hasContent =
-    shape.cardTitle ||
+  const hasContent =    
     (shape.draftRaw && editorText.length > 0) ||
     (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;
@@ -381,6 +380,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
                           <Textarea
                             value={tags[idx] ?? ""}
                             onChange={(e) => addTag(e.target.value, idx)}
+                            className="border-[#B4B9C9] rounded-lg"
                           />
                         )}
                         {q.question_type === "dropdown" && (

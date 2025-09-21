@@ -132,7 +132,6 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
 
   const editorText = featureIdeaEditorState.getCurrentContent().getPlainText().trim();
   const hasContent =
-    shape.cardTitle ||
     (shape.draftRaw && editorText.length > 0) ||
     (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;
