@@ -66,7 +66,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
       id: "jobs_to_be_done_question_4",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, how significant is this Job to the stakeholder?",
+        "On a scale of 1-10, 10 being highest, in your opinion how significant is this Job to the stakeholder?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
     },

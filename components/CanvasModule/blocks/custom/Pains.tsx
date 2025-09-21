@@ -65,7 +65,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
       id: "pains_question_4",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, what is the significance of this Pain to the stakeholder?",
+        "On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Pain to the stakeholder?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
     },

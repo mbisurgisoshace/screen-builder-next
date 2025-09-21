@@ -59,7 +59,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
       id: "gain_question_4",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, what is the significance of this Gain to the customer/user?",
+        "On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Gain to the customer/user?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
     },
