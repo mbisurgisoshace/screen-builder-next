@@ -46,15 +46,13 @@ export const Gains: React.FC<GainsProps> = (props) => {
     {
       id: "gain_question_2",
       card_type: "card",
-      question:
-        "How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
+      question: "How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
       question_type: "text-area",
     },
     {
       id: "gain_question_3",
       card_type: "card",
-      question:
-        "How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
+      question: "How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
       question_type: "text-area",
     },
     {
