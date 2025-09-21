@@ -189,6 +189,25 @@ export const EndUser: React.FC<EndUserProps> = (props) => {
         onClick={handleCardClick}
       >
         <div className="p-6 pt-0">
+          <div className="mb-4">
+            <textarea
+              placeholder={"Type End-User Segment here.."}
+              className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%] resize-none overflow-hidden"
+              defaultValue={shape.cardTitle || ""}
+              onBlur={(e) => {
+                if (e.target.value !== shape.cardTitle) {
+                  commit({ cardTitle: e.target.value });
+                }
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+              rows={1}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = target.scrollHeight + 'px';
+              }}
+            />
+          </div>
            {/* <div className="flex flex-row gap-2 p-2">
           <span>Significance Score:</span>
           {tags.map((t) => (

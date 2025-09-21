@@ -213,8 +213,6 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
     (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;
 
-  console.log("tags", tags);
-
   return (
     <div className="flex-1 overflow-auto">
       <div
