@@ -201,7 +201,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                           setEditingBody(true);
                           setShowToolbarFeature(true);
                         }}
-                        className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                        className="text-black-600 underline hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
                       >
                         + add more details
                       </button>
@@ -278,7 +278,7 @@ export const ExampleBrainstormCard: React.FC<ExampleBrainstormProps> = (
                           setEditingBody(true);
                           setShowToolbarWhyFeature(true);
                         }}
-                        className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                        className="text-black-600 underline hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
                       >
                         + add more details
                       </button>

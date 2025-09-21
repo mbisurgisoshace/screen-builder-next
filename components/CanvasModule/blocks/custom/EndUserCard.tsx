@@ -228,7 +228,7 @@ export const EndUser: React.FC<EndUserProps> = (props) => {
                     setEditingBody(true);
                     setShowToolbar(true);
                   }}
-                  className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                  className="text-black-600 underline hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
                 >
                   + add more details
                 </button>

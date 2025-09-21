@@ -215,7 +215,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
         <div className="p-6 pt-0">
           <div className="mb-4">
             <textarea
-              placeholder={"Type your title here.."}
+              placeholder={"Type Gain here.."}
               className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%] resize-none overflow-hidden"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
@@ -240,7 +240,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
                     setEditingBody(true);
                     setShowToolbar(true);
                   }}
-                  className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                  className="text-black-600 underline hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
                 >
                   + add more details
                 </button>
@@ -305,8 +305,8 @@ export const Gains: React.FC<GainsProps> = (props) => {
             >
               <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
                 {collapsed
-                  ? `Subquestions (${fiQuestions.length})`
-                  : `Subquestions (${fiQuestions.length})`}
+                  ? `Meta questions (${fiQuestions.length})`
+                  : `Meta questions (${fiQuestions.length})`}
                 <ChevronDown
                   className={`w-4 h-4 transition-transform text-[#80889D] ${
                     collapsed ? "-rotate-0" : "rotate-180"

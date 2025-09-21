@@ -199,7 +199,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                           setEditingBody(true);
                           setShowToolbarFeature(true);
                         }}
-                        className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                        className="text-black-600 underline hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
                       >
                         + add more details
                       </button>
@@ -276,7 +276,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                           setEditingBody(true);
                           setShowToolbarWhyFeature(true);
                         }}
-                        className="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+                        className="ttext-black-600 underline hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
                       >
                         + add more details
                       </button>
