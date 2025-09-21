@@ -119,7 +119,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
           left: -4,
           width: shape.width + 8,
           height: shape.height + 8,
-          border: "2px solid transparent",
+          border: "2px solid #60A5FA",
           borderRadius: "4px",
           pointerEvents: "none",
           zIndex: 30,

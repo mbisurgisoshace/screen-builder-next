@@ -20,7 +20,7 @@ export default function SelectionGroup({
         top: `${bounds.y - 4}px`,
         width: `${bounds.w + 8}px`,
         height: `${bounds.h + 8}px`,
-        border: "2px solid transparent",
+        border: "2px solid #60A5FA",
         borderRadius: "4px",
         pointerEvents: "auto",
         zIndex: 50,

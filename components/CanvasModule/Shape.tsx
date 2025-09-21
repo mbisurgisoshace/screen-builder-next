@@ -39,7 +39,7 @@ export const Shape: React.FC<Props> = ({
               left: "-4px",
               width: `${shape.width + 8}px`,
               height: `${shape.height + 8}px`,
-              border: "2px solid transparent",
+              border: "2px solid #60A5FA",
               borderRadius: "4px",
               pointerEvents: "none",
               zIndex: 30,

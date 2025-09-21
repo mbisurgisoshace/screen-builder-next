@@ -25,6 +25,8 @@ export default async function ValuePropositionPage() {
 
   const questions = await prisma.cardQuestions.findMany({});
 
+  console.log("versions", versions);
+
   return (
     <div className="flex flex-col h-full">
       <div className="h-full">
