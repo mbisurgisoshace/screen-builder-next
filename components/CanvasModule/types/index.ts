@@ -74,6 +74,7 @@ export interface Shape {
 
   // question
   questionTags?: string[];
+  segmentsTags?: string[];
   questionTitle?: string;
 
   metadata?: any;

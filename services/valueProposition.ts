@@ -2,6 +2,7 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { prisma } from "@/lib/prisma";
+import liveblocks from "@/lib/liveblocks";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -44,4 +45,21 @@ export async function createValuePropositionVersion() {
   revalidatePath(`/value-proposition`);
 
   return newVersion;
+}
+
+export async function getSegmentsPropData() {
+  const { orgId } = await auth();
+
+  if (!orgId) return;
+
+  const roomId = `segments-${orgId}`;
+
+  await liveblocks.getOrCreateRoom(roomId, {
+    defaultAccesses: [],
+  });
+
+  const segmentsData = await liveblocks.getStorageDocument(roomId);
+
+  //@ts-ignore
+  return segmentsData.data?.shapes?.data.map((s) => s.data);
 }

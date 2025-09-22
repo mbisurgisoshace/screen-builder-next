@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { getValuePropositionVersions } from "@/services/valueProposition";
+import {
+  getSegmentsPropData,
+  getValuePropositionVersions,
+} from "@/services/valueProposition";
 import ValuePropositionTabsView from "./_components/ValuePropositionTabs";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
@@ -12,6 +15,7 @@ export default async function ValuePropositionPage() {
   if (!orgId || !userId) return redirect("/sign-in");
 
   const versions = await getValuePropositionVersions();
+  const segmentsPropData = await getSegmentsPropData();
 
   if (versions.length === 0) {
     const newVersion = await prisma.valuePropositionVersion.create({
@@ -25,12 +29,10 @@ export default async function ValuePropositionPage() {
 
   const questions = await prisma.cardQuestions.findMany({});
 
-  console.log("versions", versions);
-
   return (
     <div className="flex flex-col h-full">
       <div className="h-full">
-        <QuestionsProvider questions={questions}>
+        <QuestionsProvider segments={segmentsPropData} questions={questions}>
           <ValuePropositionTabsView rooms={versions} />
         </QuestionsProvider>
       </div>

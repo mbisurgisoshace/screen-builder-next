@@ -257,32 +257,6 @@ export const Question: React.FC<QuestionProps> = (props) => {
     },
   ];
 
-  const onAddDropdownTag = (value: string) => {
-    if (value === "Basic fact-finding / understand context") {
-      const hasTag = shape.questionTags?.some(
-        (tag) => tag === "Basic fact-finding / understand context"
-      );
-      if (!hasTag) {
-        const nextTags = shape.questionTags ? [...shape.questionTags] : [];
-        nextTags.filter((tag) => tag === "Validate my hypothesis");
-        commit({ questionTags: nextTags });
-      }
-    }
-
-    if (value === "Validate my hypothesis") {
-      const hasTag = shape.questionTags?.some(
-        (tag) => tag === "Validate my hypothesis"
-      );
-      if (!hasTag) {
-        const nextTags = shape.questionTags ? [...shape.questionTags] : [];
-        nextTags.filter(
-          (tag) => tag === "Basic fact-finding / understand context"
-        );
-        commit({ questionTags: nextTags });
-      }
-    }
-  };
-
   return (
     <ShapeFrame
       {...props}

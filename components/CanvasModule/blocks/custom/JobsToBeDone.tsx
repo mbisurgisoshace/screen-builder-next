@@ -21,6 +21,8 @@ import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useQuestions } from "../../questions/QuestionsProvider";
 import { CardFrame } from "../CardFrame";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type JobsToBeDoneProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -34,6 +36,7 @@ const RteEditor = dynamic(
 );
 
 export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
+  const { segments } = useQuestions();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -211,11 +214,71 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
     }
   };
 
+  const formatSegmentsStructure = () => {
+    if (!segments) return {};
+
+    const options: any = {};
+
+    segments
+      .filter((item: any) => item.subtype)
+      .forEach((item: any) => {
+        if (options[item.subtype]) {
+          options[item.subtype].push(item);
+        } else {
+          options[item.subtype] = [item];
+        }
+      });
+
+    return options;
+  };
+
+  const formattedSegments = formatSegmentsStructure();
+
   const editorText = editorState.getCurrentContent().getPlainText().trim();
   const hasContent =
     (shape.draftRaw && editorText.length > 0) ||
     (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;
+
+  const firtQuestionsOrder = [
+    {
+      key: "customer_card",
+      label: "Customer",
+    },
+    {
+      key: "end_user_card",
+      label: "End User",
+    },
+    {
+      key: "industry_market_segment_card",
+      label: "Industry Market Segment",
+    },
+  ];
+
+  const getTitle = (subtype: string) => {
+    switch (subtype) {
+      case "customer_card":
+        return "Customer";
+      case "end_user_card":
+        return "End User";
+      case "industry_market_segment_card":
+        return "Industry Market Segment";
+      default:
+        return "Unknown";
+    }
+  };
+
+  const updateCheckTags = (id: string, checked: boolean) => {
+    let nextTags = shape.segmentsTags ? [...shape.segmentsTags] : [];
+    if (checked) {
+      if (!nextTags.includes(id)) {
+        nextTags.push(id);
+      }
+    } else {
+      nextTags = nextTags.filter((tag) => tag !== id);
+    }
+    commit({ segmentsTags: nextTags });
+  };
 
   return (
     <div className="flex-1 overflow-auto">
@@ -328,6 +391,59 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                 ref={questionsRef}
                 className="mt-4 p-4 rounded-lg bg-[#FEEDD3]"
               >
+                <h3 className="font-semibold text-sm text-gray-800 mb-3">
+                  Please pick from the Segments you've added. If you have not
+                  added any on the Segments canvas yet, they will show up here
+                  as empty for now.
+                </h3>
+
+                {firtQuestionsOrder.map(({ key, label }) => {
+                  const segment = formattedSegments[key];
+
+                  return (
+                    <div key={key} className="mb-5">
+                      <h3 className="font-semibold text-sm text-gray-800 mb-3">
+                        {getTitle(key)}
+                      </h3>
+                      <div className="flex flex-col gap-2">
+                        {segment?.map((item: any) => {
+                          if (!item.draftRaw) return null;
+                          const raw = JSON.parse(item.draftRaw);
+                          const editor = EditorState.createWithContent(
+                            convertFromRaw(raw)
+                          );
+                          const text = editor
+                            .getCurrentContent()
+                            .getPlainText();
+
+                          if (text.trim().length === 0) return null;
+
+                          return (
+                            <div
+                              className="flex items-center gap-3"
+                              key={item.id}
+                            >
+                              <Checkbox
+                                key={item.id}
+                                checked={shape.segmentsTags?.includes(
+                                  `${key}::${text}`
+                                )}
+                                className="bg-white border-gray-300"
+                                onCheckedChange={(checked) => {
+                                  updateCheckTags(`${key}::${text}`, !!checked);
+                                }}
+                              />
+                              <Label className="text-sm text-gray-700">
+                                {text}
+                              </Label>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+
                 {fiQuestions.map((q, idx) => (
                   <div className="flex flex-col mb-4" key={q.id}>
                     <div className="flex flex-col gap-4">
