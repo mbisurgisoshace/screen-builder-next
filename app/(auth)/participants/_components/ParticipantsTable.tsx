@@ -153,7 +153,6 @@ const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("blocking_issues")}</div>
     ),
-    
   },
   {
     accessorKey: "hypothesis_to_validate",
@@ -173,6 +172,9 @@ const columns: ColumnDef<any>[] = [
     accessorKey: "scheduled_date",
     header: "Schedule Date",
     cell: ({ row }) => {
+      if (!row.getValue("scheduled_date"))
+        return <div className="capitalize"></div>;
+
       const schedule_date = format(
         row.getValue("scheduled_date"),
         "MMM d, k:mm"

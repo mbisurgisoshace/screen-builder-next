@@ -94,6 +94,7 @@ export default function ParticipantTableActions({
       blocking_issues: participant.blocking_issues || "",
       hypothesis_to_validate: participant.hypothesis_to_validate || "",
       learnings: participant.learnings || "",
+      status: participant.status || "need_to_schedule",
       scheduled_date: participant.scheduled_date || undefined,
     },
   });
@@ -183,6 +184,36 @@ export default function ParticipantTableActions({
                         </SelectItem>
                         <SelectItem value="Additional Stakeholder">
                           Additional Stakeholder
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="complete">Complete</SelectItem>
+                        <SelectItem value="scheduled">Scheduled</SelectItem>
+                        <SelectItem value="incomplete">Incomplete</SelectItem>
+                        <SelectItem value="interviewed">Interviewed</SelectItem>
+                        <SelectItem value="not_available">
+                          Not Available
+                        </SelectItem>
+                        <SelectItem value="need_to_schedule">
+                          Need to Schedule
                         </SelectItem>
                       </SelectContent>
                     </Select>

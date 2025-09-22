@@ -9,5 +9,6 @@ export const participantFormSchema = z.object({
   hypothesis_to_validate: z.string().optional(),
   learnings: z.string().optional(),
   market_segment: z.string().optional(),
+  status: z.string(),
   scheduled_date: z.date().optional(),
 });

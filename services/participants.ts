@@ -32,6 +32,7 @@ export async function getParticipants() {
 
   const participants = await prisma.participant.findMany({
     where: { org_id: orgId },
+    orderBy: { scheduled_date: "desc" },
   });
 
   return participants;
