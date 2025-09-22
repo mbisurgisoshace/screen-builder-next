@@ -43,7 +43,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
     {
       id: "pains_question_1",
       card_type: "card",
-      question: "What sort of Pain is this?",
+      question: "(1) What sort of Pain is this?",
       question_options: [
         "Functional (solution doesn't work or work well enough, or has negative side effects; for eg: laptop crashes or delivery takes too much time)",
         "Social (look bad doing it; for eg: low score on a test/exam)",
@@ -59,14 +59,14 @@ export const Pains: React.FC<PainsProps> = (props) => {
       id: "pains_question_2",
       card_type: "card",
       question:
-        "What sort of emotions does the stakeholder feel when they experience this Pain?",
+        "(2) What sort of emotions does the stakeholder feel when they experience this Pain?",
       question_type: "text-area",
     },
     {
       id: "pains_question_3",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Pain to the stakeholder?",
+        "(3) On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Pain to the stakeholder?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
     },
@@ -404,7 +404,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
                 className="mt-4 p-4 rounded-lg  bg-[#FFE0E0]"
               >
                 <h3 className="font-semibold text-sm text-gray-800 mb-3">
-                  Please pick from the Segments you've added. If you have not
+                  (1) Please pick from the Segments you've added. If you have not
                   added any on the Segments canvas yet, they will show up here
                   as empty for now.
                 </h3>

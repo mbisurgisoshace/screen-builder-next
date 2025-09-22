@@ -52,14 +52,14 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
       id: "jobs_to_be_done_question_1",
       card_type: "card",
       question:
-        "Why does the stakeholder (Customer, End-User, etc) want this Job done? What is their motivation?",
+        "(2) Why does the stakeholder (Customer, End-User, etc) want this Job done? What is their motivation?",
       //question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "text-area",
     },
     {
       id: "jobs_to_be_done_question_2",
       card_type: "card",
-      question: "What sort of Job is this?",
+      question: "(3) What sort of Job is this?",
       question_options: [
         "Functional (tangible, practical outcomes like saving time, making or saving money, etc)",
         "Emotional (makes them feel a certain way about themselves)",
@@ -72,7 +72,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
       id: "jobs_to_be_done_question_4",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, in your opinion how significant is this Job to the stakeholder?",
+        "(4) On a scale of 1-10, 10 being highest, in your opinion how significant is this Job to the stakeholder?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
     },
@@ -392,7 +392,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                 className="mt-4 p-4 rounded-lg bg-[#FEEDD3]"
               >
                 <h3 className="font-semibold text-sm text-gray-800 mb-3">
-                  Please pick from the Segments you've added. If you have not
+                  (1) Please pick from the Segments you've added. If you have not
                   added any on the Segments canvas yet, they will show up here
                   as empty for now.
                 </h3>

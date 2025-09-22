@@ -51,7 +51,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
     {
       id: "gain_question_1",
       card_type: "card",
-      question: "What sort of Gain is it?",
+      question: "(1) What sort of Gain is it?",
       question_options: [
         "Required (basic expectation without which the solution wouldn't work; for eg: login to work timesheet app)",
         "Expected (common expectation set by current competitor solutions; for eg: app is desktop + mobile friendly)",
@@ -64,21 +64,21 @@ export const Gains: React.FC<GainsProps> = (props) => {
       id: "gain_question_2",
       card_type: "card",
       question:
-        "How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
+        "(2) How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
       question_type: "text-area",
     },
     {
       id: "gain_question_3",
       card_type: "card",
       question:
-        "How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
+        "(3) How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
       question_type: "text-area",
     },
     {
       id: "gain_question_4",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Gain to the customer/user?",
+        "(4) On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Gain to the customer/user?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
     },
@@ -407,7 +407,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
                 className="mt-4 p-4 rounded-lg  bg-[#FFE5D6]"
               >
                 <h3 className="font-semibold text-sm text-gray-800 mb-3">
-                  Please pick from the Segments you've added. If you have not
+                  (1) Please pick from the Segments you've added. If you have not
                   added any on the Segments canvas yet, they will show up here
                   as empty for now.
                 </h3>
