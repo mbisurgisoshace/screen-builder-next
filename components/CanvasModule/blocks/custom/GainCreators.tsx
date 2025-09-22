@@ -44,32 +44,13 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
 
   const questions = [
     {
-      id: "gain_creators_question_1",
-      card_type: "card",
-      question:
-        "What sort of Gain is it? Required (basic expectation without which the solution wouldn't work), Expected (common expectation set by current competitor solutions), Desired (great to have), Unexpected (goes beyond stakeholder expectations and desires)",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-    },
-    {
-      id: "gain_creators_question_2",
-      card_type: "card",
-      question:
-        "How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-    },
-    {
-      id: "gain_creators_question_3",
-      card_type: "card",
-      question:
-        "How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
-      question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-    },
-    {
       id: "gain_creators_question_4",
       card_type: "card",
       question:
         "On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Gain to the customer/user?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+      question_type: "slider",
+
     },
   ];
   const { shape, onCommitStyle } = props;

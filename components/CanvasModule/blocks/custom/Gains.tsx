@@ -51,7 +51,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
     {
       id: "gain_question_1",
       card_type: "card",
-      question: "(1) What sort of Gain is it?",
+      question: "(2) What sort of Gain is it?",
       question_options: [
         "Required (basic expectation without which the solution wouldn't work; for eg: login to work timesheet app)",
         "Expected (common expectation set by current competitor solutions; for eg: app is desktop + mobile friendly)",
@@ -64,21 +64,21 @@ export const Gains: React.FC<GainsProps> = (props) => {
       id: "gain_question_2",
       card_type: "card",
       question:
-        "(2) How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
+        "(3) How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
       question_type: "text-area",
     },
     {
       id: "gain_question_3",
       card_type: "card",
       question:
-        "(3) How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
+        "(4) How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
       question_type: "text-area",
     },
     {
       id: "gain_question_4",
       card_type: "card",
       question:
-        "(4) On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Gain to the customer/user?",
+        "(5) On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Gain to the customer/user?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
     },
@@ -389,8 +389,8 @@ export const Gains: React.FC<GainsProps> = (props) => {
             >
               <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
                 {collapsed
-                  ? `Meta questions (${fiQuestions.length})`
-                  : `Meta questions (${fiQuestions.length})`}
+                  ? `Meta questions (${fiQuestions.length+1})`
+                  : `Meta questions (${fiQuestions.length+1})`}
                 <ChevronDown
                   className={`w-4 h-4 transition-transform text-[#80889D] ${
                     collapsed ? "-rotate-0" : "rotate-180"
