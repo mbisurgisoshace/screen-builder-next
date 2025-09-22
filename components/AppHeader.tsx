@@ -28,6 +28,8 @@ export default function AppHeader() {
     if (pathname.includes("/common-vocabulary")) title = "Common Vocabulary";
     if (pathname.includes("/examples/laptop")) title = "Laptop Value Prop Example";
     if (pathname.includes("/examples/pickup-truck")) title = "Pickup Truck Value Prop Example";
+    if (pathname.includes("/examples/ecosystem-maps")) title = "Ecosystem Map Examples";
+
 
     if (pathname.includes("/participants/")) {
       const participantId = pathname.split("/participants/")[1];

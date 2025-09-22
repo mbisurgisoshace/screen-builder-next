@@ -119,6 +119,10 @@ const data = {
           title: "Laptop",
           url: "/examples/laptop",
         },
+        {
+          title: "Ecosystem Maps",
+          url: "/examples/ecosystem-maps",
+        },
       ],
     },
     // {
