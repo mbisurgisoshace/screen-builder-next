@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 
 import { participantFormSchema } from "@/schemas/participant";
+import { ParticipantStatus } from "@/lib/generated/prisma";
 
 export async function getParticipant(participantId: string) {
   const { orgId, userId } = await auth();
@@ -51,6 +52,7 @@ export async function createParticipant(
   const newParticipant = await prisma.participant.create({
     data: {
       ...values,
+      status: values.status as ParticipantStatus,
       org_id: orgId,
       id: participantId,
       ParticipantRoom: {
@@ -76,7 +78,7 @@ export async function updateParticipant(
 
   const updatedParticipant = await prisma.participant.update({
     where: { id: participantId, org_id: orgId },
-    data: { ...values },
+    data: { ...values, status: values.status as ParticipantStatus },
   });
 
   revalidatePath(`/participants`);
