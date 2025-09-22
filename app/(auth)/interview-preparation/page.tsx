@@ -17,15 +17,15 @@ export default function InterviewPreparationPage() {
             </div>
             
             <h1 className="text-6xl font-bold text-white leading-tight mb-8">
-              3 Tips to Improve<br />
-              Your Customer Discovery
+              Preparing for<br />
+              Customer Interviews
             </h1>
           </div>
         </div>
         
         <div className="w-1/2 relative">
           <img
-            src="https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/customer_discovery_illustration_2.jpg"
+            src="https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/customer_interview_prep.jpg"
             alt="illustration of an entrepreneur doing a customer discovery interview of a prospective customer at a cafe. the entrepreneur is seen with a laptop and a notepad. the interviewee is explaining some of the problems they experience."
             className="w-full h-full object-cover"
           />
@@ -60,9 +60,9 @@ export default function InterviewPreparationPage() {
            </h1> */}
 
           
-           <p className="text-gray-700 text-lg leading-relaxed max-w-240 m-auto">
+           {/* <p className="text-gray-700 text-lg leading-relaxed max-w-240 m-auto">
              <b>Customer discovery</b> is a term that is thrown around a lot in entrepreneurship circles. What does it really mean? Customer Discovery is all about understanding your potential customers, and figuring out what problems they face. Once you understand a customer's problem, you can start to create a solution that customers will pay for. Interviewing potential customers is the best way to learn what drives them. Let's take a look at a few Customer Discovery Tips.
-           </p>
+           </p> */}
 
         
            {/* <div className="mb-12">
@@ -83,7 +83,7 @@ export default function InterviewPreparationPage() {
                      <span className="text-white font-bold text-lg">1</span>
                    </div>
                    <h2 className="text-4xl font-bold text-gray-900">
-                     Don't be afraid to go off-script
+                     HOW DO I FIND PEOPLE TO INTERVIEW?
                    </h2>
                  </div>
 
@@ -98,12 +98,21 @@ export default function InterviewPreparationPage() {
 
 
                  <div className="space-y-4 text-gray-700 leading-relaxed">
-                   <p>
-                     Going out and interviewing people can be extremely daunting. Having a script to follow can alleviate some of the stress. You will want to ask people similar questions to learn more about their day and the problems they face which relate to your business idea.
-                   </p>
-                   <p>
-                     However, some of the greatest insights you will gain are from when the conversation deviates from the script. Don’t be afraid to ask follow-up questions with answers that intrigue you. Digging in and learning about your customer’s emotions is your objective, so don’t be afraid to ask more speci c questions!
-                   </p>
+                  <p>Check out Katy Miller's (New England I-Corps) video on how to use LinkedIn for Customer Discovery<br/><br/><iframe width="560" height="315" src="https://www.youtube.com/embed/UewkdYcnTSg?si=ni9qWmWm0qgxWnej" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" data-referrerpolicy="strict-origin-when-cross-origin" data-allowfullscreen></iframe></p>
+                  <br/><br/>
+                  <ul className="list-disc pl-5 space-y-2">
+                    <li>Alumni networking events</li>
+                    <li>Through people you are already interviewing</li>
+                    <li>Existing personal/professional connections</li>
+                    <li>Every social media connection you have ever had</li>
+                    <li>Whoever runs any business you patronize</li>
+                    <li>Professional and trade associations (like IEEE, ACS, others)</li>
+                    <li>Standards & regulatory organizations (like ASTM, others)</li>
+                    <li>Trade shows & conferences (get the attendee list, if possible)</li>
+                    <li>Trade journals, magazine newsletters</li>
+                    <li>Equipment suppliers/distributors</li>
+                    <li>Co-workers, clients, and vendors</li>
+                  </ul>                   
                  </div>
                </div>
 
@@ -114,14 +123,14 @@ export default function InterviewPreparationPage() {
                      <span className="text-white font-bold text-lg">2</span>
                    </div>
                    <h2 className="text-4xl font-bold text-gray-900">
-                     Learn about your customer - don't pitch your business idea
+                     A TEMPLATE FOR HOW TO CONTACT PEOPLE
                    </h2>
                  </div>
 
                  <div className="flex gap-8">
                    <div className="w-1/2">
                      <img
-                       src="https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/customer_discovery_illlustration_selling.jpg"
+                       src="https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/writing_email.jpg"
                        alt="City street view"
                        className="w-full h-100 object-cover rounded-lg"
                      />
@@ -130,16 +139,15 @@ export default function InterviewPreparationPage() {
                    <div className="w-1/2 flex flex-col justify-center">
                      <div className="space-y-4 text-gray-700 leading-relaxed">
                        <p>
-                         When talking to your customers, it can be extremely tempting to pitch your business idea. However, it is important to listen and learn from your customer; not the other way around.
-                       </p>
-                       <p>
-                         People will generally be supportive of your idea. This could be misinterpreted as them confirming that they would pay for your product or service.
-                       </p>
-                       <p>
-                         Being supportive of your idea and being willing to pay for it are two very different things.
-                       </p>
-                       <p>
-                         The goal of customer discovery is to learn, not pitch your idea. There will be plenty of opportunities to pitch your ideas. Customer discovery is not it.
+                        Hello, I am [my-name]<br/><br/>
+                        • I am a [describe role] at the [name of the University].<br/>
+                        • I am part of a program sponsored by the National Science Foundation (US NSF - I-Corps) designed to help researchers gain valuable insight into entrepreneurship and starting a business.<br/>
+                        • To enable translation of our research from the academic setting to the marketplace, this program requires us to interview people outside of our research setting. I'm contacting you as someone who has expertise that could be very helpful in our area of focus.<br/>
+                        • Our interview would essentially focus on understanding the customer's pains, needs and ecosystem.<br/><br/>
+
+                        • Would you be willing to help? Can we schedule a [describe encounter you would like, such as 15-20 min Zoom/Google Meet/MS Teams]? <br/>
+                        • Do you have any preference for time/day of the week for our meeting?<br/>
+                        • Thank you for your cooperation and I look forward to hearing from you.<br/>
                        </p>
                      </div>
                    </div>
@@ -152,7 +160,7 @@ export default function InterviewPreparationPage() {
                      <span className="text-white font-bold text-lg">3</span>
                    </div>
                    <h2 className="text-4xl font-bold text-gray-900">
-                     Figure out your customer's 5 why
+                     ANOTHER TEMPLATE TO CONTACT PEOPLE
                    </h2>
                  </div>
 
@@ -160,20 +168,24 @@ export default function InterviewPreparationPage() {
                    
                    <div className="w-1/2 flex flex-col justify-center">
                      <div className="space-y-4 text-gray-700 leading-relaxed">
-                       <p>
-                        A great article by the University of Akron describes the "5 why's" of customer discovery. This methodology can allow you to get to the bottom of your customer's problem. <br/><br/>First, you need to get your customer talking about the issues they are facing. You can do this by asking an open-ended question like 'What is the most challenging part of this task, process, or job?' Once they begin telling their story, continue to ask "why" questions. For example, 'Can you explain why you do that?' Asking these questions can help you to understand what is really going on with your customer, and might reveal opportunities you didn't know existed.
-                      </p>
                       <p>
-                        Long-time I-Corps instructor Dr. DasGupta describes the importance of open-ended "Why" questions: "Asking open-ended questions that evoke stories from your customers about their past or current experiences with their products/services is a great way to seek/gather 'evidence' (facts and not opinions) needed to test your value proposition hypotheses."
+                        Dear [Recipient's Name],<br/><br/>
+                        I hope this email finds you well. My name is [Your Name], and I'm part of a team participating in the National Science Foundation's I-Corps program. The goal of our project is to [briefly state the focus of your project, e.g., develop solutions for XYZ challenge].<br/><br/>
+                        As part of this program, we are conducting customer discovery interviews to better understand the needs and challenges faced by [specific group/industry, e.g., water and sewer division leaders]. We are not selling or pitching anything but seeking insights that could guide our research and development in a meaningful direction.<br/><br/>
+                        Given your expertise in [recipient's field/role], I would greatly appreciate the opportunity to speak with you for about 15 or 20 minutes at your convenience. Your insights would be invaluable in helping us understand [specific aspect you're researching].<br/><br/>
+                        If you're available, please let me know a time that works for you. Alternatively, I'm happy to adjust to your schedule.<br/><br/>
+                        Thank you very much for considering this request. I truly value your time and expertise.
+                        Best regards,<br/>
+                        [Your Full Name]<br/>
+                        [Your Role/Organization]<br/>
+                        [Your Contact Information]<br/>
                       </p>
-                      <p>
-                        Although repeatedly asking "why" questions can seem tiring, it can be the best way to learn about your customers and test your business hypotheses.
-                      </p>
+                       
                      </div>
                    </div>
                    <div className="w-1/2">
                      <img
-                       src="https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/customer_discovery_illustration_why.jpg"
+                       src="https://zuazpraxvbtqlpkzayfj.supabase.co/storage/v1/object/public/images/writing_email_lab.jpg"
                        alt="City street view"
                        className="w-full h-100 object-cover rounded-lg"
                      />
