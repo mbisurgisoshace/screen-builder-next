@@ -47,7 +47,7 @@ model Participant {
   hypothesis_to_validate String?
   learnings              String?
   status                 ParticipantStatus @default(need_to_schedule)
-  scheduled_date         DateTime
+  scheduled_date         DateTime?
   created_at             DateTime          @default(now())
   ParticipantRoom        ParticipantRoom?
 
