@@ -35,15 +35,15 @@ const RteEditor = dynamic(
 
 export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+
   useEffect(() => {
     if (textareaRef.current) {
       const target = textareaRef.current;
-      target.style.height = 'auto';
-      target.style.height = target.scrollHeight + 'px';
+      target.style.height = "auto";
+      target.style.height = target.scrollHeight + "px";
     }
   }, [props.shape.cardTitle]);
-  
+
   const questions = [
     {
       id: "jobs_to_be_done_question_1",
@@ -199,10 +199,11 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
   const handleCardClick = (e: React.MouseEvent) => {
     if (editingBody) {
       const target = e.target as HTMLElement;
-      const isEditorClick = target.closest('.rdw-editor-wrapper') || 
-                           target.closest('.rdw-editor-toolbar') ||
-                           target.closest('button[class*="text-purple"]');
-      
+      const isEditorClick =
+        target.closest(".rdw-editor-wrapper") ||
+        target.closest(".rdw-editor-toolbar") ||
+        target.closest('button[class*="text-purple"]');
+
       if (!isEditorClick) {
         setEditingBody(false);
         setShowToolbar(false);
@@ -238,8 +239,8 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
               onMouseDown={(e) => e.stopPropagation()}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
-                target.style.height = 'auto';
-                target.style.height = target.scrollHeight + 'px';
+                target.style.height = "auto";
+                target.style.height = target.scrollHeight + "px";
               }}
             />
           </div>
@@ -296,7 +297,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                 placeholder="Type your text here..."
               />
             ) : (
-              <div 
+              <div
                 className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
                 onClick={() => {
                   setEditingBody(true);
@@ -382,17 +383,21 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                               max={10}
                               step={1}
                               defaultValue={[parseInt(tags[idx]) || 0]}
-                              value={currentValue ? [currentValue] : undefined}
+                              value={
+                                parseInt(tags[idx])
+                                  ? [parseInt(tags[idx])]
+                                  : undefined
+                              }
                               onValueCommit={(value) =>
                                 addTag(value[0].toString(), idx)
                               }
                               onValueChange={(value) =>
-                                setCurrentValue(value[0])
+                                addTag(value[0].toString(), idx)
                               }
                               className="w-full"
                             />
                             <span className="text-xs font-medium text-gray-700">
-                              {currentValue || 0}
+                              {parseInt(tags[idx]) || 0}
                             </span>
                           </div>
                         )}

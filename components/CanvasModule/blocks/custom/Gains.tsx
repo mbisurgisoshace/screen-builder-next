@@ -35,40 +35,40 @@ const RteEditor = dynamic(
 
 export const Gains: React.FC<GainsProps> = (props) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
 
   useEffect(() => {
     if (textareaRef.current) {
       const target = textareaRef.current;
-      target.style.height = 'auto';
-      target.style.height = target.scrollHeight + 'px';
+      target.style.height = "auto";
+      target.style.height = target.scrollHeight + "px";
     }
   }, [props.shape.cardTitle]);
-  
+
   const questions = [
     {
       id: "gain_question_1",
       card_type: "card",
-      question:
-        "What sort of Gain is it?",
+      question: "What sort of Gain is it?",
       question_options: [
-        "Required (basic expectation without which the solution wouldn't work; for eg: login to work timesheet app)", 
-        "Expected (common expectation set by current competitor solutions; for eg: app is desktop + mobile friendly)", 
-        "Desired (great to have; for eg: app reminds me 1hr before my shift)", 
-        "Unexpected (goes beyond stakeholder expectations and desires; for eg: app calculates daily my share of tips)"
+        "Required (basic expectation without which the solution wouldn't work; for eg: login to work timesheet app)",
+        "Expected (common expectation set by current competitor solutions; for eg: app is desktop + mobile friendly)",
+        "Desired (great to have; for eg: app reminds me 1hr before my shift)",
+        "Unexpected (goes beyond stakeholder expectations and desires; for eg: app calculates daily my share of tips)",
       ],
       question_type: "dropdown",
     },
     {
       id: "gain_question_2",
       card_type: "card",
-      question: "How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
+      question:
+        "How concrete does this Gain need to be for the stakeholder? For example, approximate dollar amount or time saved, number of leads generated, etc",
       question_type: "text-area",
     },
     {
       id: "gain_question_3",
       card_type: "card",
-      question: "How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
+      question:
+        "How would this Gain make the stakeholder feel? For example, delight, relief, calm, motivated, etc.",
       question_type: "text-area",
     },
     {
@@ -204,10 +204,11 @@ export const Gains: React.FC<GainsProps> = (props) => {
   const handleCardClick = (e: React.MouseEvent) => {
     if (editingBody) {
       const target = e.target as HTMLElement;
-      const isEditorClick = target.closest('.rdw-editor-wrapper') || 
-                           target.closest('.rdw-editor-toolbar') ||
-                           target.closest('button[class*="text-purple"]');
-      
+      const isEditorClick =
+        target.closest(".rdw-editor-wrapper") ||
+        target.closest(".rdw-editor-toolbar") ||
+        target.closest('button[class*="text-purple"]');
+
       if (!isEditorClick) {
         setEditingBody(false);
         setShowToolbar(false);
@@ -243,8 +244,8 @@ export const Gains: React.FC<GainsProps> = (props) => {
               onMouseDown={(e) => e.stopPropagation()}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
-                target.style.height = 'auto';
-                target.style.height = target.scrollHeight + 'px';
+                target.style.height = "auto";
+                target.style.height = target.scrollHeight + "px";
               }}
             />
           </div>
@@ -300,7 +301,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
                 placeholder="Type your text here..."
               />
             ) : (
-              <div 
+              <div
                 className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
                 onClick={() => {
                   setEditingBody(true);
@@ -343,45 +344,6 @@ export const Gains: React.FC<GainsProps> = (props) => {
                 className="mt-4 p-4 rounded-lg  bg-[#FFE5D6]"
               >
                 {fiQuestions.map((q, idx) => (
-                  // <div className="flex flex-col gap-3" key={q.id}>
-                  //   <h3 className="font-semibold text-sm text-gray-800">
-                  //     {q.question}
-                  //   </h3>
-
-                  //   <div
-                  //     data-nodrag="true"
-                  //     onMouseDown={(e) => e.stopPropagation()}
-                  //     className="w-full"
-                  //   >
-                  //     {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
-                  //   <SelectTrigger className="w-full bg-white">
-                  //     <SelectValue placeholder="Select an option" />
-                  //   </SelectTrigger>
-                  //   <SelectContent onMouseDown={(e) => e.stopPropagation()}>
-                  //     {q.question_options.map((option) => (
-                  //       <SelectItem value={option} key={option}>
-                  //         {option}
-                  //       </SelectItem>
-                  //     ))}
-                  //   </SelectContent>
-                  // </Select> */}
-                  //     <div className="flex flex-col gap-2 items-center">
-                  //       <Slider
-                  //         min={0}
-                  //         max={10}
-                  //         step={1}
-                  //         defaultValue={[parseInt(tags[idx]) || 0]}
-                  //         value={currentValue ? [currentValue] : undefined}
-                  //         onValueCommit={(value) => addTag(value[0].toString())}
-                  //         onValueChange={(value) => setCurrentValue(value[0])}
-                  //         className="w-full"
-                  //       />
-                  //       <span className="text-xs font-medium text-gray-700">
-                  //         {currentValue || 0}
-                  //       </span>
-                  //     </div>
-                  //   </div>
-                  // </div>
                   <div className="flex flex-col mb-4" key={q.id}>
                     <div className="flex flex-col gap-4">
                       <h3 className="font-semibold text-sm text-gray-800">
@@ -426,17 +388,21 @@ export const Gains: React.FC<GainsProps> = (props) => {
                               max={10}
                               step={1}
                               defaultValue={[parseInt(tags[idx]) || 0]}
-                              value={currentValue ? [currentValue] : undefined}
+                              value={
+                                parseInt(tags[idx])
+                                  ? [parseInt(tags[idx])]
+                                  : undefined
+                              }
                               onValueCommit={(value) =>
                                 addTag(value[0].toString(), idx)
                               }
                               onValueChange={(value) =>
-                                setCurrentValue(value[0])
+                                addTag(value[0].toString(), idx)
                               }
                               className="w-full"
                             />
                             <span className="text-xs font-medium text-gray-700">
-                              {currentValue || 0}
+                              {parseInt(tags[idx]) || 0}
                             </span>
                           </div>
                         )}

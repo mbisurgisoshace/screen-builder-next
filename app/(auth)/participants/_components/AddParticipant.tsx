@@ -77,9 +77,7 @@ export default function AddParticipant({
   });
 
   async function onSubmit(values: z.infer<typeof participantFormSchema>) {
-    console.log("submitting", values);
-
-    //await createParticipant(values);
+    await createParticipant(values);
     form.reset();
   }
 

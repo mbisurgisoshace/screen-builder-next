@@ -35,7 +35,7 @@ const RteEditor = dynamic(
 
 export const Pains: React.FC<PainsProps> = (props) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+
   const questions = [
     {
       id: "pains_question_1",
@@ -73,8 +73,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
   useEffect(() => {
     if (textareaRef.current) {
       const target = textareaRef.current;
-      target.style.height = 'auto';
-      target.style.height = target.scrollHeight + 'px';
+      target.style.height = "auto";
+      target.style.height = target.scrollHeight + "px";
     }
   }, [shape.cardTitle]);
 
@@ -201,10 +201,11 @@ export const Pains: React.FC<PainsProps> = (props) => {
   const handleCardClick = (e: React.MouseEvent) => {
     if (editingBody) {
       const target = e.target as HTMLElement;
-      const isEditorClick = target.closest('.rdw-editor-wrapper') || 
-                           target.closest('.rdw-editor-toolbar') ||
-                           target.closest('button[class*="text-purple"]');
-      
+      const isEditorClick =
+        target.closest(".rdw-editor-wrapper") ||
+        target.closest(".rdw-editor-toolbar") ||
+        target.closest('button[class*="text-purple"]');
+
       if (!isEditorClick) {
         setEditingBody(false);
         setShowToolbar(false);
@@ -213,14 +214,18 @@ export const Pains: React.FC<PainsProps> = (props) => {
   };
 
   const editorText = editorState.getCurrentContent().getPlainText().trim();
-  const hasContent =    
+  const hasContent =
     (shape.draftRaw && editorText.length > 0) ||
     (!shape.draftRaw && editorText.length > 0);
   const isEmpty = !hasContent && !editingBody;
 
   return (
     <div className="flex-1">
-      <div className="bg-[#FFBCBC]" onMouseDown={(e) => e.stopPropagation()} onClick={handleCardClick}>
+      <div
+        className="bg-[#FFBCBC]"
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={handleCardClick}
+      >
         <div className="p-6 pt-0">
           <div className="mb-4">
             <textarea
@@ -237,8 +242,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
               // rows={1}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
-                target.style.height = 'auto';
-                target.style.height = target.scrollHeight + 'px';
+                target.style.height = "auto";
+                target.style.height = target.scrollHeight + "px";
               }}
             />
           </div>
@@ -294,7 +299,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
                 placeholder="Type your text here..."
               />
             ) : (
-              <div 
+              <div
                 className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
                 onClick={() => {
                   setEditingBody(true);
@@ -336,45 +341,6 @@ export const Pains: React.FC<PainsProps> = (props) => {
                 className="mt-4 p-4 rounded-lg  bg-[#FFE0E0]"
               >
                 {fiQuestions.map((q, idx) => (
-                  // <div className="flex flex-col gap-3" key={q.id}>
-                  //   <h3 className="font-semibold text-sm text-gray-800">
-                  //     {q.question}
-                  //   </h3>
-
-                  //   <div
-                  //     data-nodrag="true"
-                  //     onMouseDown={(e) => e.stopPropagation()}
-                  //     className="w-full"
-                  //   >
-                  //     {/* <Select value={tags[idx] ?? ""} onValueChange={addTag}>
-                  //   <SelectTrigger className="w-full bg-white">
-                  //     <SelectValue placeholder="Select an option" />
-                  //   </SelectTrigger>
-                  //   <SelectContent onMouseDown={(e) => e.stopPropagation()}>
-                  //     {q.question_options.map((option) => (
-                  //       <SelectItem value={option} key={option}>
-                  //         {option}
-                  //       </SelectItem>
-                  //     ))}
-                  //   </SelectContent>
-                  // </Select> */}
-                  //     <div className="flex flex-col gap-2 items-center">
-                  //       <Slider
-                  //         min={0}
-                  //         max={10}
-                  //         step={1}
-                  //         defaultValue={[parseInt(tags[idx]) || 0]}
-                  //         value={currentValue ? [currentValue] : undefined}
-                  //         onValueCommit={(value) => addTag(value[0].toString())}
-                  //         onValueChange={(value) => setCurrentValue(value[0])}
-                  //         className="w-full"
-                  //       />
-                  //       <span className="text-xs font-medium text-gray-700">
-                  //         {currentValue || 0}
-                  //       </span>
-                  //     </div>
-                  //   </div>
-                  // </div>
                   <div className="flex flex-col mb-4" key={q.id}>
                     <div className="flex flex-col gap-4">
                       <h3 className="font-semibold text-sm text-gray-800">
@@ -419,17 +385,22 @@ export const Pains: React.FC<PainsProps> = (props) => {
                               max={10}
                               step={1}
                               defaultValue={[parseInt(tags[idx]) || 0]}
-                              value={currentValue ? [currentValue] : undefined}
+                              value={
+                                parseInt(tags[idx])
+                                  ? [parseInt(tags[idx])]
+                                  : undefined
+                              }
                               onValueCommit={(value) =>
                                 addTag(value[0].toString(), idx)
                               }
                               onValueChange={(value) =>
-                                setCurrentValue(value[0])
+                                //setCurrentValue(value[0])
+                                addTag(value[0].toString(), idx)
                               }
                               className="w-full"
                             />
                             <span className="text-xs font-medium text-gray-700">
-                              {currentValue || 0}
+                              {parseInt(tags[idx]) || 0}
                             </span>
                           </div>
                         )}
