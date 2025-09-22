@@ -40,7 +40,11 @@ export default function StartupsTable({
             <TableRow key={headerGroup.id} className="bg-[#EFF0F4]">
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="font-bold text-xs">
+                  <TableHead
+                    key={header.id}
+                    className="font-bold text-xs"
+                    style={{ width: header.getSize() }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -66,6 +70,7 @@ export default function StartupsTable({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
+                    style={{ width: cell.column.getSize() }}
                     className="text-sm font-medium text-[#111827] hover:cursor-pointer"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -100,7 +105,7 @@ const columns: ColumnDef<any>[] = [
     accessorKey: "founders",
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-row flex-wrap gap-1">
           {row.original.founders.map((founder: string, index: number) => (
             <Badge className="bg-[#F4F0FF] text-[#6A35FF]" key={index}>
               {founder}
@@ -109,13 +114,15 @@ const columns: ColumnDef<any>[] = [
         </div>
       );
     },
+    size: 300,
+    minSize: 300,
   },
   {
     header: "Mentors",
     accessorKey: "mentors",
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-row flex-wrap gap-1">
           {/* {row.original.mentors.map((founder: string, index: number) => (
             <Badge className="bg-[#F4F0FF] text-[#6A35FF]" key={index}>
               {founder}
@@ -137,11 +144,11 @@ const columns: ColumnDef<any>[] = [
       return <div className="capitalize">{createdAt}</div>;
     },
   },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const payment = row.original;
-      return <div></div>;
-    },
-  },
+  // {
+  //   id: "actions",
+  //   cell: ({ row }) => {
+  //     const payment = row.original;
+  //     return <div></div>;
+  //   },
+  // },
 ];
