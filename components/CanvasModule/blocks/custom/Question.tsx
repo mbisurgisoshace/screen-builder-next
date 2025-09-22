@@ -37,7 +37,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
   const { shape, onCommitInterview } = props;
   console.log("shape", shape);
 
-  const fallbackTitle = "Double click to edit the question.";
+  const fallbackTitle = "Type question here";
   const title = (shape as any).questionTitle ?? fallbackTitle;
 
   const { valuePropData } = useValueProp();
@@ -289,9 +289,9 @@ export const Question: React.FC<QuestionProps> = (props) => {
       resizable={true}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
-      <div className="w-full bg-[#DDE1F2] border border-[#B4B9C9] rounded-lg shadow-lg flex flex-col overflow-hidden px-6 py-6 gap-4">
+      <div className="w-full bg-[#E6CFFF] border border-[#B4B9C9] rounded-lg shadow-lg flex flex-col overflow-hidden px-6 py-6 gap-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-blue-600">Question</h3>
+          <h3 className="text-sm font-medium text-black-600">Question</h3>
           <EllipsisIcon className="w-4 h-4 text-gray-600" />
         </div>
         {shape.questionTags && shape.questionTags.length > 0 && (
@@ -373,7 +373,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
               editingBody ? "bg-white" : "bg-transparent"
             }`}
             editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
-              editingBody ? "bg-white rounded" : "bg-transparent"
+              editingBody ? "bg-[#F0E2FF] rounded" : "bg-transparent"
             }`}
             wrapperClassName="rdw-editor-wrapper"
             placeholder="Type your text here..."
@@ -396,7 +396,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
                   collapsed ? "-rotate-90" : "rotate-0"
                 }`}
               />
-              Subquestions 
+              Meta questions 
               {/* firtQuestionsOrder.length + secondQuestionsOrder.length + 1 */} 
             </span>
             {/* <span className="ml-2 text-gray-400">
