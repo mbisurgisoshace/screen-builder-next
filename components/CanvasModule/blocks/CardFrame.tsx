@@ -201,7 +201,7 @@ export const CardFrame: React.FC<CardFrame> = (props) => {
       <div className="w-fullbg-white border-1 border-[#B4B9C9] rounded-xl flex flex-col overflow-hidden shadow-[0px_4px_33.3px_0px_rgba(30,39,143,0.2)]" onClick={onClick}>
         {/* Header */}
         <div
-          className={`px-3 py-2 font-semibold text-[14px] flex items-center justify-between`}
+          className={`px-3 py-2 font-semibold text-[14px] flex items-start justify-between break-words whitespace-normal`}
           style={{ backgroundColor: headerBg, color: headerTextColor }}
         >
           {header}

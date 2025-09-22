@@ -87,7 +87,7 @@ export const Interview: React.FC<InterviewProps> = (props) => {
     >
       <div className="w-full h-full bg-white border-2 border-white rounded-xl shadow flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-3 py-2 bg-gradient-to-r from-indigo-200 to-indigo-100 text-[#6376F2] font-semibold flex items-center justify-between">
+        <div className="px-3 py-2 bg-gradient-to-r from-indigo-200 to-indigo-100 text-[#6376F2] font-semibold flex items-start justify-between break-words whitespace-normal">
           <span>Interview</span>
           <span className="text-[#111827] text-[11px] font-medium opacity-50">
             Jul 18, 2025
@@ -131,7 +131,11 @@ export const Interview: React.FC<InterviewProps> = (props) => {
             onMouseDown={(e) => e.stopPropagation()}
           >
             <RteEditor
-              onBlur={() => setShowToolbar(false)}
+              onBlur={() => {
+                setShowToolbar(false);
+                const raw = convertToRaw(editorState.getCurrentContent());
+                commit({ draftRaw: JSON.stringify(raw) });
+              }}
               onFocus={() => setShowToolbar(true)}
               editorState={editorState}
               onEditorStateChange={setEditorState}

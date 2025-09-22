@@ -119,7 +119,11 @@ export const Interview: React.FC<InterviewProps> = (props) => {
             onMouseDown={(e) => e.stopPropagation()}
           >
             <RteEditor
-              onBlur={() => setShowToolbar(false)}
+              onBlur={() => {
+                setShowToolbar(false);
+                const raw = convertToRaw(editorState.getCurrentContent());
+                commit({ draftRaw: JSON.stringify(raw) });
+              }}
               onFocus={() => setShowToolbar(true)}
               editorState={editorState}
               onEditorStateChange={setEditorState}

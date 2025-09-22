@@ -37,6 +37,16 @@ const RteEditor = dynamic(
 export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
   props
 ) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  useEffect(() => {
+    if (textareaRef.current) {
+      const target = textareaRef.current;
+      target.style.height = 'auto';
+      target.style.height = target.scrollHeight + 'px';
+    }
+  }, [props.shape.cardTitle]);
+  
   const questions = [
     {
       id: "gain_creators_question_1",
@@ -196,6 +206,7 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
         <div className="p-6 pt-0">
           <div className="mb-4">
             <textarea
+              ref={textareaRef}
               placeholder={"Type Market Segment here.."}
               className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%] resize-none overflow-hidden"
               defaultValue={shape.cardTitle || ""}
@@ -205,7 +216,6 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
                 }
               }}
               onMouseDown={(e) => e.stopPropagation()}
-              rows={1}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
                 target.style.height = 'auto';
@@ -267,6 +277,9 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
                   if (!hasText) {
                     setEditorState(EditorState.createEmpty());
                     commit({ draftRaw: undefined });
+                  } else {
+                    const raw = convertToRaw(contentState);
+                    commit({ draftRaw: JSON.stringify(raw) });
                   }
                 }}
                 onFocus={() => {

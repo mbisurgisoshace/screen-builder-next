@@ -161,7 +161,11 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
               onMouseDown={(e) => e.stopPropagation()}
             >
               <RteEditor
-                onBlur={() => setShowToolbar(false)}
+                onBlur={() => {
+                  setShowToolbar(false);
+                  const raw = convertToRaw(editorState.getCurrentContent());
+                  commit({ draftRaw: JSON.stringify(raw) });
+                }}
                 onFocus={() => setShowToolbar(true)}
                 editorState={editorState}
                 onEditorStateChange={setEditorState}
