@@ -7,7 +7,7 @@ export default function EcosystemMapExamples() {
       <div className="h-full">
         <Room roomId={`example-ecosystem-map`}>
           <InfiniteCanvas
-            editable={true}
+            editable={false}
             toolbarOptions={{
               text: true,
               table: false,
