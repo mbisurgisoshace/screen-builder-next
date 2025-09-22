@@ -373,8 +373,8 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
             >
               <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
                 {collapsed
-                  ? `Meta questions (${fiQuestions.length})`
-                  : `Meta questions (${fiQuestions.length})`}
+                  ? `Meta questions (${fiQuestions.length+1})`
+                  : `Meta questions (${fiQuestions.length+1})`}
                 <ChevronDown
                   className={`w-4 h-4 transition-transform text-[#80889D] ${
                     collapsed ? "-rotate-90" : "rotate-0"

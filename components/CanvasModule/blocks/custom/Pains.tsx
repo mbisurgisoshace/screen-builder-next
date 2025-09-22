@@ -43,7 +43,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
     {
       id: "pains_question_1",
       card_type: "card",
-      question: "(1) What sort of Pain is this?",
+      question: "(2) What sort of Pain is this?",
       question_options: [
         "Functional (solution doesn't work or work well enough, or has negative side effects; for eg: laptop crashes or delivery takes too much time)",
         "Social (look bad doing it; for eg: low score on a test/exam)",
@@ -59,14 +59,14 @@ export const Pains: React.FC<PainsProps> = (props) => {
       id: "pains_question_2",
       card_type: "card",
       question:
-        "(2) What sort of emotions does the stakeholder feel when they experience this Pain?",
+        "(3) What sort of emotions does the stakeholder feel when they experience this Pain?",
       question_type: "text-area",
     },
     {
       id: "pains_question_3",
       card_type: "card",
       question:
-        "(3) On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Pain to the stakeholder?",
+        "(4) On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Pain to the stakeholder?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "slider",
     },
@@ -385,8 +385,8 @@ export const Pains: React.FC<PainsProps> = (props) => {
             >
               <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
                 {collapsed
-                  ? `Meta questions (${fiQuestions.length})`
-                  : `Meta questions (${fiQuestions.length})`}
+                  ? `Meta questions (${fiQuestions.length+1})`
+                  : `Meta questions (${fiQuestions.length+1})`}
                 <ChevronDown
                   className={`w-4 h-4 transition-transform text-[#80889D] ${
                     collapsed ? "-rotate-90" : "rotate-0"

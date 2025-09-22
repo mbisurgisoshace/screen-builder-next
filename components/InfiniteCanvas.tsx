@@ -114,7 +114,7 @@ export default function InfiniteCanvas({
 
   const isAnalysisCanvas = pathname.includes("/analysis");
   const isQuestionsCanvas = pathname.includes("/questions");
-  const isMarketSegmentsCanvas = pathname.includes("segments");
+  const isMarketSegmentsCanvas = pathname.includes("/segments");
   const isValuePropCanvas = pathname.includes("/value-proposition");
 
   const [problems, setProblems] = useState(true);
