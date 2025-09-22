@@ -115,7 +115,8 @@ export const Gains: React.FC<GainsProps> = (props) => {
 
   // Collapsed state: default closed only if already complete;
   // afterwards, user can toggle freely (no auto-collapse).
-  const [collapsed, setCollapsed] = useState<boolean>(allAnswered);
+  // const [collapsed, setCollapsed] = useState<boolean>(allAnswered);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
 
   const userToggledRef = useRef(false);
   useEffect(() => {
@@ -407,9 +408,9 @@ export const Gains: React.FC<GainsProps> = (props) => {
                 className="mt-4 p-4 rounded-lg  bg-[#FFE5D6]"
               >
                 <h3 className="font-semibold text-sm text-gray-800 mb-3">
-                  (1) Please pick from the Segments you've added. If you have not
-                  added any on the Segments canvas yet, they will show up here
-                  as empty for now.
+                  (1) Please pick from the Segments you've added. If you have
+                  not added any on the Segments canvas yet, they will show up
+                  here as empty for now.
                 </h3>
 
                 {firtQuestionsOrder.map(({ key, label }) => {

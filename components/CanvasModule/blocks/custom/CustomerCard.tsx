@@ -82,7 +82,8 @@ export const Customer: React.FC<CustomerProps> = (props) => {
 
   // Collapsed state: default closed only if already complete;
   // afterwards, user can toggle freely (no auto-collapse).
-  const [collapsed, setCollapsed] = useState<boolean>(allAnswered);
+  // const [collapsed, setCollapsed] = useState<boolean>(allAnswered);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
 
   const userToggledRef = useRef(false);
   useEffect(() => {
