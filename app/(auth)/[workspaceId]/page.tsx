@@ -33,7 +33,7 @@ export default async function RoomPage({
         <UserButton />
       </div> */}
       <div className="h-full">
-        <QuestionsProvider questions={questions}>
+        <QuestionsProvider questions={questions} segments={[]}>
           <WorkspaceTabsView
             workspaceId={workspaceId}
             rooms={workspace?.WorkspaceRoom || []}
