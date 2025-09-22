@@ -7,7 +7,7 @@ export default function LaptopExamplePage() {
       <div className="h-full">
         <Room roomId={`example-laptop`}>
           <InfiniteCanvas
-            editable={true}
+            editable={false}
             toolbarOptions={{
               text: true,
               table: false,
