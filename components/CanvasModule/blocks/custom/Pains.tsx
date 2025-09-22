@@ -114,7 +114,7 @@ export const Pains: React.FC<PainsProps> = (props) => {
   useEffect(() => {
     // If data loads after mount and user hasn't toggled yet,
     // sync the initial state once.
-    if (!userToggledRef.current) setCollapsed(allAnswered);
+    //if (!userToggledRef.current) setCollapsed(allAnswered);
   }, [allAnswered]);
 
   const questionsRef = useRef<HTMLDivElement | null>(null);

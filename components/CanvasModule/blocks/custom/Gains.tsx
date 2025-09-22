@@ -118,7 +118,7 @@ export const Gains: React.FC<GainsProps> = (props) => {
   useEffect(() => {
     // If data loads after mount and user hasn't toggled yet,
     // sync the initial state once.
-    if (!userToggledRef.current) setCollapsed(allAnswered);
+    //if (!userToggledRef.current) setCollapsed(allAnswered);
   }, [allAnswered]);
 
   const questionsRef = useRef<HTMLDivElement | null>(null);
