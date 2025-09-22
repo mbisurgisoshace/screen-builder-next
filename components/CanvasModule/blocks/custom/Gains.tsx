@@ -290,9 +290,9 @@ export const Gains: React.FC<GainsProps> = (props) => {
                   },
                   list: { options: ["unordered", "ordered"] },
                 }}
-                toolbarHidden={!showToolbar}
+                //toolbarHidden={!showToolbar}
                 toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
-                  editingBody ? "bg-white" : "bg-transparent"
+                  editingBody ? "bg-white" : "bg-transparent opacity-0"
                 }`}
                 editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
                   editingBody ? "bg-[#FFE5D6] rounded" : "bg-transparent"

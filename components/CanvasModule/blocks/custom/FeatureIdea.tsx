@@ -114,14 +114,14 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
   const [showToolbarFeature, setShowToolbarFeature] = useState(false);
   const [showToolbarWhyFeature, setShowToolbarWhyFeature] = useState(false);
 
-
   const handleCardClick = (e: React.MouseEvent) => {
     if (editingBody) {
       const target = e.target as HTMLElement;
-      const isEditorClick = target.closest('.rdw-editor-wrapper') || 
-                           target.closest('.rdw-editor-toolbar') ||
-                           target.closest('button[class*="text-purple"]');
-      
+      const isEditorClick =
+        target.closest(".rdw-editor-wrapper") ||
+        target.closest(".rdw-editor-toolbar") ||
+        target.closest('button[class*="text-purple"]');
+
       if (!isEditorClick) {
         setEditingBody(false);
         setShowToolbarFeature(false);
@@ -130,7 +130,10 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
     }
   };
 
-  const editorText = featureIdeaEditorState.getCurrentContent().getPlainText().trim();
+  const editorText = featureIdeaEditorState
+    .getCurrentContent()
+    .getPlainText()
+    .trim();
   const hasContent =
     (shape.draftRaw && editorText.length > 0) ||
     (!shape.draftRaw && editorText.length > 0);
@@ -233,7 +236,7 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                       placeholder="Add more details..."
                     />
                   ) : (
-                    <div 
+                    <div
                       className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
                       onClick={() => {
                         setEditingBody(true);
@@ -299,25 +302,29 @@ export const FeatureIdea: React.FC<FeatureIdeaProps> = (props) => {
                         },
                         list: { options: ["unordered", "ordered"] },
                       }}
-                      toolbarHidden={!showToolbarWhyFeature}
+                      //toolbarHidden={!showToolbarWhyFeature}
                       toolbarClassName={`border-b px-2 text-[14px] ${
                         editingBody ? "bg-white" : "bg-transparent"
                       }`}
                       editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${
-                        editingBody ? "bg-white rounded" : "bg-transparent"
+                        editingBody
+                          ? "bg-white rounded"
+                          : "bg-transparent opacity-0"
                       } placeholder:text-gray-500 `}
                       wrapperClassName=""
                       placeholder="Add more details..."
                     />
                   ) : (
-                    <div 
+                    <div
                       className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
                       onClick={() => {
                         setEditingBody(true);
                         setShowToolbarWhyFeature(true);
                       }}
                     >
-                      {featureIdeaEditorState.getCurrentContent().getPlainText()}
+                      {featureIdeaEditorState
+                        .getCurrentContent()
+                        .getPlainText()}
                     </div>
                   )}
                 </div>

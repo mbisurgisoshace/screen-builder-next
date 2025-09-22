@@ -288,9 +288,9 @@ export const Pains: React.FC<PainsProps> = (props) => {
                   },
                   list: { options: ["unordered", "ordered"] },
                 }}
-                toolbarHidden={!showToolbar}
+                //toolbarHidden={!showToolbar}
                 toolbarClassName={`border-b px-2 text-[14px] ${
-                  editingBody ? "bg-white" : "bg-transparent"
+                  editingBody ? "bg-white" : "bg-transparent opacity-0"
                 }`}
                 editorClassName={`px-2 py-2 min-h-[120px] text-[14px] ${
                   editingBody ? "bg-[#FFE0E0] rounded" : "bg-transparent"

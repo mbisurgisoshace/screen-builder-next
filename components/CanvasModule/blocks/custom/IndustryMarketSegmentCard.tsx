@@ -38,15 +38,15 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
   props
 ) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+
   useEffect(() => {
     if (textareaRef.current) {
       const target = textareaRef.current;
-      target.style.height = 'auto';
-      target.style.height = target.scrollHeight + 'px';
+      target.style.height = "auto";
+      target.style.height = target.scrollHeight + "px";
     }
   }, [props.shape.cardTitle]);
-  
+
   const questions = [
     {
       id: "gain_creators_question_1",
@@ -143,7 +143,7 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
         const raw = JSON.parse(shape.draftRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
-    } catch { }
+    } catch {}
     return EditorState.createEmpty();
   }, []);
 
@@ -175,14 +175,14 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
     return () => clearTimeout(t);
   }, [editorState, editingBody]);
 
- 
   const handleCardClick = (e: React.MouseEvent) => {
     if (editingBody) {
       const target = e.target as HTMLElement;
-      const isEditorClick = target.closest('.rdw-editor-wrapper') || 
-                           target.closest('.rdw-editor-toolbar') ||
-                           target.closest('button[class*="text-purple"]');
-      
+      const isEditorClick =
+        target.closest(".rdw-editor-wrapper") ||
+        target.closest(".rdw-editor-toolbar") ||
+        target.closest('button[class*="text-purple"]');
+
       if (!isEditorClick) {
         setEditingBody(false);
         setShowToolbar(false);
@@ -218,12 +218,12 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
               onMouseDown={(e) => e.stopPropagation()}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
-                target.style.height = 'auto';
-                target.style.height = target.scrollHeight + 'px';
+                target.style.height = "auto";
+                target.style.height = target.scrollHeight + "px";
               }}
             />
           </div>
-        {/* <div className="flex flex-row gap-2 p-2">
+          {/* <div className="flex flex-row gap-2 p-2">
           <span>Significance Score:</span>
           {tags.map((t) => (
             <button
@@ -295,9 +295,9 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
                   },
                   list: { options: ["unordered", "ordered"] },
                 }}
-                toolbarHidden={!showToolbar}
+                //toolbarHidden={!showToolbar}
                 toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
-                  editingBody ? "bg-white" : "bg-transparent"
+                  editingBody ? "bg-white" : "bg-transparent opacity-0"
                 }`}
                 editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
                   editingBody ? "bg-[#DAFAFE] rounded" : "bg-transparent"
@@ -306,7 +306,7 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
                 placeholder="Type your text here..."
               />
             ) : (
-              <div 
+              <div
                 className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
                 onClick={() => {
                   setEditingBody(true);
