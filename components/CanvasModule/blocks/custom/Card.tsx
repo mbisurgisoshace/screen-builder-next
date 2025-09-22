@@ -169,8 +169,11 @@ export const Card: React.FC<CardProps> = (props) => {
   const getColor = () => {
     switch (subtype) {
       case "industry_market_segment_card":
+        return "#C2F7FD"
       case "customer_card":
+        return "#C0E7FF"
       case "end_user_card":
+        return "#CECFFF"
       case "jobs_to_be_done_card":
         return "#FDE1B5";
       case "pains_card":

@@ -189,7 +189,7 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
   return (
     <div className="flex-1 overflow-auto">
       <div
-        className="shadow-lg bg-[#FDE1B5]"
+        className="shadow-lg bg-[#C2F7FD]"
         onMouseDown={(e) => e.stopPropagation()}
         onClick={handleCardClick}
       >

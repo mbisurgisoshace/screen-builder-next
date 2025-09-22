@@ -16,19 +16,18 @@ export default function AppHeader() {
 
     if (pathname === "/") title = "To-do's";
     if (pathname === "/startups") title = "Startups";
-    if (pathname.includes("/analysis")) title = "Analysis";
-    if (pathname.includes("/questions")) title = "Questions";
-    if (pathname.includes("/participants")) title = "Participants";
-    if (pathname.includes("/segments")) title = "Market Segments";
+    if (pathname.includes("/analysis")) title = "Interview Response Analysis";
+    if (pathname.includes("/questions")) title = "Interview Questions";
+    if (pathname.includes("/participants")) title = "Interview Participants";
+    if (pathname.includes("/segments")) title = "Market/Customer/End-User Segments";
     if (pathname.includes("/progress")) title = "Progress snapshot";
     if (pathname.includes("/ecosystem-map")) title = "Ecosystem Map";
     if (pathname.includes("/idea-brainstorm")) title = "Idea Brainstorm";
-    if (pathname.includes("/value-proposition")) title = "Value proposition";
+    if (pathname.includes("/value-proposition")) title = "Value Proposition";
     if (pathname.includes("/customer-discovery")) title = "Customer Discovery";
     if (pathname.includes("/common-vocabulary")) title = "Common Vocabulary";
-    if (pathname.includes("/examples/laptop")) title = "Laptop Example";
-    if (pathname.includes("/examples/pickup-truck"))
-      title = "Pickup Truck Example";
+    if (pathname.includes("/examples/laptop")) title = "Laptop Value Prop Example";
+    if (pathname.includes("/examples/pickup-truck")) title = "Pickup Truck Value Prop Example";
 
     if (pathname.includes("/participants/")) {
       const participantId = pathname.split("/participants/")[1];

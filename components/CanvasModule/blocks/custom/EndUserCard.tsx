@@ -184,7 +184,7 @@ export const EndUser: React.FC<EndUserProps> = (props) => {
   return (
     <div className="flex-1 overflow-auto">
       <div
-        className="shadow-lg bg-[#FDE1B5]"
+        className="shadow-lg bg-[#CECFFF]"
         onMouseDown={(e) => e.stopPropagation()}
         onClick={handleCardClick}
       >
