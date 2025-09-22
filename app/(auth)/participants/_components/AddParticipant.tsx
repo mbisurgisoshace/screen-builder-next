@@ -58,6 +58,9 @@ export default function AddParticipant({
       return text;
     });
 
+  console.log("marketSegments", marketSegments);
+  console.log("marketSegmentOptions", marketSegmentOptions);
+
   const form = useForm<z.infer<typeof participantFormSchema>>({
     resolver: zodResolver(participantFormSchema),
     defaultValues: {
@@ -74,7 +77,9 @@ export default function AddParticipant({
   });
 
   async function onSubmit(values: z.infer<typeof participantFormSchema>) {
-    await createParticipant(values);
+    console.log("submitting", values);
+
+    //await createParticipant(values);
     form.reset();
   }
 
@@ -118,10 +123,7 @@ export default function AddParticipant({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select a role" />
@@ -133,18 +135,10 @@ export default function AddParticipant({
                         <SelectItem value="Both Customer & End-User">
                           Both Customer & End-User
                         </SelectItem>
-                        <SelectItem value="Payer">
-                         Payer
-                        </SelectItem>
-                        <SelectItem value="Influencer">
-                         Influencer
-                        </SelectItem>
-                        <SelectItem value="Recommender">
-                         Recommender
-                        </SelectItem>
-                        <SelectItem value="Saboteur">
-                         Saboteur
-                        </SelectItem>
+                        <SelectItem value="Payer">Payer</SelectItem>
+                        <SelectItem value="Influencer">Influencer</SelectItem>
+                        <SelectItem value="Recommender">Recommender</SelectItem>
+                        <SelectItem value="Saboteur">Saboteur</SelectItem>
                         <SelectItem value="Additional Decision Maker">
                           Additional Decision Maker
                         </SelectItem>
@@ -164,21 +158,24 @@ export default function AddParticipant({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Market Segment</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select a market segment" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {marketSegmentOptions?.filter( (segment: string)=>segment.trim.length>0 ).map((segment: string) => (
-                          <SelectItem key={segment} value={segment}>
-                            {segment}
-                          </SelectItem>
-                        ))}
+                        {marketSegmentOptions
+                          ?.filter(
+                            (segment: string) => segment.trim().length > 0
+                          )
+                          .map((segment: string) => {
+                            return (
+                              <SelectItem key={segment} value={segment}>
+                                {segment}
+                              </SelectItem>
+                            );
+                          })}
                       </SelectContent>
                     </Select>
                     <FormMessage />

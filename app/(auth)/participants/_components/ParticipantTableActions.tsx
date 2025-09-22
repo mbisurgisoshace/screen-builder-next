@@ -118,7 +118,7 @@ export default function ParticipantTableActions({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem>
-            <SheetTrigger>Edit</SheetTrigger>
+            <SheetTrigger className="w-full text-left">Edit</SheetTrigger>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={markAsComplete}>
             Mark as Complete
@@ -162,10 +162,7 @@ export default function ParticipantTableActions({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select a role" />
@@ -177,18 +174,10 @@ export default function ParticipantTableActions({
                         <SelectItem value="Both Customer & End-User">
                           Both Customer & End-User
                         </SelectItem>
-                        <SelectItem value="Payer">
-                         Payer
-                        </SelectItem>
-                        <SelectItem value="Influencer">
-                         Influencer
-                        </SelectItem>
-                        <SelectItem value="Recommender">
-                         Recommender
-                        </SelectItem>
-                        <SelectItem value="Saboteur">
-                         Saboteur
-                        </SelectItem>
+                        <SelectItem value="Payer">Payer</SelectItem>
+                        <SelectItem value="Influencer">Influencer</SelectItem>
+                        <SelectItem value="Recommender">Recommender</SelectItem>
+                        <SelectItem value="Saboteur">Saboteur</SelectItem>
                         <SelectItem value="Additional Decision Maker">
                           Additional Decision Maker
                         </SelectItem>
@@ -208,21 +197,22 @@ export default function ParticipantTableActions({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Market Segment</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select a market segment" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {marketSegments?.filter( (segment: string)=>segment.trim.length>0 ).map((segment: string) => (
-                          <SelectItem key={segment} value={segment}>
-                            {segment}
-                          </SelectItem>
-                        ))}
+                        {marketSegments
+                          ?.filter(
+                            (segment: string) => segment.trim().length > 0
+                          )
+                          .map((segment: string) => (
+                            <SelectItem key={segment} value={segment}>
+                              {segment}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
