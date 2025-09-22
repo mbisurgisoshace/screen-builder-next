@@ -386,7 +386,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
           >
             <div className="mb-4 ">
               <h3 className="font-semibold text-sm text-gray-800 mb-3">
-                Why do you want to ask this question?
+                (1) Why do you want to ask this question?
               </h3>
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3">
@@ -427,7 +427,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
             <div className="border-t border-gray-300 my-4" />
 
             <h3 className="font-semibold text-sm text-gray-800 mb-3">
-              If relevant, please pick from your Value Proposition assumptions.
+              (2) If relevant, please pick from your Value Proposition assumptions.
               If you have not added any on the Value Prop canvas yet, they will
               show up here as empty for now.
             </h3>
