@@ -40,10 +40,13 @@ export const Pains: React.FC<PainsProps> = (props) => {
       card_type: "card",
       question: "What sort of Pain is this?",
       question_options: [
-        "Takes too much time",
-        "Costs too much money",
-        "Requires substantial efforts",
-        "Makes them feel a negative emotion",
+        "Functional (solution doesn't work or work well enough, or has negative side effects; for eg: laptop crashes or delivery takes too much time)",
+        "Social (look bad doing it; for eg: low score on a test/exam)",
+        "Emotional (feel bad doing it; for eg: ordering late night fast food)",
+        "Ancillary (side activity to the main Job; for eg: driving 3 miles to get a blood test)",
+        "Other undesired characteristics (for eg: don't like the design or workplace training is boring)",
+        "Obstacles (requires substantial efforts to start or continue; for eg: can't afford to buy a car)",
+        "Potential Future Risk (for eg: lose client if we don't deliver on time)",
       ],
       question_type: "dropdown",
     },
@@ -56,13 +59,6 @@ export const Pains: React.FC<PainsProps> = (props) => {
     },
     {
       id: "pains_question_3",
-      card_type: "card",
-      question:
-        "What are the negative risks/consequences when the stakeholder experiences this Pain?",
-      question_type: "text-area",
-    },
-    {
-      id: "pains_question_4",
       card_type: "card",
       question:
         "On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Pain to the stakeholder?",

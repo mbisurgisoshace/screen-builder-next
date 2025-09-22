@@ -40,7 +40,12 @@ export const Gains: React.FC<GainsProps> = (props) => {
       card_type: "card",
       question:
         "What sort of Gain is it?",
-      question_options: ["Required (basic expectation without which the solution wouldn't work)", "Expected (common expectation set by current competitor solutions)", "Desired (great to have)", "Unexpected (goes beyond stakeholder expectations and desires)"],
+      question_options: [
+        "Required (basic expectation without which the solution wouldn't work; for eg: login to work timesheet app)", 
+        "Expected (common expectation set by current competitor solutions; for eg: app is desktop + mobile friendly)", 
+        "Desired (great to have; for eg: app reminds me 1hr before my shift)", 
+        "Unexpected (goes beyond stakeholder expectations and desires; for eg: app calculates daily my share of tips)"
+      ],
       question_type: "dropdown",
     },
     {

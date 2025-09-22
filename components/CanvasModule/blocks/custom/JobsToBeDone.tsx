@@ -39,7 +39,7 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
       id: "jobs_to_be_done_question_1",
       card_type: "card",
       question:
-        "Why does the stakeholder (Customer, End-User, etc) want this Job done?",
+        "Why does the stakeholder (Customer, End-User, etc) want this Job done? What is their motivation?",
       //question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
       question_type: "text-area",
     },
@@ -54,13 +54,6 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
         "Consumption (like learning, installing, using, maintaining the product)",
       ],
       question_type: "dropdown",
-    },
-    {
-      id: "jobs_to_be_done_question_3",
-      card_type: "card",
-      question:
-        "What are some barriers preventing the stakeholder from getting this Job done?",
-      question_type: "text-area",
     },
     {
       id: "jobs_to_be_done_question_4",
