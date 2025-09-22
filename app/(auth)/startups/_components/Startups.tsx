@@ -23,14 +23,14 @@ export default function Startups() {
     for (let i = 0; i < startups.length; i++) {
       const startup = startups[i];
       const memberships = await startup.getMemberships();
+
       const founders = memberships.data.filter(
-        (membership) => membership.role === "org:founder"
+        (membership) =>
+          membership.role === "org:founder" || membership.role === "org:member"
       );
       const mentors = memberships.data.filter(
         (membership) => membership.role === "org:mentor"
       );
-
-      console.log("startup", startup.publicMetadata.lead_instructor);
 
       data.push({
         org_id: startup.id,
