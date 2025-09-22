@@ -51,6 +51,10 @@ export async function generateAnalysisRoom(roomId: string) {
 
   for (const participant of participants) {
     const participantRoomId = participant.ParticipantRoom?.roomId!;
+    await liveblocks.getOrCreateRoom(participantRoomId, {
+      defaultAccesses: [],
+    });
+
     const participantStorage: any = await liveblocks.getStorageDocument(
       participantRoomId
     );

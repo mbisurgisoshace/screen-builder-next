@@ -138,7 +138,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
   return (
     <ShapeFrame
       {...props}
-      resizable={true}
+      resizable={false}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div className="w-full h-full bg-[#DDE1F2] border border-[#B4B9C9] rounded-lg shadow-lg flex flex-row overflow-hidden">
@@ -177,8 +177,12 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                   list: { options: ["unordered", "ordered"] },
                 }}
                 toolbarHidden={!showToolbar}
-                toolbarClassName={`border-b px-2 ${editingBody ? 'bg-white' : 'bg-transparent'}`}
-                editorClassName={`px-2 py-2 min-h-[120px] ${editingBody ? 'bg-white rounded' : 'bg-transparent'}`}
+                toolbarClassName={`border-b px-2 ${
+                  editingBody ? "bg-white" : "bg-transparent"
+                }`}
+                editorClassName={`px-2 py-2 min-h-[120px] ${
+                  editingBody ? "bg-white rounded" : "bg-transparent"
+                }`}
                 wrapperClassName=""
               />
             </div>
