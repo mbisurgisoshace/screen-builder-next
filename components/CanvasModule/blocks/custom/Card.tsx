@@ -49,6 +49,8 @@ import { IndustryMarketSegment } from "./IndustryMarketSegmentCard";
 import { Customer } from "./CustomerCard";
 import { EndUser } from "./EndUserCard";
 import { ExampleBrainstormCard } from "./ExampleBrainstormCard";
+import { ExampleCustomerCard } from "./ExampleCustomerCard";
+import { ExampleIndustryMarketSegment } from "./ExampleIndustryMarketSegmentCard";
 
 type CardProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -94,6 +96,10 @@ export const Card: React.FC<CardProps> = (props) => {
         return "Summary";
       case "select_subtype":
         return "Select Card Type";
+      case "example_customer_card":
+        return "Example Customer Card";
+      case "example_industry_market_segment_card":
+        return "Example Industry/Market Segment Card";
       case "example_brainstorm_card":
         return "Example Brainstorm Card";
       default:
@@ -123,6 +129,10 @@ export const Card: React.FC<CardProps> = (props) => {
         return <GainCreators {...props} />;
       case "summary_card":
         return <Summary {...props} />;
+      case "example_customer_card":
+        return <ExampleCustomerCard {...props} />;
+      case "example_industry_market_segment_card":
+        return <ExampleIndustryMarketSegment {...props} />;
       case "example_brainstorm_card":
         return <ExampleBrainstormCard {...props} />;
       case "select_subtype":
@@ -160,6 +170,8 @@ export const Card: React.FC<CardProps> = (props) => {
       case "select_subtype":
         return false;
       case "example_brainstorm_card":
+      case "example_customer_card":
+      case "example_industry_market_segment_card":
         return false;
       default:
         return true;
@@ -168,12 +180,14 @@ export const Card: React.FC<CardProps> = (props) => {
 
   const getColor = () => {
     switch (subtype) {
+      case "example_industry_market_segment_card":
       case "industry_market_segment_card":
-        return "#C2F7FD"
+        return "#C2F7FD";
+      case "example_customer_card":
       case "customer_card":
-        return "#C0E7FF"
+        return "#C0E7FF";
       case "end_user_card":
-        return "#CECFFF"
+        return "#CECFFF";
       case "jobs_to_be_done_card":
         return "#FDE1B5";
       case "pains_card":
@@ -449,7 +463,6 @@ export const Card: React.FC<CardProps> = (props) => {
         </>
       );
     }
-
   };
 
   return (

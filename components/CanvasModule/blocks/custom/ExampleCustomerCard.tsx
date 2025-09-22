@@ -20,7 +20,7 @@ import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useQuestions } from "../../questions/QuestionsProvider";
 import { CardFrame } from "../CardFrame";
 
-type GainCreatorsProps = Omit<ShapeFrameProps, "children" | "shape"> & {
+type CustomerProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
   onCommitStyle?: (id: string, patch: Partial<IShape>) => void;
 };
@@ -31,7 +31,7 @@ const RteEditor = dynamic(
   { ssr: false }
 );
 
-export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
+export const ExampleCustomerCard: React.FC<CustomerProps> = (props) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -44,12 +44,11 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
 
   const questions = [
     {
-      id: "gain_creators_question_4",
+      id: "gain_creators_question_1",
       card_type: "card",
       question:
-        "On a scale of 1-10, 10 being highest, in your opinion what is the significance of this Gain to the customer/user?",
+        "On a scale of 1-10, 10 being highest, in your opinion what is the significance of this to the customer/user?",
       question_options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-      question_type: "slider",
     },
   ];
   const { shape, onCommitStyle } = props;
@@ -196,7 +195,7 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
   return (
     <div className="flex-1 overflow-auto">
       <div
-        className="shadow-lg bg-[#D5F9D7]"
+        className="shadow-lg bg-[#C0E7FF]"
         onMouseDown={(e) => e.stopPropagation()}
         onClick={handleCardClick}
       >
@@ -204,7 +203,7 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
           <div className="mb-4">
             <textarea
               ref={textareaRef}
-              placeholder={"Type Gain Creator here.."}
+              placeholder={"Type Customer Segment here.."}
               className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%] resize-none overflow-hidden"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
@@ -220,70 +219,90 @@ export const GainCreators: React.FC<GainCreatorsProps> = (props) => {
               }}
             />
           </div>
-          {isEmpty ? (
-            <div className="flex items-center">
-              <button
-                onClick={() => {
-                  setEditingBody(true);
-                  setShowToolbar(true);
-                }}
-                className="text-black-600 underline hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
+          {/* <div className="flex flex-row gap-2 p-2">
+          <span>Significance Score:</span>
+          {tags.map((t) => (
+            <button
+              key={t}
+              title="Remove"
+              data-nodrag="true"
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                //removeTag(t);
+              }}
+              className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200"
+            >
+              {t}
+              <svg
+                className="w-3 h-3 opacity-70"
+                viewBox="0 0 20 20"
+                fill="currentColor"
               >
-                + add more details
-              </button>
-            </div>
-          ) : (
-            <RteEditor
-              onBlur={() => {
-                setShowToolbar(false);
-                setEditingBody(false);
-                const contentState = editorState.getCurrentContent();
-                const hasText = contentState.hasText();
-                if (!hasText) {
-                  setEditorState(EditorState.createEmpty());
-                  commit({ draftRaw: undefined });
-                } else {
-                  const raw = convertToRaw(contentState);
-                  commit({ draftRaw: JSON.stringify(raw) });
-                }
-              }}
-              onFocus={() => {
-                setShowToolbar(true);
-                setEditingBody(true);
-              }}
-              editorState={editorState}
-              onEditorStateChange={setEditorState}
-              toolbar={{
-                options: ["inline", "list", "link"],
-                inline: {
-                  options: ["bold", "italic", "underline", "strikethrough"],
-                },
-                list: { options: ["unordered", "ordered"] },
-              }}
-              //toolbarHidden={!showToolbar}
-              toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
-                editingBody ? "bg-white" : "bg-transparent opacity-0"
-              }`}
-              editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
-                editingBody ? "bg-[#E6FBE7] rounded" : "bg-transparent"
-              }`}
-              wrapperClassName="rdw-editor-wrapper"
-              placeholder="Type your text here..."
-            />
-          )}
-          {tags.length > 0 && (
-            <div className="mt-4 flex flex-row gap-2 items-center">
-              <span className="text-sm text-gray-600">Significance Score:</span>
-              {tags.map((t) => (
-                <span
-                  key={t}
-                  className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200"
+                <path
+                  d="M6 6l8 8M14 6l-8 8"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          ))}
+        </div> */}
+
+          <div className="mb-6">
+            {isEmpty ? (
+              <div className="flex items-center">
+                <button
+                  onClick={() => {
+                    setEditingBody(true);
+                    setShowToolbar(true);
+                  }}
+                  className="text-black-600 underline hover:text-purple-800 text-sm font-medium transition-colors cursor-pointer"
                 >
-                  {t}
-                </span>
-              ))}
-            </div>
-          )}
+                  + add more details
+                </button>
+              </div>
+            ) : (
+              <RteEditor
+                onBlur={() => {
+                  setShowToolbar(false);
+                  setEditingBody(false);
+                  const contentState = editorState.getCurrentContent();
+                  const hasText = contentState.hasText();
+                  if (!hasText) {
+                    setEditorState(EditorState.createEmpty());
+                    commit({ draftRaw: undefined });
+                  } else {
+                    const raw = convertToRaw(contentState);
+                    commit({ draftRaw: JSON.stringify(raw) });
+                  }
+                }}
+                onFocus={() => {
+                  setShowToolbar(true);
+                  setEditingBody(true);
+                }}
+                editorState={editorState}
+                //onEditorStateChange={setEditorState}
+                toolbar={{
+                  options: ["inline", "list", "link"],
+                  inline: {
+                    options: ["bold", "italic", "underline", "strikethrough"],
+                  },
+                  list: { options: ["unordered", "ordered"] },
+                }}
+                //toolbarHidden={!showToolbar}
+                toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+                  editingBody ? "bg-white" : "bg-transparent opacity-0"
+                }`}
+                editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+                  editingBody ? "bg-[#D9F1FF] rounded" : "bg-transparent"
+                }`}
+                wrapperClassName="rdw-editor-wrapper"
+                placeholder="Type your text here..."
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -263,7 +263,7 @@ export const Customer: React.FC<CustomerProps> = (props) => {
                   + add more details
                 </button>
               </div>
-            ) : editingBody ? (
+            ) : (
               <RteEditor
                 onBlur={() => {
                   setShowToolbar(false);
@@ -301,16 +301,6 @@ export const Customer: React.FC<CustomerProps> = (props) => {
                 wrapperClassName="rdw-editor-wrapper"
                 placeholder="Type your text here..."
               />
-            ) : (
-              <div
-                className="px-2 py-2 min-h-[120px] text-[14px] font-manrope font-medium text-[#2E3545] bg-transparent cursor-pointer"
-                onClick={() => {
-                  setEditingBody(true);
-                  setShowToolbar(true);
-                }}
-              >
-                {editorState.getCurrentContent().getPlainText()}
-              </div>
             )}
           </div>
         </div>
