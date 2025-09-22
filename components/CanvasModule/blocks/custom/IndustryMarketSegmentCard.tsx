@@ -300,7 +300,7 @@ export const IndustryMarketSegment: React.FC<IndustryMarketSegmentProps> = (
                   editingBody ? "bg-white" : "bg-transparent"
                 }`}
                 editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
-                  editingBody ? "bg-[#FEEDD3] rounded" : "bg-transparent"
+                  editingBody ? "bg-[#DAFAFE] rounded" : "bg-transparent"
                 }`}
                 wrapperClassName="rdw-editor-wrapper"
                 placeholder="Type your text here..."
