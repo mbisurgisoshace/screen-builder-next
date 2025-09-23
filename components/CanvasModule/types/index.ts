@@ -39,6 +39,9 @@ export interface Shape {
   y: number;
   id: string;
   color: string;
+  textSize?: number;
+  textColor?: string;
+  textStyle?: "normal" | "bold" | "italic";
   width: number;
   text?: string;
   height: number;
