@@ -269,7 +269,6 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
   const commitText = () => {
     if ((shape.text ?? "") !== text) onCommitStyle?.(shape.id, { text });
   };
-  console.log("shape.color", shape.color);
 
   return (
     <ShapeFrame
@@ -279,7 +278,7 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
     >
       <div
         onDoubleClick={beginEdit}
-        className={` w-full rounded shadow`}
+        className={` w-full rounded border-1 border-gray-400 shadow-[0px_4px_33.3px_0px_rgba(30,39,143,0.2)]`}
         style={{
           borderRadius: 6,
           backgroundColor: shape.color || "#EAFBE3",

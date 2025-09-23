@@ -271,7 +271,7 @@ export const Ellipse: React.FC<EllipseBlockProps> = (props) => {
     >
       <div
         onDoubleClick={beginEdit}
-        className={` w-full rounded-full shadow`}
+        className={` w-full rounded-full shadow-[0px_4px_33.3px_0px_rgba(30,39,143,0.2)] border-1 border-gray-400`}
         style={{
           backgroundColor: shape.color || "#EAFBE3",
           height: shape.height,

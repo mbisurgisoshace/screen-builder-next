@@ -259,17 +259,88 @@ export const Text: React.FC<TextBlockProps> = (props) => {
   // Prevent dragging/select/marquee while editing inside the frame
   const stopAll: React.MouseEventHandler = (e) => e.stopPropagation();
 
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [text, setText] = React.useState<string>(shape.text ?? "");
+  const taRef = React.useRef<HTMLTextAreaElement>(null);
+  const beginEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditing(true);
+    requestAnimationFrame(() => {
+      taRef.current?.focus();
+      // put caret at end
+      const el = taRef.current!;
+      const len = el.value.length;
+      el.setSelectionRange(len, len);
+    });
+  };
+
+  const commitText = () => {
+    if ((shape.text ?? "") !== text) onCommitStyle?.(shape.id, { text });
+  };
+
   return (
     <ShapeFrame
       {...props}
+      minHeight={30}
       showConnectors={props.isSelected && props.selectedCount === 1}
       resizable /* connectors for text? keep true or set false */
       onMouseDown={editing ? stopAll : props.onMouseDown}
     >
+      <div
+        onDoubleClick={beginEdit}
+        className={` w-full bg-transparent`}
+        style={{
+          //borderRadius: 6,
+          //backgroundColor: shape.color || "#EAFBE3",
+          height: shape.height,
+        }}
+      >
+        {/* View mode: centered display (no caret) */}
+        {!isEditing && (
+          <div
+            className="absolute inset-0 flex flex-row items-center justify-center p-2 text-center pointer-events-none whitespace-pre-wrap break-words flex-wrap"
+            style={{
+              color: shape.textColor || "#0f172a",
+              lineHeight: 1.25,
+              fontSize: shape.textSize || 14,
+              fontStyle: shape.textStyle,
+            }}
+          >
+            <span>{text || ""}</span>
+          </div>
+        )}
+
+        {/* Edit mode: textarea overlay (you can tweak centering) */}
+        {isEditing && (
+          <textarea
+            ref={taRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onBlur={() => {
+              commitText();
+              setIsEditing(false);
+            }}
+            data-nodrag="true"
+            onMouseDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            placeholder="Add text…"
+            className="absolute inset-0 w-full h-full bg-transparent outline-none resize-none p-2 text-sm"
+            style={{
+              // You can start centering here:
+              textAlign: "center",
+              lineHeight: 1.25,
+              color: shape.textColor || "#0f172a",
+              fontSize: shape.textSize || 14,
+              fontStyle: shape.textStyle,
+              // For vertical centering with textarea, consider measuring content height and setting paddingTop.
+            }}
+          />
+        )}
+      </div>
       {/* <div className="w-full h-full flex items-center justify-center text-black select-none">
         {shape.text ?? "Text"}
       </div> */}
-      {editing ? (
+      {/* {editing ? (
         <textarea
           ref={textareaRef}
           autoFocus
@@ -300,7 +371,7 @@ export const Text: React.FC<TextBlockProps> = (props) => {
         >
           {shape.text && shape.text.length > 0 ? shape.text : "Text"}
         </div>
-      )}
+      )} */}
     </ShapeFrame>
   );
 };
