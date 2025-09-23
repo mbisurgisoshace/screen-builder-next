@@ -10,6 +10,10 @@ export async function getRoomData(roomId: string) {
 
   if (!userId) redirect("/sign-in");
 
+  await liveblocks.getOrCreateRoom(roomId, {
+    defaultAccesses: [],
+  });
+
   const storage = await liveblocks.getStorageDocument(roomId);
 
   return storage;
@@ -72,11 +76,36 @@ export async function initializeExampleCards(
   roomId: string,
   createExamples: () => LiveList<LiveObject<any>>
 ) {
-  const roomStorage = await liveblocks.getStorageDocument(roomId);
-  console.log("Room storage data", roomStorage.data);
+  await liveblocks.getOrCreateRoom(roomId, {
+    defaultAccesses: [],
+  });
 
-  //@ts-ignore
-  const hasExample = hasExampleCards(roomStorage.data.shapes.data as any[]);
+  const roomStorage = await liveblocks.getStorageDocument(roomId);
+
+  if (Object.keys(roomStorage.data).length === 0) {
+    await liveblocks.initializeStorageDocument(roomId, {
+      liveblocksType: "LiveObject",
+      data: {
+        shapes: {
+          liveblocksType: "LiveList",
+          data: [],
+        },
+        comments: {
+          liveblocksType: "LiveList",
+          data: [],
+        },
+        connections: {
+          liveblocksType: "LiveList",
+          data: [],
+        },
+      },
+    });
+  }
+
+  const hasExample = hasExampleCards(
+    //@ts-ignore
+    (roomStorage.data?.shapes?.data as any[]) || []
+  );
 
   if (!hasExample) {
     const exampleCards = await createExamples();
