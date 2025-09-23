@@ -23,6 +23,7 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { trimTo50 } from "@/lib/utils";
 
 type PainsProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -245,16 +246,16 @@ export const Pains: React.FC<PainsProps> = (props) => {
 
   const firtQuestionsOrder = [
     {
+      key: "industry_market_segment_card",
+      label: "Industry Market Segment",
+    },
+    {
       key: "customer_card",
       label: "Customer",
     },
     {
       key: "end_user_card",
       label: "End User",
-    },
-    {
-      key: "industry_market_segment_card",
-      label: "Industry Market Segment",
     },
   ];
 
@@ -415,9 +416,13 @@ export const Pains: React.FC<PainsProps> = (props) => {
                           const editor = EditorState.createWithContent(
                             convertFromRaw(raw)
                           );
-                          const text = editor
+                          const largeText = editor
                             .getCurrentContent()
                             .getPlainText();
+
+                          const text = `${item.cardTitle} ${editor
+                            .getCurrentContent()
+                            .getPlainText()}`;
 
                           if (text.trim().length === 0) return null;
 
@@ -437,7 +442,12 @@ export const Pains: React.FC<PainsProps> = (props) => {
                                 }}
                               />
                               <Label className="text-sm text-gray-700">
-                                {text}
+                                {item.cardTitle && (
+                                  <span className="font-bold">
+                                    {item.cardTitle}
+                                  </span>
+                                )}
+                                {trimTo50(largeText)}
                               </Label>
                             </div>
                           );

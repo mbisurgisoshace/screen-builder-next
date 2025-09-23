@@ -23,6 +23,7 @@ import { CardFrame } from "../CardFrame";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { trimTo50 } from "@/lib/utils";
 
 type JobsToBeDoneProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -243,16 +244,16 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
 
   const firtQuestionsOrder = [
     {
+      key: "industry_market_segment_card",
+      label: "Industry Market Segment",
+    },
+    {
       key: "customer_card",
       label: "Customer",
     },
     {
       key: "end_user_card",
       label: "End User",
-    },
-    {
-      key: "industry_market_segment_card",
-      label: "Industry Market Segment",
     },
   ];
 
@@ -374,8 +375,8 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
             >
               <span className="flex items-center gap-2 font-manrope font-bold text-[#111827] text-[14px]">
                 {collapsed
-                  ? `Meta questions (${fiQuestions.length+1})`
-                  : `Meta questions (${fiQuestions.length+1})`}
+                  ? `Meta questions (${fiQuestions.length + 1})`
+                  : `Meta questions (${fiQuestions.length + 1})`}
                 <ChevronDown
                   className={`w-4 h-4 transition-transform text-[#80889D] ${
                     collapsed ? "-rotate-90" : "rotate-0"
@@ -413,9 +414,14 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                           const editor = EditorState.createWithContent(
                             convertFromRaw(raw)
                           );
-                          const text = editor
+
+                          const largeText = editor
                             .getCurrentContent()
                             .getPlainText();
+
+                          const text = `${item.cardTitle} ${editor
+                            .getCurrentContent()
+                            .getPlainText()}`;
 
                           if (text.trim().length === 0) return null;
 
@@ -435,7 +441,12 @@ export const JobsToBeDone: React.FC<JobsToBeDoneProps> = (props) => {
                                 }}
                               />
                               <Label className="text-sm text-gray-700">
-                                {text}
+                                {item.cardTitle && (
+                                  <span className="font-bold">
+                                    {item.cardTitle}
+                                  </span>
+                                )}
+                                {trimTo50(largeText)}
                               </Label>
                             </div>
                           );
