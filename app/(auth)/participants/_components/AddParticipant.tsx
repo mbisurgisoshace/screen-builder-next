@@ -32,7 +32,9 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
 } from "@/components/ui/select";
 import { SelectValue } from "@radix-ui/react-select";
@@ -191,7 +193,7 @@ export default function AddParticipant({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {marketSegmentOptions
+                        {/* {marketSegmentOptions
                           ?.filter(
                             (segment: string) => segment.trim().length > 0
                           )
@@ -201,7 +203,23 @@ export default function AddParticipant({
                                 {segment}
                               </SelectItem>
                             );
-                          })}
+                          })} */}
+                        {marketSegments.map((segment) => {
+                          return (
+                            <SelectGroup key={segment.title}>
+                              <SelectLabel>{segment.title}</SelectLabel>
+                              {segment.data
+                                .filter(
+                                  (s: any) => s.cardTitle?.trim().length > 0
+                                )
+                                .map((s: any) => (
+                                  <SelectItem key={s.id} value={s.cardTitle}>
+                                    {s.cardTitle}
+                                  </SelectItem>
+                                ))}
+                            </SelectGroup>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                     <FormMessage />

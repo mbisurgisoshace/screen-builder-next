@@ -20,7 +20,27 @@ export async function getSegments() {
   //@ts-ignore
   const segments = segmentsData.data?.shapes?.data
     .map((s: any) => s.data)
-    .filter((s: any) => s.subtype === "industry_market_segment_card");
+    .filter(
+      (s: any) =>
+        s.subtype === "industry_market_segment_card" ||
+        s.subtype === "customer_card" ||
+        s.subtype === "end_user_card"
+    );
 
-  return segments;
+  //@ts-ignore
+  const industryMarketSegments = segments.filter(
+    (s: any) => s.subtype === "industry_market_segment_card"
+  );
+  //@ts-ignore
+  const customers = segments.filter((s: any) => s.subtype === "customer_card");
+  //@ts-ignore
+  const endUsers = segments.filter((s: any) => s.subtype === "end_user_card");
+
+  const formattedSegmentsData = [
+    { title: "Market", data: industryMarketSegments },
+    { title: "Customer", data: customers },
+    { title: "End User", data: endUsers },
+  ];
+
+  return formattedSegmentsData;
 }

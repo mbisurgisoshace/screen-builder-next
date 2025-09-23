@@ -32,7 +32,9 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -60,7 +62,7 @@ interface ParticipantTableActionsProps {
 export default function ParticipantTableActions({
   participant,
 }: ParticipantTableActionsProps) {
-  const [marketSegments, setMarketSegments] = useState<string[]>([]);
+  const [marketSegments, setMarketSegments] = useState<any[]>([]);
 
   const getMarketSegments = async () => {
     const segments = await getSegments();
@@ -235,7 +237,7 @@ export default function ParticipantTableActions({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {marketSegments
+                        {/* {marketSegments
                           ?.filter(
                             (segment: string) => segment.trim().length > 0
                           )
@@ -243,7 +245,23 @@ export default function ParticipantTableActions({
                             <SelectItem key={segment} value={segment}>
                               {segment}
                             </SelectItem>
-                          ))}
+                          ))} */}
+                        {marketSegments.map((segment) => {
+                          return (
+                            <SelectGroup key={segment.title}>
+                              <SelectLabel>{segment.title}</SelectLabel>
+                              {segment.data
+                                .filter(
+                                  (s: any) => s.cardTitle?.trim().length > 0
+                                )
+                                .map((s: any) => (
+                                  <SelectItem key={s.id} value={s.cardTitle}>
+                                    {s.cardTitle}
+                                  </SelectItem>
+                                ))}
+                            </SelectGroup>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                     <FormMessage />
