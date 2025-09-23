@@ -20,9 +20,6 @@ export default async function ParticipantsPage() {
               Manage your interview pipeline and scheduling
             </span>
           </div>
-          {/* <Button className="rounded-full text-sm font-bold">
-            + Add Participant
-          </Button> */}
           <AddParticipant marketSegments={marketSegments} />
         </header>
 
