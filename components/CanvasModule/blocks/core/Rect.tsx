@@ -190,7 +190,10 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
               className="px-2 py-1 rounded bg-gray-200"
               onClick={(e) => {
                 e.stopPropagation();
-                onCommitStyle?.(shape.id, { textStyle: "normal" });
+                onCommitStyle?.(shape.id, {
+                  textStyle: "normal",
+                  textWeight: "normal",
+                });
               }}
             >
               N
@@ -199,7 +202,7 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
               className="px-2 py-1 rounded bg-gray-200"
               onClick={(e) => {
                 e.stopPropagation();
-                onCommitStyle?.(shape.id, { textStyle: "bold" });
+                onCommitStyle?.(shape.id, { textWeight: "bold" });
               }}
             >
               <span className="font-bold">B</span>
@@ -294,6 +297,7 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
               lineHeight: 1.25,
               fontSize: shape.textSize || 14,
               fontStyle: shape.textStyle,
+              fontWeight: shape.textWeight,
             }}
           >
             <span>{text || ""}</span>
@@ -322,6 +326,7 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
               color: shape.textColor || "#0f172a",
               fontSize: shape.textSize || 14,
               fontStyle: shape.textStyle,
+              fontWeight: shape.textWeight,
               // For vertical centering with textarea, consider measuring content height and setting paddingTop.
             }}
           />

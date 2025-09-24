@@ -40,7 +40,7 @@ export const Text: React.FC<TextBlockProps> = (props) => {
       <>
         <div ref={wrapRef} className="flex items-center gap-2">
           {/* BG */}
-          <div className="relative">
+          {/* <div className="relative">
             <button
               className="px-2 py-1 rounded bg-gray-100 border flex items-center gap-1"
               onClick={(e) => {
@@ -64,7 +64,7 @@ export const Text: React.FC<TextBlockProps> = (props) => {
                 }}
               />
             )}
-          </div>
+          </div> */}
 
           {/* Text */}
           <div className="relative">
@@ -183,7 +183,10 @@ export const Text: React.FC<TextBlockProps> = (props) => {
               className="px-2 py-1 rounded bg-gray-200"
               onClick={(e) => {
                 e.stopPropagation();
-                onCommitStyle?.(shape.id, { textStyle: "normal" });
+                onCommitStyle?.(shape.id, {
+                  textStyle: "normal",
+                  textWeight: "normal",
+                });
               }}
             >
               N
@@ -192,7 +195,7 @@ export const Text: React.FC<TextBlockProps> = (props) => {
               className="px-2 py-1 rounded bg-gray-200"
               onClick={(e) => {
                 e.stopPropagation();
-                onCommitStyle?.(shape.id, { textStyle: "bold" });
+                onCommitStyle?.(shape.id, { textWeight: "bold" });
               }}
             >
               <span className="font-bold">B</span>
@@ -304,6 +307,7 @@ export const Text: React.FC<TextBlockProps> = (props) => {
               lineHeight: 1.25,
               fontSize: shape.textSize || 14,
               fontStyle: shape.textStyle,
+              fontWeight: shape.textWeight,
             }}
           >
             <span>{text || ""}</span>
@@ -332,6 +336,7 @@ export const Text: React.FC<TextBlockProps> = (props) => {
               color: shape.textColor || "#0f172a",
               fontSize: shape.textSize || 14,
               fontStyle: shape.textStyle,
+              fontWeight: shape.textWeight,
               // For vertical centering with textarea, consider measuring content height and setting paddingTop.
             }}
           />

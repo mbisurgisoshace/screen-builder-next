@@ -41,7 +41,8 @@ export interface Shape {
   color: string;
   textSize?: number;
   textColor?: string;
-  textStyle?: "normal" | "bold" | "italic";
+  textWeight?: "normal" | "bold";
+  textStyle?: "normal" | "italic";
   width: number;
   text?: string;
   height: number;
