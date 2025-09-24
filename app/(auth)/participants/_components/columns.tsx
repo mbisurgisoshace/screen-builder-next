@@ -30,16 +30,19 @@ export const columns: ColumnDef<any>[] = [
       const role = row.getValue("role") as "user" | "customer";
 
       return (
-        <div className="capitalize">
-          <Badge
-            className={`${
-              role === "customer"
-                ? "bg-[#F4F0FF] text-[#6A35FF]"
-                : "bg-[#F4F0FF] text-[#6A35FF]"
-            } text-[10px] font-semibold h-6`}
-          >
-            {role}
-          </Badge>
+        <div className="capitalize flex flex-row gap-1">
+          {role.split(",").map((r) => (
+            <Badge
+              key={r}
+              className={`${
+                role === "customer"
+                  ? "bg-[#F4F0FF] text-[#6A35FF]"
+                  : "bg-[#F4F0FF] text-[#6A35FF]"
+              } text-[10px] font-semibold h-6`}
+            >
+              {r}
+            </Badge>
+          ))}
         </div>
       );
     },

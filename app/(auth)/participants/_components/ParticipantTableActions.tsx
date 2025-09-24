@@ -54,10 +54,23 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { getSegments } from "@/services/segments";
 import { EditorState, convertFromRaw } from "draft-js";
+import { MultiSelect } from "@/components/ui/multiselect";
 
 interface ParticipantTableActionsProps {
   participant: Participant;
 }
+
+const ROLE_OPTIONS = [
+  { value: "Customer", label: "Customer" },
+  { value: "End-User", label: "End-User" },
+  { value: "Both Customer & End-User", label: "Both Customer & End-User" },
+  { value: "Payer", label: "Payer" },
+  { value: "Influencer", label: "Influencer" },
+  { value: "Recommender", label: "Recommender" },
+  { value: "Saboteur", label: "Saboteur" },
+  { value: "Additional Decision Maker", label: "Additional Decision Maker" },
+  { value: "Additional Stakeholder", label: "Additional Stakeholder" },
+];
 
 export default function ParticipantTableActions({
   participant,
@@ -165,7 +178,7 @@ export default function ParticipantTableActions({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    {/* <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select a role" />
@@ -188,7 +201,15 @@ export default function ParticipantTableActions({
                           Additional Stakeholder
                         </SelectItem>
                       </SelectContent>
-                    </Select>
+                    </Select> */}
+                    <FormControl>
+                      <MultiSelect
+                        options={ROLE_OPTIONS}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select a role"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
