@@ -110,7 +110,7 @@ export const TagPicker: React.FC<Props> = ({ value, onChange }) => {
             className="w-full mb-2 px-2 py-1 rounded border text-sm outline-none"
           />
 
-          <div className="max-h-48 overflow-auto">
+          <div className="max-h-[450px] overflow-auto">
             {suggestions.map((t) => (
               <button
                 key={t.name}
