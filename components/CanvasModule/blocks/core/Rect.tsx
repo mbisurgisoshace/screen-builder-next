@@ -39,7 +39,7 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
   >(null);
   const wrapRef = React.useRef<HTMLDivElement>(null);
 
-  const SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36];
+  const SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 60, 80, 100, 120];
 
   useRegisterToolbarExtras(
     shape.id,
@@ -120,7 +120,7 @@ export const Rect: React.FC<RectBlockProps> = (props) => {
                 className="absolute z-50 mt-1 w-32 rounded-md border bg-white shadow-lg"
                 onClick={(e) => e.stopPropagation()} // keep dropdown open when clicking inside
               >
-                <div className="max-h-56 overflow-auto py-1">
+                <div className="max-h-[550px] overflow-auto py-1">
                   {SIZES.map((s) => (
                     <button
                       key={s}
