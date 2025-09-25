@@ -33,7 +33,7 @@ export async function initializeInterviewRoom(roomId: string) {
     `questions-${orgId}`
   );
 
-  if (Object.keys(roomStorage.data).length > 0) return;
+  console.log("roomStorage", roomStorage);
 
   const questionStorageShapes = questionStorage.data.shapes?.data || [];
   const initialInterviewStorageShapes = questionStorageShapes.map(
@@ -47,11 +47,55 @@ export async function initializeInterviewRoom(roomId: string) {
           metadata: {
             questionId: shape.data.id,
             questionDate: new Date().toDateString(),
+            questionDetails: shape.data.draftRaw,
           },
         },
       };
     }
   );
+
+  if (Object.keys(roomStorage.data).length > 0) {
+    await liveblocks.mutateStorage(roomId, ({ root }) => {
+      const questions = root.get("shapes");
+
+      questionStorageShapes.forEach((shape: any) => {
+        const index = questions.toArray().findIndex((s: any) => {
+          return s.get("metadata")?.questionId === shape.data.id;
+        });
+
+        if (index === -1) {
+          questions.push(
+            new LiveObject({
+              ...shape.data,
+              id: uuidv4(),
+              draftRaw: null,
+              metadata: {
+                questionId: shape.data.id,
+                questionDate: new Date().toDateString(),
+                questionDetails: shape.data.draftRaw,
+              },
+            })
+          );
+        } else {
+          // questions.set(
+          //   index,
+          //   new LiveObject({
+          //     ...shape.data,
+          //     id: uuidv4(),
+          //     draftRaw: null,
+          //     metadata: {
+          //       questionId: shape.data.id,
+          //       questionDate: new Date().toDateString(),
+          //       questionDetails: shape.data.draftRaw,
+          //     },
+          //   })
+          // );
+        }
+      });
+    });
+
+    return;
+  }
 
   await liveblocks.initializeStorageDocument(roomId, {
     liveblocksType: "LiveObject",

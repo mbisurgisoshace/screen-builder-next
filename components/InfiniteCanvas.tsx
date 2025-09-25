@@ -162,6 +162,8 @@ export default function InfiniteCanvas({
     liveShapesReady,
   } = useRealtimeShapes();
 
+  console.log("shapes", shapes);
+
   const {
     //shapes,
     setShapes,
