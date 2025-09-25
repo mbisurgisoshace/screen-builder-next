@@ -24,6 +24,42 @@ export const columns: ColumnDef<any>[] = [
     },
   },
   {
+    accessorKey: "scheduled_date",
+    header: "Schedule Date",
+    cell: ({ row }) => {
+      if (!row.getValue("scheduled_date"))
+        return <div className="capitalize"></div>;
+
+      const schedule_date = format(
+        row.getValue("scheduled_date"),
+        "MMM d, k:mm"
+      );
+
+      return <div className="capitalize">{schedule_date}</div>;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as "complete" | "incomplete";
+
+      return (
+        <div className="capitalize">
+          <Badge
+            className={`${
+              status === "complete"
+                ? "bg-[#D4ECDC] text-[#254F2B]"
+                : "bg-red-200 text-red-800"
+            } text-[10px] font-semibold h-6`}
+          >
+            {status}
+          </Badge>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
@@ -76,6 +112,9 @@ export const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="capitalize ">{row.getValue("blocking_issues")}</div>
     ),
+    size: 350,
+    maxSize: 350,
+    minSize: 350,
   },
   {
     accessorKey: "hypothesis_to_validate",
@@ -83,6 +122,9 @@ export const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("hypothesis_to_validate")}</div>
     ),
+    size: 350,
+    maxSize: 350,
+    minSize: 350,
   },
   {
     accessorKey: "learnings",
@@ -90,43 +132,11 @@ export const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("learnings")}</div>
     ),
+    size: 350,
+    maxSize: 350,
+    minSize: 350,
   },
-  {
-    accessorKey: "scheduled_date",
-    header: "Schedule Date",
-    cell: ({ row }) => {
-      if (!row.getValue("scheduled_date"))
-        return <div className="capitalize"></div>;
 
-      const schedule_date = format(
-        row.getValue("scheduled_date"),
-        "MMM d, k:mm"
-      );
-
-      return <div className="capitalize">{schedule_date}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as "complete" | "incomplete";
-
-      return (
-        <div className="capitalize">
-          <Badge
-            className={`${
-              status === "complete"
-                ? "bg-[#D4ECDC] text-[#254F2B]"
-                : "bg-red-200 text-red-800"
-            } text-[10px] font-semibold h-6`}
-          >
-            {status}
-          </Badge>
-        </div>
-      );
-    },
-  },
   {
     id: "actions",
     cell: ({ row }) => {

@@ -305,8 +305,13 @@ export const Question: React.FC<QuestionProps> = (props) => {
         {shape.questionTags && shape.questionTags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {shape.questionTags.map((tag) => (
-              <Badge key={tag} className="bg-indigo-100 text-indigo-800">
-                {tag}
+              <Badge
+                key={tag}
+                className="bg-indigo-100 text-black max-w-[190px]"
+              >
+                <span className="block whitespace-normal break-words leading-tight">
+                  {tag}
+                </span>
               </Badge>
             ))}
           </div>

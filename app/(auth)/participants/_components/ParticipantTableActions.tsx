@@ -75,6 +75,7 @@ const ROLE_OPTIONS = [
 export default function ParticipantTableActions({
   participant,
 }: ParticipantTableActionsProps) {
+  const [open, setOpen] = useState(false);
   const [marketSegments, setMarketSegments] = useState<any[]>([]);
 
   const getMarketSegments = async () => {
@@ -116,6 +117,7 @@ export default function ParticipantTableActions({
 
   async function onSubmit(values: z.infer<typeof participantFormSchema>) {
     await updateParticipant(participant.id, values);
+    setOpen(false);
     // form.reset();
   }
 
@@ -124,7 +126,7 @@ export default function ParticipantTableActions({
   };
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
