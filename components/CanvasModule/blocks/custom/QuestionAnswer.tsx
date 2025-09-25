@@ -7,6 +7,7 @@ import {
   UserIcon,
   LayoutDashboardIcon,
   LayoutListIcon,
+  ChevronDown,
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
@@ -34,6 +35,9 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
 
   const [view, setView] = useState<"slide" | "board">("slide");
   const [currentAnswer, setCurrentAnswer] = useState<number>(0);
+  const userToggledRef = useRef(false);
+  const questionsRef = useRef<HTMLDivElement | null>(null);
+  const [detailCollapsed, setDetailCollapsed] = useState<boolean>(false);
 
   const commit = (patch: Partial<IShape>) => {
     onCommitInterview?.(shape.id, patch);
@@ -44,6 +48,17 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
     try {
       if (shape.draftRaw) {
         const raw = JSON.parse(shape.draftRaw);
+        return EditorState.createWithContent(convertFromRaw(raw));
+      }
+    } catch {}
+    return EditorState.createEmpty();
+  }, []);
+
+  // --- DraftJS editor state ---
+  const initialSummaryEditorState = useMemo(() => {
+    try {
+      if (shape.analysisRaw) {
+        const raw = JSON.parse(shape.analysisRaw);
         return EditorState.createWithContent(convertFromRaw(raw));
       }
     } catch {}
@@ -62,6 +77,9 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
 
   const [editorState, setEditorState] =
     useState<EditorState>(initialEditorState);
+  const [summaryEditorState, setSummaryEditorState] = useState<EditorState>(
+    initialSummaryEditorState
+  );
   const [editingBody, setEditingBody] = useState(true);
   const [showToolbar, setShowToolbar] = useState(false);
 
@@ -72,16 +90,18 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
   useEffect(() => {
     if (editingBody) return;
     try {
-      if (shape.draftRaw) {
-        const raw = JSON.parse(shape.draftRaw);
-        setEditorState(EditorState.createWithContent(convertFromRaw(raw)));
+      if (shape.analysisRaw) {
+        const raw = JSON.parse(shape.analysisRaw);
+        setSummaryEditorState(
+          EditorState.createWithContent(convertFromRaw(raw))
+        );
       } else {
-        setEditorState(EditorState.createEmpty());
+        setSummaryEditorState(EditorState.createEmpty());
       }
     } catch {
       // ignore bad JSON
     }
-  }, [shape.draftRaw, editingBody]);
+  }, [shape.analysisRaw, editingBody]);
 
   useEffect(() => {
     try {
@@ -99,11 +119,11 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
   useEffect(() => {
     if (!editingBody) return;
     const t = setTimeout(() => {
-      const raw = convertToRaw(editorState.getCurrentContent());
-      commit({ draftRaw: JSON.stringify(raw) });
+      const raw = convertToRaw(summaryEditorState.getCurrentContent());
+      commit({ analysisRaw: JSON.stringify(raw) });
     }, 500);
     return () => clearTimeout(t);
-  }, [editorState, editingBody]);
+  }, [summaryEditorState, editingBody]);
 
   const startBodyEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -133,7 +153,45 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
       return Math.max(prev - 1, 0);
     });
   };
-  console.log("question_answers", question_answers);
+
+  function outerHeight(el: HTMLElement | null) {
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
+    const cs = window.getComputedStyle(el);
+    const mt = parseFloat(cs.marginTop || "0");
+    const mb = parseFloat(cs.marginBottom || "0");
+    return rect.height + mt + mb;
+  }
+
+  const MIN_HEIGHT = 75;
+
+  function adjustHeight(delta: number) {
+    // Only adjust if there is a visible change
+    const current = shape.height ?? 200;
+    const next = Math.max(MIN_HEIGHT, Math.round(current + delta));
+    if (Math.abs(next - current) > 1) {
+      commit({ height: next });
+    }
+  }
+
+  function toggleDetailCollapsed() {
+    userToggledRef.current = true;
+    // setCollapsed((c) => !c);
+    if (!detailCollapsed) {
+      // Going to collapse: measure BEFORE hiding and shrink now
+      const dh = -outerHeight(questionsRef.current);
+      adjustHeight(dh);
+      setDetailCollapsed(true);
+    } else {
+      // Going to expand: first show, then measure and grow
+      setDetailCollapsed(false);
+      // wait for layout to flush
+      requestAnimationFrame(() => {
+        const dh = outerHeight(questionsRef.current);
+        adjustHeight(dh);
+      });
+    }
+  }
 
   return (
     <ShapeFrame
@@ -147,6 +205,62 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
           <h2 className="text-lg font-bold text-gray-900">
             {shape.questionTitle}
           </h2>
+
+          <div className="pt-4">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleDetailCollapsed();
+              }}
+              data-nodrag="true"
+              className="w-full flex items-center justify-between text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${
+                    detailCollapsed ? "-rotate-90" : "rotate-0"
+                  }`}
+                />
+                Details
+                {/* firtQuestionsOrder.length + secondQuestionsOrder.length + 1 */}
+              </span>
+              {/* <span className="ml-2 text-gray-400">
+              ({answeredCount}/{fiQuestions.length})
+            </span> */}
+            </button>
+          </div>
+
+          {!detailCollapsed && (
+            <RteEditor
+              editorState={editorState}
+              //onEditorStateChange={setEditorState}
+              toolbar={{
+                options: ["inline", "list", "link"],
+                inline: {
+                  options: ["bold", "italic", "underline", "strikethrough"],
+                },
+                list: { options: ["unordered", "ordered"] },
+              }}
+              //toolbarHidden={!showToolbar}
+              toolbarHidden
+              toolbarClassName={`border-b px-2 text-[14px] pb-0 mb-0 ${
+                editingBody ? "bg-white" : "bg-transparent opacity-0"
+              }`}
+              editorClassName={`px-2 pt-0 pb-2 min-h-[120px] text-[14px] mt-0 font-manrope  font-medium text-[#2E3545] ${
+                editingBody ? "bg-[#FFFFFF66] rounded" : "bg-transparent"
+              }`}
+              wrapperClassName="rdw-editor-wrapper"
+              placeholder="Type your text here..."
+            />
+          )}
+
+          <div className="pt-4">
+            <span className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              Summary
+            </span>
+          </div>
+
           {/* Body */}
           <div className="flex-1 overflow-auto">
             {isEmpty && !editingBody && (
@@ -157,18 +271,20 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
               </div>
             )}
             <div
-              className="mt-5 rounded-[8px] "
+              className="rounded-[8px] "
               onMouseDown={(e) => e.stopPropagation()}
             >
               <RteEditor
                 onBlur={() => {
                   setShowToolbar(false);
-                  const raw = convertToRaw(editorState.getCurrentContent());
-                  commit({ draftRaw: JSON.stringify(raw) });
+                  const raw = convertToRaw(
+                    summaryEditorState.getCurrentContent()
+                  );
+                  commit({ analysisRaw: JSON.stringify(raw) });
                 }}
                 onFocus={() => setShowToolbar(true)}
-                editorState={editorState}
-                onEditorStateChange={setEditorState}
+                editorState={summaryEditorState}
+                onEditorStateChange={setSummaryEditorState}
                 toolbar={{
                   options: ["inline", "list", "link"],
                   inline: {
@@ -181,7 +297,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
                   editingBody ? "bg-white" : "bg-transparent opacity-0"
                 }`}
                 editorClassName={`px-2 py-2 min-h-[120px] ${
-                  editingBody ? "bg-white rounded" : "bg-transparent"
+                  editingBody ? "bg-[#FFFFFF66] rounded" : "bg-transparent"
                 }`}
                 wrapperClassName=""
               />

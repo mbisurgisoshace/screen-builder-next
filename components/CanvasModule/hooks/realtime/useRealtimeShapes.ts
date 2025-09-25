@@ -86,7 +86,7 @@ export function useRealtimeShapes() {
             : type === "interview"
             ? 700
             : type === "question"
-            ? 600
+            ? 440
             : type === "question_answer"
             ? 780
             : 160,

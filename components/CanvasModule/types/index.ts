@@ -51,6 +51,7 @@ export interface Shape {
 
   // interview block
   draftRaw?: string;
+  analysisRaw?: string;
   images?: string[];
 
   // image block
