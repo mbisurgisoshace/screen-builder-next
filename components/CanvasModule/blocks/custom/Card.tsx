@@ -51,6 +51,13 @@ import { EndUser } from "./EndUserCard";
 import { ExampleBrainstormCard } from "./ExampleBrainstormCard";
 import { ExampleCustomerCard } from "./ExampleCustomerCard";
 import { ExampleIndustryMarketSegment } from "./ExampleIndustryMarketSegmentCard";
+import { BothCustomerEndUser } from "./BothCustomerEndUser";
+import { Payer } from "./Payer";
+import { Influencer } from "./Influencer";
+import { Recommender } from "./Recommender";
+import { Saboteur } from "./Saboteur";
+import { AdditionalDecisionMaker } from "./AdditionalDecisionMaker";
+import { AdditionalStakeholder } from "./AdditionalStakeholder";
 
 type CardProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -102,6 +109,20 @@ export const Card: React.FC<CardProps> = (props) => {
         return "Example Industry/Market Segment Card";
       case "example_brainstorm_card":
         return "Example Brainstorm Card";
+      case "both_customer_end_user_card":
+        return "Both Customer & End-User";
+      case "payer_card":
+        return "Payer";
+      case "influencer_card":
+        return "Influencer";
+      case "recommender_card":
+        return "Recommender";
+      case "saboteur_card":
+        return "Saboteur";
+      case "additional_decision_maker_card":
+        return "Additional Decision Maker";
+      case "additional_stakeholder_card":
+        return "Additional Stakeholder";
       default:
         return "Unknown";
     }
@@ -135,6 +156,20 @@ export const Card: React.FC<CardProps> = (props) => {
         return <ExampleIndustryMarketSegment {...props} />;
       case "example_brainstorm_card":
         return <ExampleBrainstormCard {...props} />;
+      case "both_customer_end_user_card":
+        return <BothCustomerEndUser {...props} />;
+      case "payer_card":
+        return <Payer {...props} />;
+      case "influencer_card":
+        return <Influencer {...props} />;
+      case "recommender_card":
+        return <Recommender {...props} />;
+      case "saboteur_card":
+        return <Saboteur {...props} />;
+      case "additional_decision_maker_card":
+        return <AdditionalDecisionMaker {...props} />;
+      case "additional_stakeholder_card":
+        return <AdditionalStakeholder {...props} />;
       case "select_subtype":
         return <span>Please select a card type from the menu.</span>;
     }
@@ -146,6 +181,13 @@ export const Card: React.FC<CardProps> = (props) => {
       case "customer_card":
       case "end_user_card":
       case "solution_card":
+      case "both_customer_end_user_card":
+      case "payer_card":
+      case "influencer_card":
+      case "recommender_card":
+      case "saboteur_card":
+      case "additional_decision_maker_card":
+      case "additional_stakeholder_card":
         return false;
       case "interview_card":
         return false;
@@ -204,6 +246,20 @@ export const Card: React.FC<CardProps> = (props) => {
         return "#DDE1F2";
       case "summary_card":
         return "#6A35FF";
+      case "both_customer_end_user_card":
+        return "#FDE1B5";
+      case "payer_card":
+        return "#FFD3BB";
+      case "influencer_card":
+        return "#FFCCCC";
+      case "recommender_card":
+        return "#DDF5B5";
+      case "saboteur_card":
+        return "#D5F9D7";
+      case "additional_decision_maker_card":
+        return "#CCF6EA";
+      case "additional_stakeholder_card":
+        return "#E6CFFF";
       default:
         return "#FFFFFF";
     }
@@ -335,6 +391,95 @@ export const Card: React.FC<CardProps> = (props) => {
             }`}
           >
             End-User
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "both_customer_end_user_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "both_customer_end_user_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Both Customer & End-User
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "payer_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "payer_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Payer
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "influencer_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "influencer_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Influencer
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "recommender_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "recommender_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Recommender
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "saboteur_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "saboteur_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Saboteur
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "additional_decision_maker_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "additional_decision_maker_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Additional Decision Maker
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => {
+              onCommitStyle?.(shape.id, {
+                subtype: "additional_stakeholder_card",
+              });
+            }}
+            className={`rounded-sm text-xs font-semibold text-[#111827] px-4 py-2 ${
+              subtype === "additional_stakeholder_card" ? "bg-[#D5F9D7]" : ""
+            }`}
+          >
+            Additional Stakeholder
           </DropdownMenuItem>
         </>
       );
