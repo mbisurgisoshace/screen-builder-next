@@ -7,6 +7,16 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDef<any>[] = [
   {
+    id: "actions",
+    cell: ({ row }) => {
+      const participant = row.original;
+
+      return (
+        <ParticipantTableActions participant={participant as Participant} />
+      );
+    },
+  },
+  {
     accessorKey: "name",
     header: "Participant",
     cell: ({ row }) => {
@@ -89,6 +99,9 @@ export const columns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("contact_info")}</div>
     ),
+    size: 350,
+    maxSize: 350,
+    minSize: 350,
   },
   {
     accessorKey: "rationale",
@@ -135,16 +148,5 @@ export const columns: ColumnDef<any>[] = [
     size: 350,
     maxSize: 350,
     minSize: 350,
-  },
-
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const participant = row.original;
-
-      return (
-        <ParticipantTableActions participant={participant as Participant} />
-      );
-    },
   },
 ];
