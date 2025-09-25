@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { text } from "stream/consumers";
+import { trimTo50 } from "@/lib/utils";
 
 type QuestionProps = Omit<ShapeFrameProps, "children" | "shape"> & {
   shape: IShape;
@@ -537,7 +538,14 @@ export const Question: React.FC<QuestionProps> = (props) => {
                       const editor = EditorState.createWithContent(
                         convertFromRaw(raw)
                       );
-                      const text = editor.getCurrentContent().getPlainText();
+                      //const text = editor.getCurrentContent().getPlainText();
+                      const largeText = editor
+                        .getCurrentContent()
+                        .getPlainText();
+
+                      const text = `${item.cardTitle} ${editor
+                        .getCurrentContent()
+                        .getPlainText()}`;
 
                       if (text.trim().length === 0) return null;
 
@@ -554,7 +562,13 @@ export const Question: React.FC<QuestionProps> = (props) => {
                             }}
                           />
                           <Label className="text-sm text-gray-700">
-                            {text}
+                            {/* {text} */}
+                            {item.cardTitle && (
+                              <span className="font-bold">
+                                {item.cardTitle}
+                              </span>
+                            )}
+                            {trimTo50(largeText)}
                           </Label>
                         </div>
                       );
