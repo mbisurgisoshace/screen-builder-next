@@ -180,30 +180,6 @@ export default function ParticipantTableActions({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    {/* <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Customer">Customer</SelectItem>
-                        <SelectItem value="End-User">End-User</SelectItem>
-                        <SelectItem value="Both Customer & End-User">
-                          Both Customer & End-User
-                        </SelectItem>
-                        <SelectItem value="Payer">Payer</SelectItem>
-                        <SelectItem value="Influencer">Influencer</SelectItem>
-                        <SelectItem value="Recommender">Recommender</SelectItem>
-                        <SelectItem value="Saboteur">Saboteur</SelectItem>
-                        <SelectItem value="Additional Decision Maker">
-                          Additional Decision Maker
-                        </SelectItem>
-                        <SelectItem value="Additional Stakeholder">
-                          Additional Stakeholder
-                        </SelectItem>
-                      </SelectContent>
-                    </Select> */}
                     <FormControl>
                       <MultiSelect
                         options={ROLE_OPTIONS}
@@ -269,22 +245,28 @@ export default function ParticipantTableActions({
                               {segment}
                             </SelectItem>
                           ))} */}
-                        {marketSegments.map((segment) => {
-                          return (
-                            <SelectGroup key={segment.title}>
-                              <SelectLabel>{segment.title}</SelectLabel>
-                              {segment.data
-                                .filter(
-                                  (s: any) => s.cardTitle?.trim().length > 0
-                                )
-                                .map((s: any) => (
-                                  <SelectItem key={s.id} value={s.cardTitle}>
-                                    {s.cardTitle}
-                                  </SelectItem>
-                                ))}
-                            </SelectGroup>
-                          );
-                        })}
+                        {marketSegments.length === 0 ? (
+                          <div className="py-2 px-3 text-sm text-gray-500">
+                            No segments available
+                          </div>
+                        ) : (
+                          marketSegments.map((segment) => {
+                            return (
+                              <SelectGroup key={segment.title}>
+                                <SelectLabel>{segment.title}</SelectLabel>
+                                {segment.data
+                                  .filter(
+                                    (s: any) => s.cardTitle?.trim().length > 0
+                                  )
+                                  .map((s: any) => (
+                                    <SelectItem key={s.id} value={s.cardTitle}>
+                                      {s.cardTitle}
+                                    </SelectItem>
+                                  ))}
+                              </SelectGroup>
+                            );
+                          })
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />

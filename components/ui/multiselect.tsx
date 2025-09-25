@@ -95,7 +95,7 @@ export function MultiSelect({
               <Badge
                 key={opt.value}
                 variant="secondary"
-                className="mr-1 max-w-[8rem] truncate"
+                className="mr-1 max-w-[11rem] truncate"
               >
                 {opt.label}
               </Badge>

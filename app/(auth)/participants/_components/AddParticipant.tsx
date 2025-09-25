@@ -225,7 +225,7 @@ export default function AddParticipant({
                               </SelectItem>
                             );
                           })} */}
-                        {marketSegments.map((segment) => {
+                        {/* {marketSegments.map((segment) => {
                           return (
                             <SelectGroup key={segment.title}>
                               <SelectLabel>{segment.title}</SelectLabel>
@@ -240,7 +240,29 @@ export default function AddParticipant({
                                 ))}
                             </SelectGroup>
                           );
-                        })}
+                        })} */}
+                        {marketSegments.length === 0 ? (
+                          <div className="py-2 px-3 text-sm text-gray-500">
+                            No segments available
+                          </div>
+                        ) : (
+                          marketSegments.map((segment) => {
+                            return (
+                              <SelectGroup key={segment.title}>
+                                <SelectLabel>{segment.title}</SelectLabel>
+                                {segment.data
+                                  .filter(
+                                    (s: any) => s.cardTitle?.trim().length > 0
+                                  )
+                                  .map((s: any) => (
+                                    <SelectItem key={s.id} value={s.cardTitle}>
+                                      {s.cardTitle}
+                                    </SelectItem>
+                                  ))}
+                              </SelectGroup>
+                            );
+                          })
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -108,7 +108,7 @@ export async function generateAnalysisRoom(roomId: string) {
           new LiveObject({
             ...question,
             type: "question_answer",
-            width: 780,
+            width: 1180,
             height: 320,
             question_answers: answersForQuestion,
           })
@@ -134,7 +134,7 @@ export async function generateAnalysisRoom(roomId: string) {
             new LiveObject({
               ...question,
               type: "question_answer",
-              width: 780,
+              width: 1180,
               height: 320,
               question_answers: answersForQuestion,
             })

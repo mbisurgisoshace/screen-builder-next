@@ -97,7 +97,9 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: "contact_info",
     header: "Contact Info",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("contact_info")}</div>
+      <div className="capitalize whitespace-normal">
+        {row.getValue("contact_info")}
+      </div>
     ),
     size: 350,
     maxSize: 350,
@@ -107,11 +109,7 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: "rationale",
     header: "Rationale",
     cell: ({ row }) => (
-      <div
-        className="capitalize whitespace-normal
-      
-      "
-      >
+      <div className="capitalize whitespace-normal">
         {row.getValue("rationale")}
       </div>
     ),
@@ -123,7 +121,9 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: "blocking_issues",
     header: "Blocking Issues",
     cell: ({ row }) => (
-      <div className="capitalize ">{row.getValue("blocking_issues")}</div>
+      <div className="capitalize whitespace-normal">
+        {row.getValue("blocking_issues")}
+      </div>
     ),
     size: 350,
     maxSize: 350,
@@ -133,7 +133,9 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: "hypothesis_to_validate",
     header: "Hypothesis to Validate",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("hypothesis_to_validate")}</div>
+      <div className="capitalize whitespace-normal">
+        {row.getValue("hypothesis_to_validate")}
+      </div>
     ),
     size: 350,
     maxSize: 350,
@@ -143,7 +145,9 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: "learnings",
     header: "Learnings",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("learnings")}</div>
+      <div className="capitalize whitespace-normal">
+        {row.getValue("learnings")}
+      </div>
     ),
     size: 350,
     maxSize: 350,

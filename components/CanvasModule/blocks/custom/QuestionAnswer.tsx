@@ -37,7 +37,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
   const [currentAnswer, setCurrentAnswer] = useState<number>(0);
   const userToggledRef = useRef(false);
   const questionsRef = useRef<HTMLDivElement | null>(null);
-  const [detailCollapsed, setDetailCollapsed] = useState<boolean>(false);
+  const [detailCollapsed, setDetailCollapsed] = useState<boolean>(true);
 
   const commit = (patch: Partial<IShape>) => {
     onCommitInterview?.(shape.id, patch);
@@ -200,7 +200,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div className="w-full h-full bg-[#DDE1F2] border border-[#B4B9C9] rounded-lg shadow-lg flex flex-row overflow-hidden">
-        <div className="flex-[8] h-full flex flex-col overflow-hidden px-6 py-6 gap-4 border-r border-[#B4B9C9]">
+        <div className="flex-[3] h-full flex flex-col overflow-hidden px-6 py-6 gap-4 border-r border-[#B4B9C9]">
           <h3 className="text-sm font-medium text-black-600">Question</h3>
           <h2 className="text-lg font-bold text-gray-900">
             {shape.questionTitle}
@@ -429,7 +429,7 @@ export const QuestionAnswer: React.FC<QuestionAnswerProps> = (props) => {
           )}
 
           {view == "board" && (
-            <div className="flex flex-col gap-4 max-h-full overflow-y-auto">
+            <div className="grid grid-cols-2 gap-4 max-h-full overflow-y-auto">
               {question_answers.map((answer, index) => {
                 const raw = JSON.parse(answer.draftRaw);
 
