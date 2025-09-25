@@ -347,7 +347,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
           )}
         </h2>
 
-        {shape.metadata.questionId && (
+        {shape.metadata?.questionId && (
           <div className="pt-4">
             <button
               type="button"
@@ -374,7 +374,7 @@ export const Question: React.FC<QuestionProps> = (props) => {
           </div>
         )}
 
-        {shape.metadata.questionDetails && !detailCollapsed && (
+        {shape.metadata?.questionDetails && !detailCollapsed && (
           <RteEditor
             editorState={detailEditorState}
             //onEditorStateChange={setEditorState}
