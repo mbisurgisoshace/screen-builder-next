@@ -203,7 +203,7 @@ export const BothCustomerEndUser: React.FC<CustomerProps> = (props) => {
           <div className="mb-4">
             <textarea
               ref={textareaRef}
-              placeholder={"Type Customer Segment here.."}
+              placeholder={"Type Both Customer & End-User here.."}
               className="w-full bg-transparent border-none outline-none font-manrope font-extrabold text-[24px] leading-[115%] tracking-[0%] text-[#111827] placeholder:text-[#858b9b] placeholder:font-extrabold placeholder:text-[24px] placeholder:leading-[115%] resize-none overflow-hidden"
               defaultValue={shape.cardTitle || ""}
               onBlur={(e) => {
