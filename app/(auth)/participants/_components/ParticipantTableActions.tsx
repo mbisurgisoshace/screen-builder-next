@@ -92,7 +92,7 @@ export default function ParticipantTableActions({
         return text;
       });
 
-    setMarketSegments(marketSegmentOptions);
+    setMarketSegments(segments);
   };
 
   useEffect(() => {

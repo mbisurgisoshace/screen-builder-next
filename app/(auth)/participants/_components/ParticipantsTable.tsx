@@ -39,12 +39,6 @@ import { useEffect, useState } from "react";
 import { columns } from "./columns";
 
 export default function ParticipantsTable({ data }: { data: any[] }) {
-  // const [tableData, setTableData] = useState(data);
-
-  // useEffect(() => {
-  //   setTableData(data);
-  // }, [data.length]);
-
   const table = useReactTable({
     data,
     columns: columns,
