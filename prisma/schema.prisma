@@ -61,7 +61,7 @@ model ParticipantRoom {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  participant Participant @relation(fields: [participantId], references: [id])
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
 
   @@index([participantId])
   @@map("participant_rooms")

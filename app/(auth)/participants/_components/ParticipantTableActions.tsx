@@ -17,6 +17,7 @@ import {
 import { CalendarIcon, MoreHorizontal } from "lucide-react";
 import { Participant } from "@/lib/generated/prisma";
 import {
+  deleteParticipant,
   markParticipantAsComplete,
   updateParticipant,
 } from "@/services/participants";
@@ -142,7 +143,10 @@ export default function ParticipantTableActions({
             Mark as Complete
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-red-600" onClick={() => {}}>
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => deleteParticipant(participant.id)}
+          >
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

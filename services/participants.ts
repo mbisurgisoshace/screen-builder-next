@@ -96,3 +96,15 @@ export async function markParticipantAsComplete(participantId: string) {
 
   revalidatePath(`/participants`);
 }
+
+export async function deleteParticipant(participantId: string) {
+  const { orgId, userId } = await auth();
+
+  if (!orgId || !userId) return redirect("/sign-in");
+
+  await prisma.participant.delete({
+    where: { id: participantId, org_id: orgId },
+  });
+
+  revalidatePath(`/participants`);
+}
