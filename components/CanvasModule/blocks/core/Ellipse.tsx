@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Shape as IShape } from "../../types";
 import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { useRegisterToolbarExtras } from "../toolbar/toolbarExtrasStore";
@@ -34,6 +34,12 @@ export const Ellipse: React.FC<EllipseBlockProps> = (props) => {
   const wrapRef = React.useRef<HTMLDivElement>(null);
 
   const SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 60, 80, 100, 120];
+
+  useEffect(() => {
+    if (!props.isSelected) {
+      taRef.current?.blur();
+    }
+  }, [props.isSelected]);
 
   useRegisterToolbarExtras(
     shape.id,

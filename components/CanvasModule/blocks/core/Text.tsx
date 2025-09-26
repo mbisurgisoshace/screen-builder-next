@@ -34,6 +34,12 @@ export const Text: React.FC<TextBlockProps> = (props) => {
 
   const SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 60, 80, 100, 120];
 
+  useEffect(() => {
+    if (!props.isSelected) {
+      taRef.current?.blur();
+    }
+  }, [props.isSelected]);
+
   useRegisterToolbarExtras(
     shape.id,
     () => (

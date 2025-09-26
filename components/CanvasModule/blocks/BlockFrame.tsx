@@ -65,7 +65,9 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   });
 
   useEffect(() => {
-    onCommitStyle?.(shape.id, { height });
+    if (!resizable) {
+      onCommitStyle?.(shape.id, { height });
+    }
   }, [height]);
 
   const canInteract = interactive;
