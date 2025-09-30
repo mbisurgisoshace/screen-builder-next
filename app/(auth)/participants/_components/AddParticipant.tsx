@@ -42,6 +42,7 @@ import { EditorState, convertFromRaw } from "draft-js";
 import { participantFormSchema } from "@/schemas/participant";
 import { createParticipant } from "@/services/participants";
 import { MultiSelect } from "@/components/ui/multiselect";
+import { useState } from "react";
 
 interface AddParticipantProps {
   marketSegments: any[];
@@ -62,6 +63,7 @@ const ROLE_OPTIONS = [
 export default function AddParticipant({
   marketSegments,
 }: AddParticipantProps) {
+  const [open, setOpen] = useState(false);
   const marketSegmentOptions = marketSegments
     ?.filter((s: any) => s.draftRaw)
     .map((segment: any) => {
@@ -92,10 +94,11 @@ export default function AddParticipant({
   async function onSubmit(values: z.infer<typeof participantFormSchema>) {
     await createParticipant(values);
     form.reset();
+    setOpen(false);
   }
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button className="rounded-full text-sm font-bold">
           + Add Participant
