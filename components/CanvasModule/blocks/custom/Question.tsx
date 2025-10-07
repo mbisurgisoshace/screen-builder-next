@@ -533,19 +533,28 @@ export const Question: React.FC<QuestionProps> = (props) => {
                   </h3>
                   <div className="flex flex-col gap-2">
                     {valueProp?.map((item: any) => {
-                      if (!item.draftRaw) return null;
-                      const raw = JSON.parse(item.draftRaw);
-                      const editor = EditorState.createWithContent(
-                        convertFromRaw(raw)
-                      );
-                      //const text = editor.getCurrentContent().getPlainText();
-                      const largeText = editor
-                        .getCurrentContent()
-                        .getPlainText();
+                      // if (!item.draftRaw) return null;
+                      // const raw = JSON.parse(item.draftRaw);
+                      // const editor = EditorState.createWithContent(
+                      //   convertFromRaw(raw)
+                      // );
 
-                      const text = `${item.cardTitle} ${editor
-                        .getCurrentContent()
-                        .getPlainText()}`;
+                      let largeText = "";
+                      if (item.draftRaw) {
+                        const raw = JSON.parse(item.draftRaw);
+                        const editor = EditorState.createWithContent(
+                          convertFromRaw(raw)
+                        );
+
+                        largeText = editor.getCurrentContent().getPlainText();
+                      }
+
+                      // const largeText = editor
+                      //   .getCurrentContent()
+                      //   .getPlainText();
+
+                      const text = `${item.cardTitle} ${largeText}`;
+                      //const text = `${item.cardTitle}`;
 
                       if (text.trim().length === 0) return null;
 
