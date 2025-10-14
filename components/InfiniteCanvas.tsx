@@ -671,6 +671,76 @@ export default function InfiniteCanvas({
 
     if (!type) return;
 
+    if (type === "screen") {
+      const id = uuidv4();
+      const w = 1440,
+        h = 900; // Desktop preset
+      addShape("screen", x - w / 2, y - h / 2, id);
+      updateShape(id, (s) => ({
+        ...s,
+        width: w,
+        height: h,
+        color: "#ffffff",
+        screenPreset: "Desktop",
+        platform: "web",
+        clipContents: true,
+        childrenIds: [],
+      }));
+      return;
+    }
+
+    if (type === "button") {
+      const id = uuidv4();
+      const w = 120,
+        h = 40;
+
+      // Find topmost Screen under the drop point
+      const pointIn = (s: Shape, px: number, py: number) =>
+        px >= s.x && px <= s.x + s.width && py >= s.y && py <= s.y + s.height;
+
+      const screens = (shapes as Shape[]).filter((s) => s.type === "screen");
+      const parent = (() => {
+        for (let i = screens.length - 1; i >= 0; i--) {
+          if (pointIn(screens[i], x, y)) return screens[i];
+        }
+        return undefined;
+      })();
+
+      // Default position: centered at drop
+      let nx = x - w / 2,
+        ny = y - h / 2;
+
+      // Clamp inside the screen if found
+      if (parent) {
+        const minX = parent.x,
+          minY = parent.y;
+        const maxX = parent.x + parent.width - w,
+          maxY = parent.y + parent.height - h;
+        nx = Math.min(Math.max(nx, minX), Math.max(minX, maxX));
+        ny = Math.min(Math.max(ny, minY), Math.max(minY, maxY));
+      }
+
+      // Create the button
+      addShape("button", nx, ny, id);
+      updateShape(id, (s) => ({
+        ...s,
+        width: w,
+        height: h,
+        color: "#ffffff",
+        parentId: parent?.id,
+        label: s.label ?? "Button",
+      }));
+
+      // Register as child (ordered)
+      if (parent) {
+        updateShape(parent.id, (ps) => ({
+          ...ps,
+          childrenIds: [...(ps.childrenIds ?? []), id],
+        }));
+      }
+      return;
+    }
+
     // if (type === "feature_idea") {
     //   const SMALL_W = 140,
     //     SMALL_H = 64;
@@ -943,6 +1013,9 @@ export default function InfiniteCanvas({
       backgroundPosition: `${offset}, ${offset}, ${offset}, ${offset}`,
     };
   }
+
+  const topLevel = shapes.filter((s) => !s.parentId);
+  const screens = shapes.filter((s) => s.type === "screen");
 
   return (
     <div className="w-full h-full overflow-hidden bg-[#EFF0F4] relative flex">
@@ -1309,6 +1382,48 @@ export default function InfiniteCanvas({
               </span>
             </button>
           )}
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "screen");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Screen"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Card"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Screen
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "button");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Button"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Button"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Button
+            </span>
+          </button>
         </div>
       )}
 
@@ -1418,91 +1533,94 @@ export default function InfiniteCanvas({
               />
             ))}
 
-          {shapes
-            .filter((shape) => {
-              if (!shape) return false;
-              if (
-                !examples &&
-                (shape.type.includes("example") ||
-                  shape.subtype?.includes("example"))
-              )
-                return false;
-              if (isValuePropCanvas) {
+          {
+            //shapes
+            topLevel
+              .filter((shape) => {
+                if (!shape) return false;
                 if (
-                  shape.type === "text" ||
-                  shape.type === "rect" ||
-                  shape.type === "ellipse"
-                ) {
-                  return true;
-                }
-
-                if (!problems) {
+                  !examples &&
+                  (shape.type.includes("example") ||
+                    shape.subtype?.includes("example"))
+                )
+                  return false;
+                if (isValuePropCanvas) {
                   if (
-                    shape.type === "card" &&
-                    (shape.subtype === "jobs_to_be_done_card" ||
-                      shape.subtype === "gains_card" ||
-                      shape.subtype === "pains_card")
+                    shape.type === "text" ||
+                    shape.type === "rect" ||
+                    shape.type === "ellipse"
                   ) {
-                    return false;
+                    return true;
+                  }
+
+                  if (!problems) {
+                    if (
+                      shape.type === "card" &&
+                      (shape.subtype === "jobs_to_be_done_card" ||
+                        shape.subtype === "gains_card" ||
+                        shape.subtype === "pains_card")
+                    ) {
+                      return false;
+                    }
+                  }
+
+                  if (!solutions) {
+                    if (
+                      shape.type === "card" &&
+                      (shape.subtype === "products_services_card" ||
+                        shape.subtype === "gain_creators_card" ||
+                        shape.subtype === "pain_relievers_card")
+                    ) {
+                      return false;
+                    }
                   }
                 }
 
-                if (!solutions) {
-                  if (
-                    shape.type === "card" &&
-                    (shape.subtype === "products_services_card" ||
-                      shape.subtype === "gain_creators_card" ||
-                      shape.subtype === "pain_relievers_card")
-                  ) {
-                    return false;
-                  }
-                }
-              }
+                return true;
+              })
+              .map((shape) => {
+                const Component = shapeRegistry[shape.type];
+                if (!Component) return null;
 
-              return true;
-            })
-            .map((shape) => {
-              const Component = shapeRegistry[shape.type];
-              if (!Component) return null;
-
-              return (
-                <Component
-                  key={shape.id}
-                  shape={shape}
-                  interactive={editable}
-                  //renderHandles={renderHandles}
-                  onResizeStart={startResizing}
-                  selectedCount={selectedShapeIds.length}
-                  isSelected={selectedShapeIds.includes(shape.id)}
-                  onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
-                  onConnectorMouseDown={handleConnectorMouseDown}
-                  //@ts-ignore
-                  onCommitText={(id, text) =>
-                    updateShape(id, (s) => ({
-                      ...s,
-                      // keep empty strings if user clears the text; Liveblocks adapter already null-coalesces
-                      text,
-                    }))
-                  }
-                  //@ts-ignore
-                  onCommitInterview={(id, patch) =>
-                    updateShape(id, (s) => ({ ...s, ...patch }))
-                  }
-                  //@ts-ignore
-                  onCommitTable={(id, patch) =>
-                    updateShape(id, (s) => ({ ...s, ...patch }))
-                  }
-                  //@ts-ignore
-                  onChangeTags={(id, names) => {
-                    updateShape(id, (s) => ({ ...s, tags: names }));
-                  }}
-                  //@ts-ignore
-                  onCommitStyle={(id, patch) => {
-                    updateShape(id, (s) => ({ ...s, ...patch })); // your existing immutable updater
-                  }}
-                />
-              );
-            })}
+                return (
+                  <Component
+                    key={shape.id}
+                    shape={shape}
+                    interactive={editable}
+                    //renderHandles={renderHandles}
+                    onResizeStart={startResizing}
+                    selectedCount={selectedShapeIds.length}
+                    isSelected={selectedShapeIds.includes(shape.id)}
+                    onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
+                    onConnectorMouseDown={handleConnectorMouseDown}
+                    //@ts-ignore
+                    onCommitText={(id, text) =>
+                      updateShape(id, (s) => ({
+                        ...s,
+                        // keep empty strings if user clears the text; Liveblocks adapter already null-coalesces
+                        text,
+                      }))
+                    }
+                    //@ts-ignore
+                    onCommitInterview={(id, patch) =>
+                      updateShape(id, (s) => ({ ...s, ...patch }))
+                    }
+                    //@ts-ignore
+                    onCommitTable={(id, patch) =>
+                      updateShape(id, (s) => ({ ...s, ...patch }))
+                    }
+                    //@ts-ignore
+                    onChangeTags={(id, names) => {
+                      updateShape(id, (s) => ({ ...s, tags: names }));
+                    }}
+                    //@ts-ignore
+                    onCommitStyle={(id, patch) => {
+                      updateShape(id, (s) => ({ ...s, ...patch })); // your existing immutable updater
+                    }}
+                  />
+                );
+              })
+          }
 
           {/* Smart Guides */}
           {guides.map((g, i) =>

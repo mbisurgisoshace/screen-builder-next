@@ -23,7 +23,7 @@ export default function WorkspaceTabsView({
 }) {
   const [tabs, setTabs] = useState(rooms);
   const [activeRoomId, setActiveRoom] = useState<string | null>(
-    rooms[0].roomId
+    rooms[0]?.roomId
   );
 
   const [draft, setDraft] = useState("");

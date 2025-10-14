@@ -4,6 +4,8 @@ export type ShapeType =
   | "text"
   | "image"
   | "table"
+  | "screen"
+  | "button"
   | "ellipse"
   | "question"
   | "interview"
@@ -104,6 +106,11 @@ export interface Shape {
     questionId: string;
     draftRaw: string;
   }[];
+
+  parentId?: string;
+  childrenIds?: string[];
+
+  label?: string;
 }
 
 export type Attachment = {
