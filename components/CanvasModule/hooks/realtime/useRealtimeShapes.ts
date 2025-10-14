@@ -232,3 +232,64 @@ export function useRealtimeShapes() {
     liveShapesReady: !!liveShapes,
   };
 }
+
+// Add a child (full shape) into a screen's children array
+export const useScreenChildren = () => {
+  const addChild = useMutation(
+    ({ storage }, screenId: string, child: Shape) => {
+      const list = storage.get("shapes") as LiveList<LiveObject<any>>;
+      for (let i = list.length - 1; i >= 0; i--) {
+        const lo = list.get(i) as LiveObject<any>;
+        if (lo.get("id") === screenId && lo.get("type") === "screen") {
+          const prev = (lo.get("children") as any[]) || [];
+          lo.set("children", [...prev, child]);
+          break;
+        }
+      }
+    },
+    []
+  );
+
+  const updateChild = useMutation(
+    (
+      { storage },
+      screenId: string,
+      childId: string,
+      fn: (s: Shape) => Shape
+    ) => {
+      const list = storage.get("shapes") as LiveList<LiveObject<any>>;
+      for (let i = list.length - 1; i >= 0; i--) {
+        const lo = list.get(i) as LiveObject<any>;
+        if (lo.get("id") === screenId && lo.get("type") === "screen") {
+          const prev: Shape[] = (lo.get("children") as any[]) || [];
+          const idx = prev.findIndex((c) => c.id === childId);
+          if (idx >= 0) {
+            const next = prev.slice();
+            next[idx] = fn(prev[idx]);
+            lo.set("children", next);
+          }
+          break;
+        }
+      }
+    },
+    []
+  );
+
+  const removeChild = useMutation(
+    ({ storage }, screenId: string, childId: string) => {
+      const list = storage.get("shapes") as LiveList<LiveObject<any>>;
+      for (let i = list.length - 1; i >= 0; i--) {
+        const lo = list.get(i) as LiveObject<any>;
+        if (lo.get("id") === screenId && lo.get("type") === "screen") {
+          const prev: Shape[] = (lo.get("children") as any[]) || [];
+          const next = prev.filter((c) => c.id !== childId);
+          lo.set("children", next);
+          break;
+        }
+      }
+    },
+    []
+  );
+
+  return { addChild, updateChild, removeChild };
+};

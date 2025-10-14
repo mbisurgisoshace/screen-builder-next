@@ -108,7 +108,7 @@ export interface Shape {
   }[];
 
   parentId?: string;
-  childrenIds?: string[];
+  children?: Shape[];
 
   label?: string;
 }

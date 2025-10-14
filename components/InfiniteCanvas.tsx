@@ -674,7 +674,7 @@ export default function InfiniteCanvas({
     if (type === "screen") {
       const id = uuidv4();
       const w = 1440,
-        h = 900; // Desktop preset
+        h = 900;
       addShape("screen", x - w / 2, y - h / 2, id);
       updateShape(id, (s) => ({
         ...s,
@@ -683,61 +683,57 @@ export default function InfiniteCanvas({
         color: "#ffffff",
         screenPreset: "Desktop",
         platform: "web",
-        clipContents: true,
-        childrenIds: [],
+        children: [], // NEW: initialize nested children
       }));
       return;
     }
 
+    // Drop a Button INSIDE a Screen → child uses LOCAL x/y
     if (type === "button") {
-      const id = uuidv4();
-      const w = 120,
-        h = 40;
-
-      // Find topmost Screen under the drop point
-      const pointIn = (s: Shape, px: number, py: number) =>
-        px >= s.x && px <= s.x + s.width && py >= s.y && py <= s.y + s.height;
-
-      const screens = (shapes as Shape[]).filter((s) => s.type === "screen");
+      // Find topmost screen under world point (your helper or quick inline)
+      const screens = (shapes as IShape[]).filter((s) => s.type === "screen");
       const parent = (() => {
         for (let i = screens.length - 1; i >= 0; i--) {
-          if (pointIn(screens[i], x, y)) return screens[i];
+          const s = screens[i];
+          const inside =
+            x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height;
+          if (inside) return s;
         }
         return undefined;
       })();
 
-      // Default position: centered at drop
-      let nx = x - w / 2,
-        ny = y - h / 2;
+      if (!parent) return; // ignore dropping button outside a screen
 
-      // Clamp inside the screen if found
-      if (parent) {
-        const minX = parent.x,
-          minY = parent.y;
-        const maxX = parent.x + parent.width - w,
-          maxY = parent.y + parent.height - h;
-        nx = Math.min(Math.max(nx, minX), Math.max(minX, maxX));
-        ny = Math.min(Math.max(ny, minY), Math.max(minY, maxY));
-      }
+      const id = uuidv4();
+      const w = 120,
+        h = 40;
 
-      // Create the button
-      addShape("button", nx, ny, id);
-      updateShape(id, (s) => ({
-        ...s,
+      // Convert world → local coords
+      let lx = x - parent.x - w / 2;
+      let ly = y - parent.y - h / 2;
+
+      // Clamp inside local bounds
+      lx = Math.min(Math.max(lx, 0), Math.max(0, parent.width - w));
+      ly = Math.min(Math.max(ly, 0), Math.max(0, parent.height - h));
+
+      const child: IShape = {
+        id,
+        type: "button",
+        x: lx,
+        y: ly, // LOCAL coords
         width: w,
         height: h,
         color: "#ffffff",
-        parentId: parent?.id,
-        label: s.label ?? "Button",
+        label: "Button",
+        parentId: parent.id, // optional reference
+      };
+
+      // Push into the parent's nested children
+      updateShape(parent.id, (ps) => ({
+        ...ps,
+        children: [...(ps.children ?? []), child],
       }));
 
-      // Register as child (ordered)
-      if (parent) {
-        updateShape(parent.id, (ps) => ({
-          ...ps,
-          childrenIds: [...(ps.childrenIds ?? []), id],
-        }));
-      }
       return;
     }
 
