@@ -16,9 +16,27 @@ type ChildDragState = null | {
   initY: number;
 };
 
+type ChildSelectionProps = {
+  onChildMouseDown?: (
+    e: React.PointerEvent,
+    screenId: string,
+    childId: string
+  ) => void;
+  isChildSelected?: (screenId: string, childId: string) => boolean;
+};
+
 export const Screen: React.FC<
-  { shape: IShape } & Omit<ShapeFrameProps, "shape" | "children">
-> = ({ shape, isSelected, selectedCount, onMouseDown, onResizeStart }) => {
+  { shape: IShape } & Omit<ShapeFrameProps, "shape" | "children"> &
+    ChildSelectionProps
+> = ({
+  shape,
+  isSelected,
+  selectedCount,
+  onMouseDown,
+  onResizeStart,
+  onChildMouseDown,
+  isChildSelected,
+}) => {
   const { updateChild } = useScreenChildren();
   const children = shape.children ?? [];
 
@@ -28,6 +46,7 @@ export const Screen: React.FC<
   const onChildPointerDown = useCallback(
     (e: React.PointerEvent, child: IShape) => {
       e.stopPropagation();
+      onChildMouseDown?.(e, shape.id, child.id);
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       dragRef.current = {
         id: child.id,
@@ -37,11 +56,12 @@ export const Screen: React.FC<
         initY: child.y,
       };
     },
-    []
+    [onChildMouseDown, shape.id]
   );
 
   const onChildPointerMove = useCallback(
     (e: React.PointerEvent) => {
+      e.stopPropagation();
       if (!dragRef.current) return;
       const { id, startX, startY, initX, initY } = dragRef.current;
       const dx = e.clientX - startX;
@@ -63,6 +83,7 @@ export const Screen: React.FC<
   );
 
   const onChildPointerUp = useCallback((e: React.PointerEvent) => {
+    e.stopPropagation();
     if (!dragRef.current) return;
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
     dragRef.current = null;
@@ -128,6 +149,7 @@ export const Screen: React.FC<
           {children.map((child) => {
             const Block = shapeRegistry[child.type];
             if (!Block) return null;
+            const selected = isChildSelected?.(shape.id, child.id) ?? false;
             return (
               <div
                 key={child.id}
@@ -142,23 +164,13 @@ export const Screen: React.FC<
                 onPointerMove={onChildPointerMove}
                 onPointerUp={onChildPointerUp}
               >
-                <ShapeFrame
+                <Block
                   shape={child}
-                  resizable={false}
-                  showConnectors={false}
-                  isSelected={false}
-                  selectedCount={0}
-                  onMouseDown={() => {}}
+                  isSelected={selected}
+                  onMouseDown={(e) => onChildPointerDown(e, child)}
                   onResizeStart={() => {}}
-                >
-                  <Block
-                    shape={child}
-                    isSelected={false}
-                    onMouseDown={() => {}}
-                    onResizeStart={() => {}}
-                    selectedCount={selectedCount}
-                  />
-                </ShapeFrame>
+                  selectedCount={selectedCount}
+                />
               </div>
             );
           })}

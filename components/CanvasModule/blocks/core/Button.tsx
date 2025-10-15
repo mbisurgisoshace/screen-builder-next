@@ -1,23 +1,36 @@
 "use client";
 import * as React from "react";
-import type { Shape } from "../../types";
+import type { Shape as IShape } from "../../types";
+import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 
-export const Button: React.FC<{ shape: Shape }> = ({ shape }) => {
+interface ButtonBlockProps extends Omit<ShapeFrameProps, "children" | "shape"> {
+  shape: IShape;
+  onCommitStyle?: (id: string, patch: Partial<IShape>) => void;
+}
+
+export const Button: React.FC<ButtonBlockProps> = (props) => {
+  const { shape } = props;
   return (
-    <div
-      className="w-full h-full flex items-center justify-center"
-      style={{ pointerEvents: "none" }}
+    <ShapeFrame
+      {...props}
+      resizable={true}
+      showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div
-        className="px-4 py-1.5 rounded-md border text-sm font-medium truncate"
-        style={{
-          background: "#111827",
-          color: "#fff",
-          borderColor: "rgba(0,0,0,0.2)",
-        }}
+        className="w-full flex items-center justify-center"
+        style={{ pointerEvents: "none" }}
       >
-        {shape.label ?? "Button"}
+        <div
+          className="w-full px-4 py-1.5 rounded-md border text-sm font-medium truncate text-center"
+          style={{
+            background: "#111827",
+            color: "#fff",
+            borderColor: "rgba(0,0,0,0.2)",
+          }}
+        >
+          {shape.label ?? "Button"}
+        </div>
       </div>
-    </div>
+    </ShapeFrame>
   );
 };

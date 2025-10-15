@@ -737,55 +737,6 @@ export default function InfiniteCanvas({
       return;
     }
 
-    // if (type === "feature_idea") {
-    //   const SMALL_W = 140,
-    //     SMALL_H = 64;
-    //   const MAIN_W = 260,
-    //     MAIN_H = 140;
-    //   const GAP = 24;
-
-    //   const labelId = uuidv4();
-    //   const mainId = uuidv4();
-
-    //   const labelX = x - GAP - SMALL_W;
-    //   const labelY = y - SMALL_H / 2;
-
-    //   const mainX = x + GAP;
-    //   const mainY = y - MAIN_H / 2;
-
-    //   pause();
-
-    //   // create label
-    //   addShape("rect", labelX, labelY, labelId);
-    //   updateShape(labelId, (s) => ({
-    //     ...s,
-    //     width: SMALL_W,
-    //     height: SMALL_H,
-    //     text: "Trigger", // editable with your existing Rect text behavior
-    //     color: "bg-blue-100", // optional default fill
-    //   }));
-    //   // create main
-    //   addShape("feature_idea", mainX, mainY, mainId);
-    //   updateShape(mainId, (s) => ({
-    //     ...s,
-    //     width: MAIN_W,
-    //     height: MAIN_H,
-    //   }));
-    //   resume();
-
-    //   addConnectionRelative({
-    //     fromShapeId: labelId,
-    //     toShapeId: mainId,
-    //     fromAnchor: { x: 1, y: 0.5 }, // right middle
-    //     toAnchor: { x: 0, y: 0.5 }, // left middle
-    //     //fromSide: "right",
-    //     //toSide: "left",
-    //     //style: "curve", // or "orthogonal" if you added that toggle
-    //   });
-
-    //   return;
-    // }
-
     addShape(type, x, y, uuidv4());
   };
 
@@ -1009,6 +960,16 @@ export default function InfiniteCanvas({
       backgroundPosition: `${offset}, ${offset}, ${offset}, ${offset}`,
     };
   }
+
+  const childToken = (screenId: string, childId: string) =>
+    `child:${screenId}:${childId}`;
+
+  const selectChildOnly = (screenId: string, childId: string) => {
+    setSelectedShapeIds([childToken(screenId, childId)]);
+  };
+
+  const isChildSelected = (screenId: string, childId: string) =>
+    selectedShapeIds.includes(childToken(screenId, childId));
 
   const topLevel = shapes.filter((s) => !s.parentId);
   const screens = shapes.filter((s) => s.type === "screen");
@@ -1613,6 +1574,20 @@ export default function InfiniteCanvas({
                     onCommitStyle={(id, patch) => {
                       updateShape(id, (s) => ({ ...s, ...patch })); // your existing immutable updater
                     }}
+                    onChildMouseDown={(
+                      e: React.PointerEvent,
+                      screenId: string,
+                      childId: string
+                    ) => {
+                      // select the child, not the screen
+                      e.stopPropagation();
+                      selectChildOnly(screenId, childId);
+                      // optional: prevent starting a marquee/drag at this exact click
+                      setDragging(false);
+                    }}
+                    isChildSelected={(screenId: string, childId: string) =>
+                      isChildSelected(screenId, childId)
+                    }
                   />
                 );
               })
