@@ -43,6 +43,10 @@ type ChildSelectionProps = {
   isChildSelected?: (screenId: string, childId: string) => boolean;
 };
 
+/** Config: include screen edges/centers for snapping/guides */
+const INCLUDE_SCREEN_EDGES = true;
+const INCLUDE_SCREEN_CENTERS = true;
+
 export const Screen: React.FC<
   { shape: IShape } & Omit<ShapeFrameProps, "shape" | "children"> &
     ChildSelectionProps
@@ -87,23 +91,31 @@ export const Screen: React.FC<
   const SNAP_TOL = useMemo(() => 6 / (scale || 1), [scale]);
 
   /**
-   * Build snap candidates (in local screen coords) for horizontal (x) and vertical (y):
-   * - screen edges/center
-   * - siblings’ edges and centers (exclude current child)
+   * Build snap candidates (in local screen coords):
+   * - screen edges (0 / width, 0 / height)
+   * - screen centers (width/2, height/2) — optional
+   * - siblings’ edges and centers (excluding the active child)
    */
   const buildSnapSets = useCallback(
     (activeId: string) => {
-      const screenX = [0, shape.width / 2, shape.width];
-      const screenY = [0, shape.height / 2, shape.height];
+      const xs: number[] = [];
+      const ys: number[] = [];
 
-      const others = children.filter((c) => c.id !== activeId);
-      const xs: number[] = [...screenX];
-      const ys: number[] = [...screenY];
+      if (INCLUDE_SCREEN_EDGES) {
+        xs.push(0, shape.width);
+        ys.push(0, shape.height);
+      }
+      if (INCLUDE_SCREEN_CENTERS) {
+        xs.push(shape.width / 2);
+        ys.push(shape.height / 2);
+      }
 
-      for (const c of others) {
+      for (const c of children) {
+        if (c.id === activeId) continue;
         xs.push(c.x, c.x + c.width / 2, c.x + c.width);
         ys.push(c.y, c.y + c.height / 2, c.y + c.height);
       }
+
       return {
         xs: Array.from(new Set(xs)).sort((a, b) => a - b),
         ys: Array.from(new Set(ys)).sort((a, b) => a - b),
