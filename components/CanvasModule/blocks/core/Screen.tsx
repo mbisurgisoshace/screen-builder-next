@@ -27,6 +27,13 @@ type ChildResizeState = null | {
   init: { x: number; y: number; w: number; h: number };
 };
 
+/** Visual guide line within the screen (local coords) */
+type GuideLine =
+  | { type: "v"; x: number; fromY: number; toY: number }
+  | { type: "h"; y: number; fromX: number; toX: number };
+
+type ResizeHandle = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
+
 type ChildSelectionProps = {
   onChildMouseDown?: (
     e: React.PointerEvent,
@@ -60,6 +67,9 @@ export const Screen: React.FC<
   const startLocalRef = useRef<{ x: number; y: number } | null>(null);
   const [isResizingChild, setIsResizingChild] = useState(false);
 
+  // Smart guides state (rendered only during active drag/resize)
+  const [guides, setGuides] = useState<GuideLine[]>([]);
+
   // Convert client pointer to world coords using the inner transformed element
   const clientToWorldFast = useCallback(
     (clientX: number, clientY: number) => {
@@ -72,6 +82,234 @@ export const Screen: React.FC<
     },
     [canvasEl, scale]
   );
+
+  /** Snap tolerance in world units ≈ 6px on screen */
+  const SNAP_TOL = useMemo(() => 6 / (scale || 1), [scale]);
+
+  /**
+   * Build snap candidates (in local screen coords) for horizontal (x) and vertical (y):
+   * - screen edges/center
+   * - siblings’ edges and centers (exclude current child)
+   */
+  const buildSnapSets = useCallback(
+    (activeId: string) => {
+      const screenX = [0, shape.width / 2, shape.width];
+      const screenY = [0, shape.height / 2, shape.height];
+
+      const others = children.filter((c) => c.id !== activeId);
+      const xs: number[] = [...screenX];
+      const ys: number[] = [...screenY];
+
+      for (const c of others) {
+        xs.push(c.x, c.x + c.width / 2, c.x + c.width);
+        ys.push(c.y, c.y + c.height / 2, c.y + c.height);
+      }
+      return {
+        xs: Array.from(new Set(xs)).sort((a, b) => a - b),
+        ys: Array.from(new Set(ys)).sort((a, b) => a - b),
+      };
+    },
+    [children, shape.width, shape.height]
+  );
+
+  /** Helper to pick nearest candidate within tolerance; returns snapped value + guide lines */
+  function snapPosition(
+    proposedLeft: number,
+    proposedTop: number,
+    width: number,
+    height: number,
+    snaps: { xs: number[]; ys: number[] },
+    tol: number
+  ) {
+    let x = proposedLeft;
+    let y = proposedTop;
+    const gx: GuideLine[] = [];
+    const gy: GuideLine[] = [];
+
+    // Our element edges/centers (proposed)
+    const L = proposedLeft;
+    const CX = proposedLeft + width / 2;
+    const R = proposedLeft + width;
+
+    const T = proposedTop;
+    const CY = proposedTop + height / 2;
+    const B = proposedTop + height;
+
+    // Try snapping each of the 3 x positions to candidates
+    const testX = [
+      { kind: "L", val: L, apply: (snap: number) => (x += snap - L) },
+      { kind: "CX", val: CX, apply: (snap: number) => (x += snap - CX) },
+      { kind: "R", val: R, apply: (snap: number) => (x += snap - R) },
+    ] as const;
+
+    // same for y
+    const testY = [
+      { kind: "T", val: T, apply: (snap: number) => (y += snap - T) },
+      { kind: "CY", val: CY, apply: (snap: number) => (y += snap - CY) },
+      { kind: "B", val: B, apply: (snap: number) => (y += snap - B) },
+    ] as const;
+
+    // find best X snap
+    let bestX: {
+      delta: number;
+      to: number;
+      kind: (typeof testX)[number]["kind"];
+    } | null = null;
+    for (const probe of testX) {
+      for (const cand of snaps.xs) {
+        const d = Math.abs(cand - probe.val);
+        if (d <= tol && (!bestX || d < bestX.delta)) {
+          bestX = { delta: d, to: cand, kind: probe.kind };
+        }
+      }
+    }
+    if (bestX) {
+      const beforeX = x;
+      const chosen = testX.find((t) => t.kind === bestX!.kind)!;
+      chosen.apply(bestX.to);
+      // vertical guide line at snapped x
+      gx.push({
+        type: "v",
+        x: bestX.to,
+        fromY: 0,
+        toY: shape.height,
+      });
+      // ensure x moved (avoid floating errors)
+      if (Math.abs(beforeX - x) < 1e-6)
+        x =
+          bestX.to -
+          (bestX.kind === "R" ? width : bestX.kind === "CX" ? width / 2 : 0);
+    }
+
+    // find best Y snap
+    let bestY: {
+      delta: number;
+      to: number;
+      kind: (typeof testY)[number]["kind"];
+    } | null = null;
+    for (const probe of testY) {
+      for (const cand of snaps.ys) {
+        const d = Math.abs(cand - probe.val);
+        if (d <= tol && (!bestY || d < bestY.delta)) {
+          bestY = { delta: d, to: cand, kind: probe.kind };
+        }
+      }
+    }
+    if (bestY) {
+      const beforeY = y;
+      const chosen = testY.find((t) => t.kind === bestY!.kind)!;
+      chosen.apply(bestY.to);
+      gy.push({
+        type: "h",
+        y: bestY.to,
+        fromX: 0,
+        toX: shape.width,
+      });
+      if (Math.abs(beforeY - y) < 1e-6)
+        y =
+          bestY.to -
+          (bestY.kind === "B" ? height : bestY.kind === "CY" ? height / 2 : 0);
+    }
+
+    return { x, y, guideLines: [...gx, ...gy] as GuideLine[] };
+  }
+
+  /**
+   * Resize snapping: given the handle, we only snap the edges that are "active".
+   * This returns new x/y/w/h and guide lines (only for the snapped edges).
+   */
+  function snapResize(
+    init: { x: number; y: number; w: number; h: number },
+    proposal: { x: number; y: number; w: number; h: number },
+    handle: ResizeHandle,
+    snaps: { xs: number[]; ys: number[] },
+    tol: number
+  ) {
+    let { x, y, w, h } = proposal;
+    const lines: GuideLine[] = [];
+
+    // active edges for this handle
+    const affectsLeft = handle.includes("w");
+    const affectsRight = handle.includes("e");
+    const affectsTop = handle.includes("n");
+    const affectsBottom = handle.includes("s");
+
+    // try snapping left/right
+    if (affectsLeft || affectsRight) {
+      const candidates = snaps.xs;
+      // compute proposed edges
+      let L = x;
+      let R = x + w;
+
+      let bestForL: { d: number; to: number } | null = null;
+      let bestForR: { d: number; to: number } | null = null;
+
+      if (affectsLeft) {
+        for (const c of candidates) {
+          const d = Math.abs(c - L);
+          if (d <= tol && (!bestForL || d < bestForL.d))
+            bestForL = { d, to: c };
+        }
+      }
+      if (affectsRight) {
+        for (const c of candidates) {
+          const d = Math.abs(c - R);
+          if (d <= tol && (!bestForR || d < bestForR.d))
+            bestForR = { d, to: c };
+        }
+      }
+
+      // apply best snaps, favor the smaller delta if both present
+      if (bestForL && (!bestForR || bestForL.d <= bestForR.d)) {
+        const delta = bestForL.to - L;
+        x += delta;
+        w -= delta;
+        lines.push({ type: "v", x: bestForL.to, fromY: 0, toY: shape.height });
+      } else if (bestForR) {
+        const delta = bestForR.to - R;
+        w += delta;
+        lines.push({ type: "v", x: bestForR.to, fromY: 0, toY: shape.height });
+      }
+    }
+
+    // try snapping top/bottom
+    if (affectsTop || affectsBottom) {
+      const candidates = snaps.ys;
+      let T = y;
+      let B = y + h;
+
+      let bestForT: { d: number; to: number } | null = null;
+      let bestForB: { d: number; to: number } | null = null;
+
+      if (affectsTop) {
+        for (const c of candidates) {
+          const d = Math.abs(c - T);
+          if (d <= tol && (!bestForT || d < bestForT.d))
+            bestForT = { d, to: c };
+        }
+      }
+      if (affectsBottom) {
+        for (const c of candidates) {
+          const d = Math.abs(c - B);
+          if (d <= tol && (!bestForB || d < bestForB.d))
+            bestForB = { d, to: c };
+        }
+      }
+
+      if (bestForT && (!bestForB || bestForT.d <= bestForB.d)) {
+        const delta = bestForT.to - T;
+        y += delta;
+        h -= delta;
+        lines.push({ type: "h", y: bestForT.to, fromX: 0, toX: shape.width });
+      } else if (bestForB) {
+        const delta = bestForB.to - B;
+        h += delta;
+        lines.push({ type: "h", y: bestForB.to, fromX: 0, toX: shape.width });
+      }
+    }
+
+    return { x, y, w, h, guideLines: lines };
+  }
 
   // --- Child dragging (ignore if the event started on a resize handle) ---
   const onChildPointerDown = useCallback(
@@ -98,6 +336,8 @@ export const Screen: React.FC<
         initX: child.x,
         initY: child.y,
       };
+
+      setGuides([]); // clear any stale guides
     },
     [onChildMouseDown, shape.id, clientToWorldFast]
   );
@@ -121,6 +361,7 @@ export const Screen: React.FC<
         init: { x: child.x, y: child.y, w: child.width, h: child.height },
       };
       setIsResizingChild(true); // activate window listeners
+      setGuides([]);
     },
     [clientToWorldFast, shape.x, shape.y]
   );
@@ -138,68 +379,78 @@ export const Screen: React.FC<
       const dx = cur.x - st.startLocal.x;
       const dy = cur.y - st.startLocal.y;
 
-      let { x, y, w, h } = st.init;
+      let prop = { x: st.init.x, y: st.init.y, w: st.init.w, h: st.init.h };
       const MIN_W = 24;
       const MIN_H = 16;
 
       switch (st.handle) {
         case "n":
-          y = st.init.y + dy;
-          h = st.init.h - dy;
+          prop.y = st.init.y + dy;
+          prop.h = st.init.h - dy;
           break;
         case "s":
-          h = st.init.h + dy;
+          prop.h = st.init.h + dy;
           break;
         case "w":
-          x = st.init.x + dx;
-          w = st.init.w - dx;
+          prop.x = st.init.x + dx;
+          prop.w = st.init.w - dx;
           break;
         case "e":
-          w = st.init.w + dx;
+          prop.w = st.init.w + dx;
           break;
         case "nw":
-          x = st.init.x + dx;
-          w = st.init.w - dx;
-          y = st.init.y + dy;
-          h = st.init.h - dy;
+          prop.x = st.init.x + dx;
+          prop.w = st.init.w - dx;
+          prop.y = st.init.y + dy;
+          prop.h = st.init.h - dy;
           break;
         case "ne":
-          y = st.init.y + dy;
-          h = st.init.h - dy;
-          w = st.init.w + dx;
+          prop.y = st.init.y + dy;
+          prop.h = st.init.h - dy;
+          prop.w = st.init.w + dx;
           break;
         case "sw":
-          x = st.init.x + dx;
-          w = st.init.w - dx;
-          h = st.init.h + dy;
+          prop.x = st.init.x + dx;
+          prop.w = st.init.w - dx;
+          prop.h = st.init.h + dy;
           break;
         case "se":
-          w = st.init.w + dx;
-          h = st.init.h + dy;
+          prop.w = st.init.w + dx;
+          prop.h = st.init.h + dy;
           break;
       }
 
       // Min size
-      w = Math.max(MIN_W, w);
-      h = Math.max(MIN_H, h);
+      prop.w = Math.max(MIN_W, prop.w);
+      prop.h = Math.max(MIN_H, prop.h);
 
-      // Clamp to screen bounds
-      x = Math.min(Math.max(x, 0), Math.max(0, shape.width - w));
-      y = Math.min(Math.max(y, 0), Math.max(0, shape.height - h));
+      // Clamp inside screen
+      prop.x = Math.min(Math.max(prop.x, 0), Math.max(0, shape.width - prop.w));
+      prop.y = Math.min(
+        Math.max(prop.y, 0),
+        Math.max(0, shape.height - prop.h)
+      );
 
+      // Snap relevant edges for this handle
+      const snaps = buildSnapSets(st.id);
+      const snapped = snapResize(st.init, prop, st.handle, snaps, SNAP_TOL);
+
+      // Apply & show guides
       updateChild(shape.id, st.id, (c) => ({
         ...c,
-        x,
-        y,
-        width: w,
-        height: h,
+        x: snapped.x,
+        y: snapped.y,
+        width: snapped.w,
+        height: snapped.h,
       }));
+      setGuides(snapped.guideLines);
     };
 
     const onUp = () => {
       resizeRef.current = null;
       startLocalRef.current = null;
       setIsResizingChild(false);
+      setGuides([]);
     };
 
     window.addEventListener("mousemove", onMove);
@@ -216,6 +467,8 @@ export const Screen: React.FC<
     shape.width,
     shape.height,
     updateChild,
+    buildSnapSets,
+    SNAP_TOL,
   ]);
 
   // Drag move (only when not resizing)
@@ -231,17 +484,25 @@ export const Screen: React.FC<
       const dx = currLocal.x - startLocalRef.current.x;
       const dy = currLocal.y - startLocalRef.current.y;
 
-      let nx = initX + dx;
-      let ny = initY + dy;
+      // proposed new position
+      let px = initX + dx;
+      let py = initY + dy;
 
+      // clamp inside screen using current child size
       const child = children.find((c) => c.id === id);
-      const cw = child?.width ?? 1;
-      const ch = child?.height ?? 1;
+      if (!child) return;
+      const cw = child.width;
+      const ch = child.height;
 
-      nx = Math.min(Math.max(nx, 0), Math.max(0, shape.width - cw));
-      ny = Math.min(Math.max(ny, 0), Math.max(0, shape.height - ch));
+      px = Math.min(Math.max(px, 0), Math.max(0, shape.width - cw));
+      py = Math.min(Math.max(py, 0), Math.max(0, shape.height - ch));
 
-      updateChild(shape.id, id, (c) => ({ ...c, x: nx, y: ny }));
+      // Snap (to screen + siblings)
+      const snaps = buildSnapSets(id);
+      const snapped = snapPosition(px, py, cw, ch, snaps, SNAP_TOL);
+
+      updateChild(shape.id, id, (c) => ({ ...c, x: snapped.x, y: snapped.y }));
+      setGuides(snapped.guideLines);
     },
     [
       children,
@@ -252,6 +513,8 @@ export const Screen: React.FC<
       shape.x,
       shape.y,
       updateChild,
+      buildSnapSets,
+      SNAP_TOL,
     ]
   );
 
@@ -259,6 +522,7 @@ export const Screen: React.FC<
     e.stopPropagation();
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
     dragRef.current = null;
+    setGuides([]);
     // Note: resize end is handled on window mouseup to catch outside releases
   }, []);
 
@@ -351,6 +615,37 @@ export const Screen: React.FC<
               </div>
             );
           })}
+
+          {/* Smart Guides */}
+          {guides.map((g, i) =>
+            g.type === "v" ? (
+              <div
+                key={`vg-${i}`}
+                className="absolute pointer-events-none"
+                style={{
+                  left: `${g.x}px`,
+                  top: `${Math.min(g.fromY, g.toY)}px`,
+                  width: 0,
+                  height: `${Math.abs(g.toY - g.fromY)}px`,
+                  borderLeft: "1px dashed #60A5FA",
+                  zIndex: 250,
+                }}
+              />
+            ) : (
+              <div
+                key={`hg-${i}`}
+                className="absolute pointer-events-none"
+                style={{
+                  top: `${g.y}px`,
+                  left: `${Math.min(g.fromX, g.toX)}px`,
+                  height: 0,
+                  width: `${Math.abs(g.toX - g.fromX)}px`,
+                  borderTop: "1px dashed #60A5FA",
+                  zIndex: 250,
+                }}
+              />
+            )
+          )}
         </div>
       </div>
     </ScreenFrame>
