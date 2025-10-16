@@ -228,6 +228,7 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
     <ShapeFrame
       {...props}
       resizable={true}
+      showTagsToolbar={false}
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div

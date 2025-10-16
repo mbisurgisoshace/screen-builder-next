@@ -45,6 +45,8 @@ export interface ShapeFrameProps {
 
   onChangeTags?: (id: string, tagIds: string[]) => void;
   onCommitStyle?: (id: string, patch: Partial<IShape>) => void;
+
+  showTagsToolbar?: boolean;
 }
 
 export const ShapeFrame: React.FC<ShapeFrameProps> = ({
@@ -63,6 +65,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   interactive = true,
   onCommitStyle,
   positioned = true,
+  showTagsToolbar = true,
 }) => {
   const { ref, height } = useElementSize<HTMLDivElement>({
     box: "content-box",
@@ -249,6 +252,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
           //onDuplicate={onDuplicateShape}
           //onDelete={onDeleteShape}
           //onLockToggle={onLockToggle}
+          showTagsToolbar={showTagsToolbar}
           locked={Boolean((shape as any).locked)}
         />
       )}

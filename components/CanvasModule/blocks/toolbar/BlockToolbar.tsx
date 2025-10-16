@@ -15,6 +15,7 @@ type Props = {
   onDelete?: (id: string) => void;
   onLockToggle?: (id: string, lock: boolean) => void;
   locked?: boolean;
+  showTagsToolbar?: boolean;
 };
 
 export const BlockToolbar: React.FC<Props> = ({
@@ -27,6 +28,7 @@ export const BlockToolbar: React.FC<Props> = ({
   onDelete,
   onLockToggle,
   locked = false,
+  showTagsToolbar = true,
 }) => {
   const posStyle: React.CSSProperties = flipBelow
     ? { top: "100%", transform: `translate(-50%, ${gap}px)` }
@@ -46,13 +48,18 @@ export const BlockToolbar: React.FC<Props> = ({
         {/* Bubble */}
         <div className="flex items-center text-xs gap-1.5 px-2 py-1.5 rounded-2xl bg-white/98 backdrop-blur border border-gray-200 shadow-lg ring-1 ring-black/5 w-max">
           {/* Default set — TagPicker (icon trigger works too if you added it) */}
-          <TagPicker
-            // trigger="icon" // uncomment if you implemented the icon trigger
-            value={shape.tags ?? []}
-            onChange={(names) => onChangeTags?.(shape.id, names)}
-          />
+          {showTagsToolbar && (
+            <>
+              <TagPicker
+                // trigger="icon" // uncomment if you implemented the icon trigger
+                value={shape.tags ?? []}
+                onChange={(names) => onChangeTags?.(shape.id, names)}
+              />
 
-          <div className="w-px h-5 bg-gray-200" />
+              <div className="w-px h-5 bg-gray-200" />
+              <div className="w-px h-5 bg-gray-200" />
+            </>
+          )}
 
           {/* <button
             className="p-1.5 rounded-lg hover:bg-gray-50"
@@ -96,7 +103,6 @@ export const BlockToolbar: React.FC<Props> = ({
           {/* Block-specific extras appended to the right */}
           {extras && (
             <>
-              <div className="w-px h-5 bg-gray-200" />
               <div className="flex items-center gap-3">{extras}</div>
             </>
           )}

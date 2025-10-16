@@ -562,7 +562,7 @@ export const Screen: React.FC<
         className="w-full h-full relative border rounded-md bg-white"
         style={{
           background: shape.color || "#ffffff",
-          overflow: "hidden", // keep children clipped by screen
+          //overflow: "hidden", // keep children clipped by screen
           boxShadow: "0 0 0 1px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)",
         }}
       >
