@@ -17,11 +17,11 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
       showConnectors={props.isSelected && props.selectedCount === 1}
     >
       <div
-        className="w-full flex items-center justify-center"
+        className="w-full h-full flex items-center justify-center"
         style={{ pointerEvents: "none" }}
       >
         <div
-          className="w-full px-4 py-1.5 rounded-md border text-sm font-medium truncate text-center"
+          className="w-full h-full px-4 py-1.5 rounded-md border text-sm font-medium truncate flex items-center justify-center"
           style={{
             background: "#111827",
             color: "#fff",

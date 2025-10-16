@@ -129,6 +129,10 @@ export type Attachment = {
 
 export type ShapeComponentProps = {
   shape: Shape;
+  scale?: number;
+  canvasEl?: HTMLDivElement | null;
+  positioned?: boolean;
+  position?: { x: number; y: number };
   isSelected: boolean;
   selectedCount: number;
   // renderHandles: (shape: Shape) => React.ReactNode;

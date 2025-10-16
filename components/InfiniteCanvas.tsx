@@ -974,6 +974,8 @@ export default function InfiniteCanvas({
   const topLevel = shapes.filter((s) => !s.parentId);
   const screens = shapes.filter((s) => s.type === "screen");
 
+  const worldRef = useRef<HTMLDivElement>(null);
+
   return (
     <div className="w-full h-full overflow-hidden bg-[#EFF0F4] relative flex">
       <div className="absolute top-4 right-4 z-20 flex flex-row gap-6 bg-black p-2 rounded-md text-white">
@@ -1400,6 +1402,7 @@ export default function InfiniteCanvas({
         )}
 
         <div
+          ref={worldRef}
           className="absolute top-0 left-0 w-full h-full"
           style={{
             transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
@@ -1544,6 +1547,10 @@ export default function InfiniteCanvas({
                     key={shape.id}
                     shape={shape}
                     interactive={editable}
+                    scale={scale}
+                    //canvasEl={canvasRef.current}
+                    canvasEl={worldRef.current}
+                    position={position}
                     //renderHandles={renderHandles}
                     onResizeStart={startResizing}
                     selectedCount={selectedShapeIds.length}

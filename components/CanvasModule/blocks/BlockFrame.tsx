@@ -12,7 +12,10 @@ type Connector = "top" | "right" | "bottom" | "left";
 
 export interface ShapeFrameProps {
   shape: IShape;
-
+  scale?: number;
+  positioned?: boolean;
+  canvasEl?: HTMLDivElement | null;
+  position?: { x: number; y: number };
   // selection state
   isSelected: boolean;
   selectedCount: number;
@@ -59,6 +62,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   onChangeTags,
   interactive = true,
   onCommitStyle,
+  positioned = true,
 }) => {
   const { ref, height } = useElementSize<HTMLDivElement>({
     box: "content-box",
@@ -210,17 +214,30 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
       ref={ref}
       data-shapeid={shape.id}
       onMouseDown={onMouseDown}
-      style={{
-        position: "absolute",
-        left: shape.x,
-        top: shape.y,
-        width: shape.width,
-        // height: shape.height,
-        height: "min-content",
-        //minHeight,
-        zIndex: isSelected ? 50 : 45,
-        pointerEvents: canInteract ? "auto" : "none",
-      }}
+      // style={{
+      //   position: "absolute",
+      //   left: shape.x,
+      //   top: shape.y,
+      //   width: shape.width,
+      //   // height: shape.height,
+      //   height: "min-content",
+      //   //minHeight,
+      //   zIndex: isSelected ? 50 : 45,
+      //   pointerEvents: canInteract ? "auto" : "none",
+      // }}
+      style={
+        positioned
+          ? {
+              left: `${shape.x}px`,
+              top: `${shape.y}px`,
+              width: `${shape.width}px`,
+              height: `${shape.height}px`,
+            }
+          : {
+              width: `${shape.width}px`,
+              height: `${shape.height}px`,
+            }
+      }
     >
       {/* Floating toolbar (single select): Tag picker */}
       {showSingleSelectionUI && (
