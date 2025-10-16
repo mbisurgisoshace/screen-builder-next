@@ -623,6 +623,10 @@ export const Screen: React.FC<
                     onChildResizeStart(evt, child, handle)
                   }
                   selectedCount={selectedCount}
+                  //@ts-ignore
+                  onCommitStyle={(_id, patch) =>
+                    updateChild(shape.id, child.id, (c) => ({ ...c, ...patch }))
+                  }
                 />
               </div>
             );

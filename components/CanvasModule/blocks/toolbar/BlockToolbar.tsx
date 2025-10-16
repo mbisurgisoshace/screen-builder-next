@@ -38,6 +38,9 @@ export const BlockToolbar: React.FC<Props> = ({
       style={{ ...posStyle, zIndex: 60 }}
       data-nodrag="true"
       onMouseDown={(e) => e.stopPropagation()}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+      }}
     >
       <div className="relative">
         {/* Bubble */}
