@@ -13,6 +13,7 @@ import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { ScreenFrame } from "../ScreenFrame";
 import { shapeRegistry } from "../blockRegistry";
 import { useScreenChildren } from "../../hooks/realtime/useRealtimeShapes";
+import { useRegisterToolbarExtras } from "../toolbar/toolbarExtrasStore";
 
 type ChildDragState = null | {
   id: string;
@@ -47,6 +48,38 @@ type ChildSelectionProps = {
 const INCLUDE_SCREEN_EDGES = true;
 const INCLUDE_SCREEN_CENTERS = true;
 
+export type ScreenPreset = {
+  id: string;
+  label: string;
+  width: number;
+  height: number;
+  platform: "web" | "mobile" | "tablet";
+};
+
+export const SCREEN_PRESETS: ScreenPreset[] = [
+  {
+    id: "desktop",
+    label: "Desktop (1440×900)",
+    width: 1440,
+    height: 900,
+    platform: "web",
+  },
+  {
+    id: "tablet",
+    label: "Tablet (768×1024)",
+    width: 768,
+    height: 1024,
+    platform: "tablet",
+  },
+  {
+    id: "mobile",
+    label: "Mobile (390×844)",
+    width: 390,
+    height: 844,
+    platform: "mobile",
+  },
+];
+
 export const Screen: React.FC<
   { shape: IShape } & Omit<ShapeFrameProps, "shape" | "children"> &
     ChildSelectionProps
@@ -61,9 +94,15 @@ export const Screen: React.FC<
   onResizeStart,
   onChildMouseDown,
   isChildSelected,
+  onCommitStyle,
 }) => {
   const { updateChild } = useScreenChildren();
   const children = shape.children ?? [];
+  const wrapRef = React.useRef<HTMLDivElement>(null);
+
+  const [openPicker, setOpenPicker] = useState<
+    null | "bg" | "fg" | "size" | "fs"
+  >(null);
 
   // drag + resize state (local to this screen)
   const dragRef = useRef<ChildDragState>(null);
@@ -539,12 +578,75 @@ export const Screen: React.FC<
   }, []);
 
   const presetLabel =
-    shape.screenPreset ??
-    (shape.width >= 1200
-      ? "Desktop"
-      : shape.width >= 700
-      ? "Tablet"
-      : "Mobile");
+    shape.width >= 1200 ? "Desktop" : shape.width >= 700 ? "Tablet" : "Mobile";
+
+  useRegisterToolbarExtras(
+    shape.id,
+    () => (
+      <>
+        <div ref={wrapRef} className="flex items-center gap-2 z-100">
+          {/* Font size */}
+          <div className="relative">
+            <button
+              className="px-2 h-[26px] rounded bg-gray-100 border flex items-center gap-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenPicker(openPicker === "fs" ? null : "fs");
+              }}
+            >
+              <span className="text-gray-500">Size</span>
+              <span className="min-w-[5rem] px-1 py-0.5 rounded border bg-white text-xs text-gray-700 grid place-items-center">
+                {presetLabel}
+              </span>
+            </button>
+
+            {openPicker === "fs" && (
+              <div
+                className="absolute z-50 mt-1 w-[180px] rounded-md border bg-white shadow-lg"
+                onClick={(e) => e.stopPropagation()} // keep dropdown open when clicking inside
+              >
+                <div className="max-h-[600px] overflow-auto py-1">
+                  {SCREEN_PRESETS.map((s) => (
+                    <button
+                      key={s.id}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 flex items-center justify-between"
+                      onClick={() => {
+                        onCommitStyle?.(shape.id, {
+                          width: s.width,
+                          height: s.height,
+                        });
+                        setOpenPicker(null);
+                      }}
+                    >
+                      <span>{s.label}</span>
+                      {/* <span
+                              className={
+                                s === (shape.textSize ?? 14)
+                                  ? "i-checked text-gray-700"
+                                  : "opacity-0"
+                              }
+                            >
+                              ✓
+                            </span> */}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </>
+    ),
+    [
+      shape.id,
+      shape.color,
+      openPicker,
+      shape.textColor,
+      shape.textStyle,
+      shape.textSize,
+      onCommitStyle,
+    ]
+  );
 
   return (
     <ScreenFrame
@@ -568,7 +670,7 @@ export const Screen: React.FC<
       >
         {/* Top bar label */}
         <div
-          className="absolute left-2 top-2 text-xs px-1.5 py-0.5 rounded bg-black/70 text-white"
+          className="absolute left-2 -top-7 text-xs px-1.5 py-0.5 rounded bg-black/70 text-white"
           style={{ pointerEvents: "none" }}
         >
           {presetLabel} · {Math.round(shape.width)}×{Math.round(shape.height)}

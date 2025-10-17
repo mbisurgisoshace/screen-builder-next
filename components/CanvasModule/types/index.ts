@@ -2,12 +2,15 @@ export type ShapeType =
   | "card"
   | "rect"
   | "text"
+  | "input"
   | "image"
   | "table"
   | "screen"
   | "button"
   | "ellipse"
+  | "dropdown"
   | "question"
+  | "checkbox"
   | "interview"
   | "feature_idea"
   | "question_answer";
@@ -111,6 +114,8 @@ export interface Shape {
   children?: Shape[];
 
   label?: string;
+
+  placeholder?: string;
 }
 
 export type Attachment = {

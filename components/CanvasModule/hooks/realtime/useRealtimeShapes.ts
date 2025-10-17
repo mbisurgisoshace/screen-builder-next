@@ -213,12 +213,75 @@ export function useRealtimeShapes() {
 
   const removeShapes = useMutation(({ storage }, ids: string[]) => {
     const list = storage.get("shapes") as LiveList<LiveObject<any>>;
-    const set = new Set(ids);
-    // remove from end to keep indices stable
+
+    // Parse incoming ids:
+    // - plain IDs (could be top-level OR child ids)
+    // - encoded child tokens: "child:<screenId>:<childId>" (we'll also accept "child:<childId>")
+    type ChildTarget = { screenId?: string; childId: string };
+
+    const plainIds: string[] = [];
+    const childTargets: ChildTarget[] = [];
+
+    for (const raw of ids) {
+      if (raw.startsWith("child:")) {
+        const parts = raw.split(":"); // ["child", <screenId>?, <childId>?]
+        if (parts.length === 3) {
+          // child:<screenId>:<childId>
+          childTargets.push({ screenId: parts[1], childId: parts[2] });
+        } else if (parts.length === 2) {
+          // child:<childId>
+          childTargets.push({ childId: parts[1] });
+        }
+      } else {
+        plainIds.push(raw); // could be top-level OR child id
+      }
+    }
+
+    // 1) Remove top-level shapes by exact id
+    if (plainIds.length) {
+      const topSet = new Set(plainIds);
+      for (let i = list.length - 1; i >= 0; i--) {
+        const lo = list.get(i)!;
+        const id = lo.get("id") as string;
+        if (topSet.has(id)) {
+          list.delete(i);
+          topSet.delete(id);
+        }
+      }
+      // Note: we don't early-return even if topSet is now empty,
+      // because some of the plainIds might actually be child IDs.
+    }
+
+    // 2) Remove children from screens
+    // Build a set of child IDs to remove, including:
+    // - from encoded child targets
+    // - any remaining plain IDs (treat them as possible child IDs)
+    const childIdSet = new Set<string>([
+      ...childTargets.map((t) => t.childId),
+      ...plainIds, // if any of these are child ids, they'll be removed below
+    ]);
+
     for (let i = list.length - 1; i >= 0; i--) {
-      const lo = list.get(i)!;
-      if (set.has(lo.get("id"))) {
-        list.delete(i);
+      const lo = list.get(i) as LiveObject<any>;
+      if (lo.get("type") !== "screen") continue;
+
+      const screenId = lo.get("id") as string;
+      const prev: any[] = (lo.get("children") as any[]) || [];
+      if (prev.length === 0) continue;
+
+      const next = prev.filter((c) => {
+        const isSpecificHit = childTargets.some((t) =>
+          t.screenId
+            ? t.screenId === screenId && t.childId === c.id
+            : t.childId === c.id
+        );
+        const isGenericHit = childIdSet.has(c.id);
+        return !(isSpecificHit || isGenericHit);
+      });
+
+      if (next.length !== prev.length) {
+        lo.set("children", next);
+        // optional: you could also prune matched tokens here if you need to track leftovers
       }
     }
   }, []);

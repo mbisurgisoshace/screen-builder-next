@@ -14,6 +14,9 @@ import { QuestionAnswer } from "./custom/QuestionAnswer";
 import { ExampleBrainstormCard } from "./custom/ExampleBrainstormCard";
 import { Screen } from "./core/Screen";
 import { Button } from "./core/Button";
+import { Input } from "./core/Input";
+import { Dropdown } from "./core/Dropdown";
+import { Checkbox } from "./core/Checkbox";
 
 // Registry maps type to corresponding component
 export const shapeRegistry: Record<string, ShapeComponent> = {
@@ -30,4 +33,7 @@ export const shapeRegistry: Record<string, ShapeComponent> = {
   example_brainstorm_card: ExampleBrainstormCard,
   screen: Screen,
   button: Button,
+  input: Input,
+  dropdown: Dropdown,
+  checkbox: Checkbox,
 };

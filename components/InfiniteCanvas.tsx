@@ -162,8 +162,6 @@ export default function InfiniteCanvas({
     liveShapesReady,
   } = useRealtimeShapes();
 
-  console.log("shapes", shapes);
-
   const {
     //shapes,
     setShapes,
@@ -736,6 +734,159 @@ export default function InfiniteCanvas({
 
       return;
     }
+
+    if (type === "input") {
+      // Find topmost screen under world point (your helper or quick inline)
+      const screens = (shapes as IShape[]).filter((s) => s.type === "screen");
+      const parent = (() => {
+        for (let i = screens.length - 1; i >= 0; i--) {
+          const s = screens[i];
+          const inside =
+            x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height;
+          if (inside) return s;
+        }
+        return undefined;
+      })();
+
+      if (!parent) return; // ignore dropping button outside a screen
+
+      const id = uuidv4();
+      const w = 120,
+        h = 40;
+
+      // Convert world → local coords
+      let lx = x - parent.x - w / 2;
+      let ly = y - parent.y - h / 2;
+
+      // Clamp inside local bounds
+      lx = Math.min(Math.max(lx, 0), Math.max(0, parent.width - w));
+      ly = Math.min(Math.max(ly, 0), Math.max(0, parent.height - h));
+
+      const child: IShape = {
+        id,
+        type: "input",
+        x: lx,
+        y: ly,
+        width: w,
+        height: h,
+        color: "#ffffff",
+        textColor: "#111827",
+        textSize: 14,
+        placeholder: "Input",
+        parentId: parent.id, // optional reference
+      };
+
+      // Push into the parent's nested children
+      updateShape(parent.id, (ps) => ({
+        ...ps,
+        children: [...(ps.children ?? []), child],
+      }));
+
+      return;
+    }
+
+    if (type === "dropdown") {
+      // Find topmost screen under world point (your helper or quick inline)
+      const screens = (shapes as IShape[]).filter((s) => s.type === "screen");
+      const parent = (() => {
+        for (let i = screens.length - 1; i >= 0; i--) {
+          const s = screens[i];
+          const inside =
+            x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height;
+          if (inside) return s;
+        }
+        return undefined;
+      })();
+
+      if (!parent) return; // ignore dropping button outside a screen
+
+      const id = uuidv4();
+      const w = 120,
+        h = 40;
+
+      // Convert world → local coords
+      let lx = x - parent.x - w / 2;
+      let ly = y - parent.y - h / 2;
+
+      // Clamp inside local bounds
+      lx = Math.min(Math.max(lx, 0), Math.max(0, parent.width - w));
+      ly = Math.min(Math.max(ly, 0), Math.max(0, parent.height - h));
+
+      const child: IShape = {
+        id,
+        type: "dropdown",
+        x: lx,
+        y: ly,
+        width: w,
+        height: h,
+        color: "#ffffff",
+        textColor: "#111827",
+        textSize: 14,
+        label: "Select…",
+        parentId: parent.id,
+      };
+
+      // Push into the parent's nested children
+      updateShape(parent.id, (ps) => ({
+        ...ps,
+        children: [...(ps.children ?? []), child],
+      }));
+
+      return;
+    }
+
+    if (type === "checkbox") {
+      // Find topmost screen under world point (your helper or quick inline)
+      const screens = (shapes as IShape[]).filter((s) => s.type === "screen");
+      const parent = (() => {
+        for (let i = screens.length - 1; i >= 0; i--) {
+          const s = screens[i];
+          const inside =
+            x >= s.x && x <= s.x + s.width && y >= s.y && y <= s.y + s.height;
+          if (inside) return s;
+        }
+        return undefined;
+      })();
+
+      if (!parent) return; // ignore dropping button outside a screen
+
+      const id = uuidv4();
+      const w = 120,
+        h = 40;
+
+      // Convert world → local coords
+      let lx = x - parent.x - w / 2;
+      let ly = y - parent.y - h / 2;
+
+      // Clamp inside local bounds
+      lx = Math.min(Math.max(lx, 0), Math.max(0, parent.width - w));
+      ly = Math.min(Math.max(ly, 0), Math.max(0, parent.height - h));
+
+      const child: IShape = {
+        id,
+        type: "checkbox",
+        x: lx,
+        y: ly,
+        width: w,
+        height: h,
+        textColor: "#111827",
+        textSize: 14,
+        label: "Checkbox",
+        checked: true, // purely visual
+        color: "#3B82F6", // used when checked (box fill)
+        parentId: parent.id,
+      };
+
+      // Push into the parent's nested children
+      updateShape(parent.id, (ps) => ({
+        ...ps,
+        children: [...(ps.children ?? []), child],
+      }));
+
+      return;
+    }
+
+    // 3) Regular shape from toolbar
 
     addShape(type, x, y, uuidv4());
   };
@@ -1381,6 +1532,69 @@ export default function InfiniteCanvas({
             />
             <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
               Button
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "input");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Input"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Input"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Input
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "dropdown");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Dropdown"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Dropdown"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Dropdown
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "checkbox");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Checkbox"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Checkbox"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Checkbox
             </span>
           </button>
         </div>
