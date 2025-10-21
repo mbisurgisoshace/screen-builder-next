@@ -769,8 +769,10 @@ export const Screen: React.FC<
                   positioned={false}
                   //resizable={true}
                   isSelected={selected}
+                  //@ts-ignore
                   onMouseDown={(e) => onChildPointerDown(e, child)}
                   onResizeStart={(evt, _id, handle) =>
+                    //@ts-ignore
                     onChildResizeStart(evt, child, handle)
                   }
                   selectedCount={selectedCount}
