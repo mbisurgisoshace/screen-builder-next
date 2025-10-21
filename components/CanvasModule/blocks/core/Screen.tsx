@@ -303,8 +303,8 @@ export const Screen: React.FC<
     if (affectsLeft || affectsRight) {
       const candidates = snaps.xs;
       // compute proposed edges
-      let L = x;
-      let R = x + w;
+      const L = x;
+      const R = x + w;
 
       let bestForL: { d: number; to: number } | null = null;
       let bestForR: { d: number; to: number } | null = null;
@@ -340,8 +340,8 @@ export const Screen: React.FC<
     // try snapping top/bottom
     if (affectsTop || affectsBottom) {
       const candidates = snaps.ys;
-      let T = y;
-      let B = y + h;
+      const T = y;
+      const B = y + h;
 
       let bestForT: { d: number; to: number } | null = null;
       let bestForB: { d: number; to: number } | null = null;
@@ -451,7 +451,7 @@ export const Screen: React.FC<
       const dx = cur.x - st.startLocal.x;
       const dy = cur.y - st.startLocal.y;
 
-      let prop = { x: st.init.x, y: st.init.y, w: st.init.w, h: st.init.h };
+      const prop = { x: st.init.x, y: st.init.y, w: st.init.w, h: st.init.h };
       const MIN_W = 24;
       const MIN_H = 16;
 

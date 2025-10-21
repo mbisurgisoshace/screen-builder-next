@@ -125,6 +125,8 @@ export interface Shape {
   toggleOn?: boolean;
 
   accentColor?: string;
+
+  checked?: boolean;
 }
 
 export type Attachment = {
