@@ -228,7 +228,7 @@ export const Dropdown: React.FC<DropdownBlockProps> = (props) => {
   const bg = shape.color ?? "#ffffff";
   const fg = shape.textColor ?? "#111827";
   const fs = shape.textSize ?? 14;
-  const radius = shape.radius ?? 6;
+  const radius = shape.borderRadius ?? 6;
   const text = shape.label ?? "Select…";
 
   return (
