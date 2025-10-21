@@ -3,14 +3,17 @@ export type ShapeType =
   | "rect"
   | "text"
   | "input"
+  | "label"
   | "image"
   | "table"
+  | "toggle"
   | "screen"
   | "button"
   | "ellipse"
   | "dropdown"
   | "question"
   | "checkbox"
+  | "container"
   | "interview"
   | "feature_idea"
   | "question_answer";
@@ -116,6 +119,12 @@ export interface Shape {
   label?: string;
 
   placeholder?: string;
+
+  borderRadius?: number;
+
+  toggleOn?: boolean;
+
+  accentColor?: string;
 }
 
 export type Attachment = {

@@ -17,6 +17,9 @@ import { Button } from "./core/Button";
 import { Input } from "./core/Input";
 import { Dropdown } from "./core/Dropdown";
 import { Checkbox } from "./core/Checkbox";
+import { Container } from "./core/Container";
+import { Label } from "./core/Label";
+import { ToggleSwitch } from "./core/Toggle";
 
 // Registry maps type to corresponding component
 export const shapeRegistry: Record<string, ShapeComponent> = {
@@ -36,4 +39,7 @@ export const shapeRegistry: Record<string, ShapeComponent> = {
   input: Input,
   dropdown: Dropdown,
   checkbox: Checkbox,
+  container: Container,
+  label: Label,
+  toggle: ToggleSwitch,
 };

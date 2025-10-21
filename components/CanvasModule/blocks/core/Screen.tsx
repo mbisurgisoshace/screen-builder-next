@@ -80,6 +80,20 @@ export const SCREEN_PRESETS: ScreenPreset[] = [
   },
 ];
 
+const PALETTE = [
+  "#ffffff",
+  "#f8fafc",
+  "#fee2e2",
+  "#ffedd5",
+  "#fef3c7",
+  "#dcfce7",
+  "#dbeafe",
+  "#e9d5ff",
+  "#fce7f3",
+  "#000000",
+  "#F2F4FE",
+];
+
 export const Screen: React.FC<
   { shape: IShape } & Omit<ShapeFrameProps, "shape" | "children"> &
     ChildSelectionProps
@@ -375,6 +389,13 @@ export const Screen: React.FC<
         return;
       }
 
+      if ((e as any).detail >= 2) {
+        e.preventDefault();
+        e.stopPropagation();
+        onChildMouseDown?.(e, shape.id, child.id); // ensure child becomes selected
+        return;
+      }
+
       e.stopPropagation();
       onChildMouseDown?.(e, shape.id, child.id);
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -585,7 +606,35 @@ export const Screen: React.FC<
     () => (
       <>
         <div ref={wrapRef} className="flex items-center gap-2 z-100">
-          {/* Font size */}
+          {/* BG */}
+          <div className="relative">
+            <button
+              className="px-2 py-1 rounded bg-gray-100 border flex items-center gap-1"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpenPicker(openPicker === "bg" ? null : "bg");
+              }}
+            >
+              <span className="text-gray-500">BG</span>
+              <span
+                className="w-4 h-4 rounded border"
+                style={{
+                  backgroundColor: shape.color || "#ffffff",
+                }}
+              />
+            </button>
+            {openPicker === "bg" && (
+              <PalettePopover
+                onPick={(c) => {
+                  onCommitStyle?.(shape.id, { color: c });
+                  setOpenPicker(null);
+                }}
+              />
+            )}
+          </div>
+
+          {/* Screen size */}
           <div className="relative">
             <button
               className="px-2 h-[26px] rounded bg-gray-100 border flex items-center gap-1"
@@ -769,3 +818,34 @@ export const Screen: React.FC<
     </ScreenFrame>
   );
 };
+
+function PalettePopover({
+  onPick,
+  selectedHex,
+}: {
+  onPick: (c: string) => void;
+  selectedHex?: string;
+}) {
+  return (
+    <div
+      className="absolute w-max top-full left-0 mt-1 z-50 p-2 bg-white border rounded-xl shadow grid grid-cols-5 gap-1"
+      data-nodrag="true"
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      {PALETTE.map((c) => (
+        <button
+          key={c}
+          title={c}
+          className={`w-6 h-6 rounded border hover:scale-105 transition ${
+            selectedHex === c ? "ring-2 ring-blue-500" : ""
+          }`}
+          style={{ backgroundColor: c }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onPick(c);
+          }}
+        />
+      ))}
+    </div>
+  );
+}

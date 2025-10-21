@@ -1,8 +1,7 @@
 "use client";
-import * as React from "react";
-import type { Shape as IShape } from "../../types";
+import React, { useEffect, useRef, useState } from "react";
+import { Shape as IShape } from "../../types";
 import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
-import { useState } from "react";
 import { useRegisterToolbarExtras } from "../toolbar/toolbarExtrasStore";
 
 const PALETTE = [
@@ -16,16 +15,17 @@ const PALETTE = [
   "#e9d5ff",
   "#fce7f3",
   "#000000",
-  "#201F22",
-  "#083B60",
+  "#A4A6B7",
 ];
-interface ButtonBlockProps extends Omit<ShapeFrameProps, "children" | "shape"> {
+
+interface LabelBlockProps extends Omit<ShapeFrameProps, "children" | "shape"> {
   shape: IShape;
+  onCommitText?: (id: IShape["id"], text: string) => void;
   onCommitStyle?: (id: string, patch: Partial<IShape>) => void;
 }
 
-export const Button: React.FC<ButtonBlockProps> = (props) => {
-  const { shape, onCommitStyle } = props;
+export const Label: React.FC<LabelBlockProps> = (props) => {
+  const { shape, onCommitText, onCommitStyle } = props;
 
   const [openPicker, setOpenPicker] = useState<
     null | "bg" | "fg" | "size" | "fs"
@@ -35,17 +35,22 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
 
   const SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 60, 80, 100, 120];
 
+  useEffect(() => {
+    if (!props.isSelected) {
+      taRef.current?.blur();
+    }
+  }, [props.isSelected]);
+
   useRegisterToolbarExtras(
     shape.id,
     () => (
       <>
-        <div ref={wrapRef} className="flex items-center gap-2 z-100">
+        <div ref={wrapRef} className="flex items-center gap-2">
           {/* BG */}
-          <div className="relative">
+          {/* <div className="relative">
             <button
               className="px-2 py-1 rounded bg-gray-100 border flex items-center gap-1"
               onClick={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 setOpenPicker(openPicker === "bg" ? null : "bg");
               }}
@@ -66,7 +71,7 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
                 }}
               />
             )}
-          </div>
+          </div> */}
 
           {/* Text */}
           <div className="relative">
@@ -212,49 +217,6 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
               <span className="italic">I</span>
             </button>
           </div>
-
-          {/* Border Radius */}
-          <div className="flex items-center gap-1">
-            <span className="text-gray-500">Radius</span>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCommitStyle?.(shape.id, {
-                  borderRadius: 0,
-                });
-              }}
-            >
-              None
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCommitStyle?.(shape.id, { borderRadius: 5 });
-              }}
-            >
-              <span className="">Small</span>
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCommitStyle?.(shape.id, { borderRadius: 15 });
-              }}
-            >
-              <span className="">Medium</span>
-            </button>
-            <button
-              className="px-2 py-1 rounded bg-gray-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCommitStyle?.(shape.id, { borderRadius: 100 });
-              }}
-            >
-              <span className="">Rounded</span>
-            </button>
-          </div>
         </div>
       </>
     ),
@@ -270,9 +232,45 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
   );
 
   const [editing, setEditing] = useState(false);
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [text, setText] = React.useState<string>(shape.label ?? "");
+  const [draft, setDraft] = useState<string>(shape.text ?? "");
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  useEffect(() => {
+    if (!editing) setDraft(shape.text ?? "");
+  }, [shape.text, editing]);
+
+  const enterEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditing(true);
+  };
+
+  const commit = () => {
+    const value = draft.trim();
+    onCommitText?.(shape.id, value);
+    setEditing(false);
+  };
+
+  const cancel = () => {
+    setDraft(shape.text ?? "");
+    setEditing(false);
+  };
+
+  const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+    // Enter commits (unless Shift+Enter for newline). Esc cancels.
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      commit();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      cancel();
+    }
+  };
+
+  // Prevent dragging/select/marquee while editing inside the frame
+  const stopAll: React.MouseEventHandler = (e) => e.stopPropagation();
+
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [text, setText] = React.useState<string>(shape.text ?? "");
   const taRef = React.useRef<HTMLInputElement>(null);
   const beginEdit = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -288,18 +286,15 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
   };
 
   const commitText = () => {
-    if ((shape.label ?? "") !== text)
-      onCommitStyle?.(shape.id, { label: text });
+    if ((shape.text ?? "") !== text) onCommitStyle?.(shape.id, { text });
   };
-
-  const stopAll: React.MouseEventHandler = (e) => e.stopPropagation();
 
   return (
     <ShapeFrame
       {...props}
-      resizable={true}
-      showTagsToolbar={false}
+      minHeight={30}
       showConnectors={props.isSelected && props.selectedCount === 1}
+      resizable /* connectors for text? keep true or set false */
       onMouseDown={(e) => {
         console.log("e", e);
 
@@ -317,53 +312,93 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
       }}
     >
       <div
-        className="w-full h-full flex items-center justify-center"
-        style={{ pointerEvents: "none" }}
+        onDoubleClick={beginEdit}
+        className={` w-full bg-transparent`}
+        style={{
+          //borderRadius: 6,
+          //backgroundColor: shape.color || "#EAFBE3",
+          height: shape.height,
+        }}
       >
-        <div
-          className="w-full h-full rounded-md border text-sm truncate flex items-center justify-center"
+        {/* View mode: centered display (no caret) */}
+        {!isEditing && (
+          <div
+            className="absolute inset-0 flex flex-row items-center  p-2 pointer-events-none whitespace-pre-wrap break-words flex-wrap"
+            style={{
+              color: shape.textColor || "#0f172a",
+              lineHeight: 1.25,
+              fontSize: shape.textSize || 14,
+              fontStyle: shape.textStyle,
+              fontWeight: shape.textWeight,
+            }}
+          >
+            <span>{text || ""}</span>
+          </div>
+        )}
+
+        {/* Edit mode: textarea overlay (you can tweak centering) */}
+        {isEditing && (
+          <input
+            ref={taRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onBlur={() => {
+              commitText();
+              setIsEditing(false);
+            }}
+            data-nodrag="true"
+            onMouseDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            placeholder="Add text…"
+            className="absolute inset-0 w-full h-full bg-transparent outline-none resize-none p-2 text-sm"
+            style={{
+              // You can start centering here:
+              textAlign: "center",
+              lineHeight: 1.25,
+              color: shape.textColor || "#0f172a",
+              fontSize: shape.textSize || 14,
+              fontStyle: shape.textStyle,
+              fontWeight: shape.textWeight,
+              // For vertical centering with textarea, consider measuring content height and setting paddingTop.
+            }}
+          />
+        )}
+      </div>
+      {/* <div className="w-full h-full flex items-center justify-center text-black select-none">
+        {shape.text ?? "Text"}
+      </div> */}
+      {/* {editing ? (
+        <textarea
+          ref={textareaRef}
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={onKeyDown}
+          onBlur={commit}
+          className="w-full h-full bg-transparent outline-none resize-none p-2 text-black"
           style={{
-            backgroundColor: shape.color || "#111827",
-            color: shape.textColor || "fff",
-            borderColor: "rgba(0,0,0,0.2)",
+            // Make sure text starts at top-left like Miro text blocks
+            lineHeight: 1.2,
+            whiteSpace: "pre-wrap",
+            overflow: "hidden",
+            color: shape.textColor || "#0f172a",
             fontSize: shape.textSize || 14,
             fontStyle: shape.textStyle,
-            fontWeight: shape.textWeight,
-            borderRadius: shape.borderRadius || 4,
           }}
+        />
+      ) : (
+        <div
+          style={{
+            color: shape.textColor || "#0f172a",
+            fontSize: shape.textSize || 14,
+            fontStyle: shape.textStyle,
+          }}
+          className="w-full h-full flex items-start justify-start p-2 text-black select-none cursor-text"
+          onDoubleClick={enterEdit}
         >
-          {/* {shape.label ?? "Button"} */}
-
-          {isEditing ? (
-            <input
-              ref={taRef}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onBlur={() => {
-                commitText();
-                setIsEditing(false);
-              }}
-              data-nodrag="true"
-              onMouseDown={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.stopPropagation()}
-              placeholder="Add text…"
-              className="absolute inset-0 w-full h-full bg-transparent outline-none resize-none p-2 text-sm"
-              style={{
-                // You can start centering here:
-                textAlign: "center",
-                lineHeight: 1.25,
-                color: shape.textColor || "#0f172a",
-                fontSize: shape.textSize || 14,
-                fontStyle: shape.textStyle,
-                fontWeight: shape.textWeight,
-                // For vertical centering with textarea, consider measuring content height and setting paddingTop.
-              }}
-            />
-          ) : (
-            shape.label ?? "Button"
-          )}
+          {shape.text && shape.text.length > 0 ? shape.text : "Text"}
         </div>
-      </div>
+      )} */}
     </ShapeFrame>
   );
 };
