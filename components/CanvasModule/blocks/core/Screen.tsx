@@ -116,6 +116,12 @@ export const Screen: React.FC<
   const children = shape.children ?? [];
   const wrapRef = React.useRef<HTMLDivElement>(null);
 
+  const groupDragRef = useRef<null | {
+    activeId: string;
+    selectedIds: string[];
+    initById: Record<string, { x: number; y: number; w: number; h: number }>;
+  }>(null);
+
   const [openPicker, setOpenPicker] = useState<
     null | "bg" | "fg" | "size" | "fs"
   >(null);
@@ -426,11 +432,20 @@ export const Screen: React.FC<
           ? selectedInThisScreen
           : [child.id];
 
-      const init: Record<string, { x: number; y: number }> = {};
+      const initById: Record<
+        string,
+        { x: number; y: number; w: number; h: number }
+      > = {};
       for (const id of ids) {
         const c = children.find((cc) => cc.id === id);
-        if (c) init[id] = { x: c.x, y: c.y };
+        if (c) initById[id] = { x: c.x, y: c.y, w: c.width, h: c.height };
       }
+
+      groupDragRef.current = {
+        activeId: child.id,
+        selectedIds: ids,
+        initById,
+      };
 
       dragRef.current = {
         id: child.id,
@@ -576,43 +591,65 @@ export const Screen: React.FC<
   const onChildPointerMove = useCallback(
     (e: React.PointerEvent) => {
       e.stopPropagation();
-      if (resizeRef.current) return; // resizing takes priority
-      if (!dragRef.current || !startLocalRef.current) return;
+      if (resizeRef.current) return;
+      if (!startLocalRef.current) return;
+      if (!groupDragRef.current) return;
 
-      const { id, initX, initY } = dragRef.current;
+      const { activeId, selectedIds, initById } = groupDragRef.current;
+      const initActive = initById[activeId];
+      if (!initActive) return;
+
+      // Pointer delta in local screen coords
       const world = clientToWorldFast(e.clientX, e.clientY);
       const currLocal = { x: world.x - shape.x, y: world.y - shape.y };
-      const dx = currLocal.x - startLocalRef.current.x;
-      const dy = currLocal.y - startLocalRef.current.y;
+      const dxRaw = currLocal.x - startLocalRef.current.x;
+      const dyRaw = currLocal.y - startLocalRef.current.y;
 
-      // proposed new position
-      let px = initX + dx;
-      let py = initY + dy;
+      // Propose new position for the active child
+      let px = initActive.x + dxRaw;
+      let py = initActive.y + dyRaw;
 
-      // clamp inside screen using current child size
-      const child = children.find((c) => c.id === id);
-      if (!child) return;
-      const cw = child.width;
-      const ch = child.height;
+      // Clamp the active child inside the screen
+      px = Math.min(Math.max(px, 0), Math.max(0, shape.width - initActive.w));
+      py = Math.min(Math.max(py, 0), Math.max(0, shape.height - initActive.h));
 
-      px = Math.min(Math.max(px, 0), Math.max(0, shape.width - cw));
-      py = Math.min(Math.max(py, 0), Math.max(0, shape.height - ch));
+      // Snap based on the active child only
+      const snaps = buildSnapSets(activeId);
+      const snapped = snapPosition(
+        px,
+        py,
+        initActive.w,
+        initActive.h,
+        snaps,
+        SNAP_TOL
+      );
 
-      // Snap (to screen + siblings)
-      const snaps = buildSnapSets(id);
-      const snapped = snapPosition(px, py, cw, ch, snaps, SNAP_TOL);
+      // Actual applied delta after snapping+clamp
+      const dx = snapped.x - initActive.x;
+      const dy = snapped.y - initActive.y;
 
-      updateChild(shape.id, id, (c) => ({ ...c, x: snapped.x, y: snapped.y }));
+      // Move EVERY selected child by (dx, dy), clamped to screen bounds
+      for (const id of selectedIds) {
+        const init = initById[id];
+        const nx = Math.min(
+          Math.max(init.x + dx, 0),
+          Math.max(0, shape.width - init.w)
+        );
+        const ny = Math.min(
+          Math.max(init.y + dy, 0),
+          Math.max(0, shape.height - init.h)
+        );
+        updateChild(shape.id, id, (c) => ({ ...c, x: nx, y: ny }));
+      }
+
       setGuides(snapped.guideLines);
     },
     [
-      children,
       clientToWorldFast,
-      shape.id,
-      shape.width,
-      shape.height,
       shape.x,
       shape.y,
+      shape.width,
+      shape.height,
       updateChild,
       buildSnapSets,
       SNAP_TOL,
@@ -623,8 +660,8 @@ export const Screen: React.FC<
     e.stopPropagation();
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
     dragRef.current = null;
+    groupDragRef.current = null; // <— important
     setGuides([]);
-    // Note: resize end is handled on window mouseup to catch outside releases
   }, []);
 
   function getSelectedChildIdsForThisScreen(
