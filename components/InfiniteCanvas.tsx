@@ -1275,6 +1275,8 @@ export default function InfiniteCanvas({
 
   const worldRef = useRef<HTMLDivElement>(null);
 
+  console.log("selectedShapes", selectedShapeIds);
+
   return (
     <div className="w-full h-full overflow-hidden bg-[#EFF0F4] relative flex">
       <div className="absolute top-4 right-4 z-20 flex flex-row gap-6 bg-black p-2 rounded-md text-white">
@@ -2011,9 +2013,31 @@ export default function InfiniteCanvas({
                       screenId: string,
                       childId: string
                     ) => {
-                      // select the child, not the screen
+                      // // select the child, not the screen
+                      // e.stopPropagation();
+                      // selectChildOnly(screenId, childId);
+
+                      e.preventDefault();
                       e.stopPropagation();
-                      selectChildOnly(screenId, childId);
+
+                      const token = childToken(screenId, childId);
+                      const isMeta = (e as any).metaKey || (e as any).ctrlKey;
+
+                      console.log("token", token);
+                      console.log("isMeta", isMeta);
+
+                      setSelectedShapeIds((prev) => {
+                        if (isMeta) {
+                          // Toggle this child in the set
+                          if (prev.includes(token)) {
+                            return prev.filter((id) => id !== token);
+                          }
+                          return [...prev, token];
+                        }
+                        // Single select this child
+                        return [token];
+                      });
+
                       // optional: prevent starting a marquee/drag at this exact click
                       setDragging(false);
                     }}

@@ -124,6 +124,14 @@ export const Screen: React.FC<
   const startLocalRef = useRef<{ x: number; y: number } | null>(null);
   const [isResizingChild, setIsResizingChild] = useState(false);
 
+  const childSelectedCount = useMemo(() => {
+    let n = 0;
+    for (const c of children) {
+      if (isChildSelected?.(shape.id, c.id)) n++;
+    }
+    return n;
+  }, [children, isChildSelected, shape.id]);
+
   // Smart guides state (rendered only during active drag/resize)
   const [guides, setGuides] = useState<GuideLine[]>([]);
 
@@ -750,6 +758,7 @@ export const Screen: React.FC<
             const Block = shapeRegistry[child.type];
             if (!Block) return null;
             const selected = isChildSelected?.(shape.id, child.id) ?? false;
+
             return (
               <div
                 key={child.id}
@@ -775,7 +784,8 @@ export const Screen: React.FC<
                     //@ts-ignore
                     onChildResizeStart(evt, child, handle)
                   }
-                  selectedCount={selectedCount}
+                  //selectedCount={selectedCount}
+                  selectedCount={childSelectedCount}
                   //@ts-ignore
                   onCommitStyle={(_id, patch) =>
                     updateChild(shape.id, child.id, (c) => ({ ...c, ...patch }))
