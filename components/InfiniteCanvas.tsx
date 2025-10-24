@@ -7,7 +7,7 @@ import {
   useHistory,
   useCanRedo,
 } from "@liveblocks/react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 
 import {
   writeClipboard,
@@ -881,6 +881,9 @@ export default function InfiniteCanvas({
   const topLevel = shapes.filter((s) => !s.parentId);
   const worldRef = useRef<HTMLDivElement>(null);
 
+  // token helpers
+  const isChildToken = (id: string) => id.startsWith("child:");
+
   console.log("selectedShapes", selectedShapeIds);
 
   return (
@@ -988,33 +991,27 @@ export default function InfiniteCanvas({
                   screenId: string,
                   childId: string
                 ) => {
-                  // // select the child, not the screen
-                  // e.stopPropagation();
-                  // selectChildOnly(screenId, childId);
-
                   e.preventDefault();
                   e.stopPropagation();
 
                   const token = childToken(screenId, childId);
-                  const isMeta = (e as any).metaKey || (e as any).ctrlKey;
+                  const additive = e.metaKey || e.ctrlKey; // Cmd on mac, Ctrl on Windows
 
-                  console.log("token", token);
-                  console.log("isMeta", isMeta);
+                  setDragging(false);
+                  setResizing(null);
 
                   setSelectedShapeIds((prev) => {
-                    if (isMeta) {
-                      // Toggle this child in the set
+                    if (additive) {
+                      // toggle in/out of selection
                       if (prev.includes(token)) {
                         return prev.filter((id) => id !== token);
                       }
                       return [...prev, token];
                     }
-                    // Single select this child
+
+                    // no modifier: select only this child
                     return [token];
                   });
-
-                  // optional: prevent starting a marquee/drag at this exact click
-                  setDragging(false);
                 }}
                 isChildSelected={(screenId: string, childId: string) =>
                   isChildSelected(screenId, childId)

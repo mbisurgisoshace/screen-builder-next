@@ -413,6 +413,25 @@ export const Screen: React.FC<
       const world = clientToWorldFast(e.clientX, e.clientY);
       startLocalRef.current = { x: world.x - shape.x, y: world.y - shape.y };
 
+      // Resolve which children are selected in THIS screen
+      const selectedInThisScreen = getSelectedChildIdsForThisScreen(
+        shape.id,
+        children,
+        isChildSelected
+      );
+
+      const ids =
+        selectedInThisScreen.length > 0 &&
+        selectedInThisScreen.includes(child.id)
+          ? selectedInThisScreen
+          : [child.id];
+
+      const init: Record<string, { x: number; y: number }> = {};
+      for (const id of ids) {
+        const c = children.find((cc) => cc.id === id);
+        if (c) init[id] = { x: c.x, y: c.y };
+      }
+
       dragRef.current = {
         id: child.id,
         initX: child.x,
@@ -608,6 +627,16 @@ export const Screen: React.FC<
     // Note: resize end is handled on window mouseup to catch outside releases
   }, []);
 
+  function getSelectedChildIdsForThisScreen(
+    screenId: string,
+    children: IShape[],
+    isChildSelected?: (screenId: string, childId: string) => boolean
+  ) {
+    return children
+      .filter((c) => isChildSelected?.(screenId, c.id))
+      .map((c) => c.id);
+  }
+
   const presetLabel =
     shape.width >= 1200 ? "Desktop" : shape.width >= 700 ? "Tablet" : "Mobile";
 
@@ -760,6 +789,7 @@ export const Screen: React.FC<
             const Block = shapeRegistry[child.type];
             if (!Block) return null;
             const selected = isChildSelected?.(shape.id, child.id) ?? false;
+            const multi = childSelectedCount > 1;
 
             return (
               <div
@@ -778,8 +808,9 @@ export const Screen: React.FC<
                 <Block
                   shape={child}
                   positioned={false}
-                  //resizable={true}
                   isSelected={selected}
+                  //resizable={true}
+                  //selectedCount={1}
                   //@ts-ignore
                   onMouseDown={(e) => onChildPointerDown(e, child)}
                   onResizeStart={(evt, _id, handle) =>
@@ -787,7 +818,8 @@ export const Screen: React.FC<
                     onChildResizeStart(evt, child, handle)
                   }
                   //selectedCount={selectedCount}
-                  selectedCount={childSelectedCount}
+                  selectedCount={selected ? 1 : 0}
+                  //selectedCount={childSelectedCount}
                   //@ts-ignore
                   onCommitStyle={(_id, patch) =>
                     updateChild(shape.id, child.id, (c) => ({ ...c, ...patch }))
