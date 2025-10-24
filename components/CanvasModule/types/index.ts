@@ -164,6 +164,7 @@ export type ShapeComponentProps = {
     shapeId: string,
     direction: "top" | "right" | "bottom" | "left"
   ) => void;
+  realSelectionCount?: number;
 };
 
 export type ShapeComponent = React.FC<ShapeComponentProps>;

@@ -808,6 +808,7 @@ export const Screen: React.FC<
                 <Block
                   shape={child}
                   positioned={false}
+                  realSelectionCount={childSelectedCount}
                   isSelected={selected}
                   //resizable={true}
                   //selectedCount={1}

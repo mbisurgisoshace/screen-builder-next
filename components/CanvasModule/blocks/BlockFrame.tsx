@@ -47,6 +47,7 @@ export interface ShapeFrameProps {
   onCommitStyle?: (id: string, patch: Partial<IShape>) => void;
 
   showTagsToolbar?: boolean;
+  realSelectionCount?: number;
 }
 
 export const ShapeFrame: React.FC<ShapeFrameProps> = ({
@@ -66,6 +67,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   onCommitStyle,
   positioned = true,
   showTagsToolbar = true,
+  realSelectionCount,
 }) => {
   const { ref, height } = useElementSize<HTMLDivElement>({
     box: "content-box",
@@ -80,6 +82,9 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
   const canInteract = interactive;
   const showSingleSelectionUI =
     canInteract && selectable && isSelected && selectedCount === 1;
+
+  const showSingleChildSelectionUI =
+    canInteract && selectable && isSelected && realSelectionCount === 1;
 
   const flipBelow = shape.y < 72;
   const extras = useExtrasNode(shape.id);
@@ -243,7 +248,7 @@ export const ShapeFrame: React.FC<ShapeFrameProps> = ({
       }
     >
       {/* Floating toolbar (single select): Tag picker */}
-      {showSingleSelectionUI && (
+      {showSingleChildSelectionUI && (
         <BlockToolbar
           shape={shape}
           flipBelow={flipBelow}
