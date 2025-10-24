@@ -42,6 +42,7 @@ type ChildSelectionProps = {
     childId: string
   ) => void;
   isChildSelected?: (screenId: string, childId: string) => boolean;
+  selectedChildIds?: string[];
 };
 
 /** Config: include screen edges/centers for snapping/guides */
@@ -103,12 +104,13 @@ export const Screen: React.FC<
   canvasEl,
   position,
   isSelected,
-  selectedCount,
   onMouseDown,
   onResizeStart,
-  onChildMouseDown,
-  isChildSelected,
   onCommitStyle,
+  selectedCount,
+  isChildSelected,
+  onChildMouseDown,
+  selectedChildIds = [],
 }) => {
   const { updateChild } = useScreenChildren();
   const children = shape.children ?? [];
