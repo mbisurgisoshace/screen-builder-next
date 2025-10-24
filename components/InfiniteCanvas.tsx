@@ -1001,15 +1001,26 @@ export default function InfiniteCanvas({
                   setResizing(null);
 
                   setSelectedShapeIds((prev) => {
+                    const already = prev.includes(token);
+                    const selectedInThisScreen = prev.filter((id) =>
+                      id.startsWith(`child:${screenId}:`)
+                    );
+
                     if (additive) {
-                      // toggle in/out of selection
-                      if (prev.includes(token)) {
-                        return prev.filter((id) => id !== token);
-                      }
-                      return [...prev, token];
+                      // Toggle membership
+                      return already
+                        ? prev.filter((id) => id !== token)
+                        : [...prev, token];
                     }
 
-                    // no modifier: select only this child
+                    // No modifier:
+                    // If multiple from this screen are selected and we clicked one of them,
+                    // keep the group as-is (don’t collapse to a single).
+                    if (selectedInThisScreen.length > 1 && already) {
+                      return prev;
+                    }
+
+                    // Otherwise, focus just this child.
                     return [token];
                   });
                 }}
