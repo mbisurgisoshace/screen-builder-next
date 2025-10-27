@@ -1093,7 +1093,7 @@ export const Screen: React.FC<
               hudH = 40,
               pad = 8;
             let hudX = b.left + b.width / 2 - hudW / 2;
-            let hudY = Math.max(0, b.top - hudH - pad);
+            const hudY = Math.max(0, b.top - hudH - pad);
             hudX = Math.min(Math.max(hudX, 0), Math.max(0, shape.width - hudW));
 
             return (
