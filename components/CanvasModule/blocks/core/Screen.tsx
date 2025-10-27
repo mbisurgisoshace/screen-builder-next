@@ -677,6 +677,132 @@ export const Screen: React.FC<
   const presetLabel =
     shape.width >= 1200 ? "Desktop" : shape.width >= 700 ? "Tablet" : "Mobile";
 
+  function selectedChildren() {
+    return (shape.children ?? []).filter((c) =>
+      isChildSelected?.(shape.id, c.id)
+    );
+  }
+
+  function bboxOf(children: IShape[]) {
+    const left = Math.min(...children.map((c) => c.x));
+    const top = Math.min(...children.map((c) => c.y));
+    const right = Math.max(...children.map((c) => c.x + c.width));
+    const bottom = Math.max(...children.map((c) => c.y + c.height));
+    return { left, top, width: right - left, height: bottom - top };
+  }
+
+  function clampInsideScreen(x: number, y: number, w: number, h: number) {
+    return {
+      x: Math.min(Math.max(x, 0), Math.max(0, shape.width - w)),
+      y: Math.min(Math.max(y, 0), Math.max(0, shape.height - h)),
+    };
+  }
+
+  // --- ALIGN ---
+  type AlignMode = "left" | "hcenter" | "right" | "top" | "vcenter" | "bottom";
+
+  function alignSelected(mode: AlignMode) {
+    const sel = selectedChildren();
+    if (sel.length < 2) return;
+    const b = bboxOf(sel);
+
+    for (const c of sel) {
+      let nx = c.x,
+        ny = c.y;
+
+      if (mode === "left") nx = b.left;
+      if (mode === "right") nx = b.left + b.width - c.width;
+      if (mode === "hcenter") nx = b.left + (b.width - c.width) / 2;
+
+      if (mode === "top") ny = b.top;
+      if (mode === "bottom") ny = b.top + b.height - c.height;
+      if (mode === "vcenter") ny = b.top + (b.height - c.height) / 2;
+
+      const clamped = clampInsideScreen(nx, ny, c.width, c.height);
+      updateChild(shape.id, c.id, (prev) => ({
+        ...prev,
+        x: clamped.x,
+        y: clamped.y,
+      }));
+    }
+  }
+
+  // --- DISTRIBUTE ---
+  type DistributeAxis = "horizontal" | "vertical";
+
+  function distributeSelected(axis: DistributeAxis) {
+    const sel = selectedChildren();
+    if (sel.length < 3) return;
+
+    // Sort by lead edge
+    const sorted =
+      axis === "horizontal"
+        ? [...sel].sort((a, b) => a.x - b.x)
+        : [...sel].sort((a, b) => a.y - b.y);
+
+    const b = bboxOf(sorted);
+    const totalSize = sorted.reduce(
+      (sum, c) => sum + (axis === "horizontal" ? c.width : c.height),
+      0
+    );
+    const gaps = sorted.length - 1;
+    const free = (axis === "horizontal" ? b.width : b.height) - totalSize;
+    const gap = gaps > 0 ? free / gaps : 0;
+
+    let cursor = axis === "horizontal" ? b.left : b.top;
+
+    for (let i = 0; i < sorted.length; i++) {
+      const c = sorted[i];
+      const nx = axis === "horizontal" ? cursor : c.x;
+      const ny = axis === "vertical" ? cursor : c.y;
+
+      const clamped = clampInsideScreen(nx, ny, c.width, c.height);
+      updateChild(shape.id, c.id, (prev) => ({
+        ...prev,
+        x: clamped.x,
+        y: clamped.y,
+      }));
+
+      cursor += (axis === "horizontal" ? c.width : c.height) + gap;
+    }
+  }
+
+  // --- MATCH SIZE ---
+  type MatchSizeMode = "width" | "height";
+
+  function matchSizeSelected(
+    mode: MatchSizeMode,
+    basis: "largest" | "smallest" = "largest"
+  ) {
+    const sel = selectedChildren();
+    if (sel.length < 2) return;
+
+    const target =
+      mode === "width"
+        ? basis === "largest"
+          ? Math.max(...sel.map((c) => c.width))
+          : Math.min(...sel.map((c) => c.width))
+        : basis === "largest"
+        ? Math.max(...sel.map((c) => c.height))
+        : Math.min(...sel.map((c) => c.height));
+
+    for (const c of sel) {
+      let w = c.width,
+        h = c.height;
+      if (mode === "width") w = target;
+      if (mode === "height") h = target;
+
+      const clamped = clampInsideScreen(c.x, c.y, w, h);
+      updateChild(shape.id, c.id, (prev) => ({
+        ...prev,
+        x: clamped.x,
+        y: clamped.y,
+        width: w,
+        height: h,
+      }));
+    }
+  }
+
   useRegisterToolbarExtras(
     shape.id,
     () => (
@@ -954,6 +1080,103 @@ export const Screen: React.FC<
               </div>
             );
           })}
+
+          {(() => {
+            const sel = (shape.children ?? []).filter((c) =>
+              isChildSelected?.(shape.id, c.id)
+            );
+            if (sel.length < 2) return null;
+
+            const b = bboxOf(sel); // { left, top, width, height }
+            // Place HUD just above the bbox, clamped to screen bounds
+            const hudW = 260,
+              hudH = 40,
+              pad = 8;
+            let hudX = b.left + b.width / 2 - hudW / 2;
+            let hudY = Math.max(0, b.top - hudH - pad);
+            hudX = Math.min(Math.max(hudX, 0), Math.max(0, shape.width - hudW));
+
+            return (
+              <div
+                className="absolute z-[260] px-2 py-1.5 rounded-2xl flex items-center text-xs gap-1.5 bg-white/98 backdrop-blur border border-gray-200 shadow-lg ring-1 ring-black/5 w-max"
+                style={{ left: hudX, top: hudY, height: hudH }}
+                onPointerDown={(e) => e.stopPropagation()} // don't start drags
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                {/* Align */}
+                <span className="text-[11px] text-gray-500 mr-1">Align</span>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => alignSelected("left")}
+                >
+                  L
+                </button>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => alignSelected("hcenter")}
+                >
+                  HC
+                </button>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => alignSelected("right")}
+                >
+                  R
+                </button>
+                <div className="w-px h-4 mx-1 bg-gray-300" />
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => alignSelected("top")}
+                >
+                  T
+                </button>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => alignSelected("vcenter")}
+                >
+                  VC
+                </button>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => alignSelected("bottom")}
+                >
+                  B
+                </button>
+
+                {/* Distribute */}
+                <div className="w-px h-4 mx-1 bg-gray-300" />
+                <span className="text-[11px] text-gray-500 mr-1">Dist</span>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => distributeSelected("horizontal")}
+                >
+                  H
+                </button>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => distributeSelected("vertical")}
+                >
+                  V
+                </button>
+
+                {/* Match size */}
+                <div className="w-px h-4 mx-1 bg-gray-300" />
+                <span className="text-[11px] text-gray-500 mr-1">Size</span>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => matchSizeSelected("width", "largest")}
+                >
+                  =W
+                </button>
+                <button
+                  className="px-1 text-xs border rounded bg-white"
+                  onClick={() => matchSizeSelected("height", "largest")}
+                >
+                  =H
+                </button>
+              </div>
+            );
+          })()}
 
           {/* Smart Guides */}
           {guides.map((g, i) =>
