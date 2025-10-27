@@ -773,6 +773,29 @@ export const Screen: React.FC<
     ]
   );
 
+  function getChildGroupBounds(
+    kids: IShape[],
+    isSelected: (id: string) => boolean
+  ) {
+    const sel = kids.filter((k) => isSelected(k.id));
+    if (sel.length < 2) return null;
+
+    const left = Math.min(...sel.map((c) => c.x));
+    const top = Math.min(...sel.map((c) => c.y));
+    const right = Math.max(...sel.map((c) => c.x + c.width));
+    const bottom = Math.max(...sel.map((c) => c.y + c.height));
+
+    return { x: left, y: top, w: right - left, h: bottom - top };
+  }
+
+  const childGroupBounds = useMemo(() => {
+    if (!isChildSelected) return null;
+    return getChildGroupBounds(
+      children,
+      (id) => !!isChildSelected(shape.id, id)
+    );
+  }, [children, isChildSelected, shape.id]);
+
   return (
     <ScreenFrame
       shape={shape}
@@ -822,6 +845,71 @@ export const Screen: React.FC<
 
         {/* Children: render with local absolute coordinates */}
         <div className="absolute inset-0">
+          {childGroupBounds && (
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                left: childGroupBounds.x,
+                top: childGroupBounds.y,
+                width: childGroupBounds.w,
+                height: childGroupBounds.h,
+                // main stroke
+                boxShadow: "0 0 0 1px #3B82F6 inset",
+                // subtle outer glow so it’s visible on any bg
+                outline: "2px solid rgba(59,130,246,0.15)",
+                outlineOffset: "2px",
+                borderRadius: 6,
+                zIndex: 255, // above children, below handles/guides if needed
+              }}
+            >
+              {/* optional handle dots purely visual (no interaction) */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: -3,
+                  top: -3,
+                  width: 6,
+                  height: 6,
+                  borderRadius: 9999,
+                  background: "#3B82F6",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  right: -3,
+                  top: -3,
+                  width: 6,
+                  height: 6,
+                  borderRadius: 9999,
+                  background: "#3B82F6",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  left: -3,
+                  bottom: -3,
+                  width: 6,
+                  height: 6,
+                  borderRadius: 9999,
+                  background: "#3B82F6",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  right: -3,
+                  bottom: -3,
+                  width: 6,
+                  height: 6,
+                  borderRadius: 9999,
+                  background: "#3B82F6",
+                }}
+              />
+            </div>
+          )}
+
           {children.map((child) => {
             const Block = shapeRegistry[child.type];
             if (!Block) return null;
