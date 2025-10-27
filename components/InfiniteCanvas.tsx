@@ -261,6 +261,14 @@ export default function InfiniteCanvas({
       )
       .map((x) => x.childId);
 
+  // Return all top-level shape ids that share a groupId
+  const groupMemberIdsTopLevel = (gid: string) =>
+    shapes.filter((s) => !s.parentId && s.groupId === gid).map((s) => s.id);
+
+  // Return all child ids in a screen that share a groupId
+  const groupMemberIdsInScreen = (screen: IShape, gid: string) =>
+    (screen.children ?? []).filter((c) => c.groupId === gid).map((c) => c.id);
+
   // ---------- KEYBOARD ----------
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -315,42 +323,69 @@ export default function InfiniteCanvas({
 
       // ---- GROUP (Cmd/Ctrl + G) ----
       if (meta && !e.shiftKey && e.key.toLowerCase() === "g") {
-        // Only consider child tokens, and only for one screen at a time
+        // 2 paths: (A) top-level shapes, (B) screen children
+        const topIds = selectedShapeIds.filter((id) => !isChildToken(id));
         const childToks = selectedShapeIds
           .map(parseChildToken)
-          .filter(Boolean) as {
-          screenId: string;
-          childId: string;
-        }[];
+          .filter(Boolean) as { screenId: string; childId: string }[];
 
+        // (A) Top-level group: need at least 2 top-level items
+        if (topIds.length >= 2) {
+          e.preventDefault();
+          const gid = uuidv4();
+          pause();
+          try {
+            for (const id of topIds) {
+              updateShape(id, (s) => ({ ...s, groupId: gid }));
+            }
+          } finally {
+            resume();
+          }
+          return;
+        }
+
+        // (B) Screen-children group: must be same screen + >= 2 children
         if (childToks.length >= 2) {
           e.preventDefault();
           const screenId = childToks[0].screenId;
-          // enforce same screen
           const sameScreen = childToks.every((t) => t.screenId === screenId);
           if (!sameScreen) return;
 
           const ids = childToks.map((t) => t.childId);
           const gid = uuidv4();
 
-          updateShape(screenId, (s) => {
-            const kids = (s.children ?? []).map((c) =>
+          updateShape(screenId, (s) => ({
+            ...s,
+            children: (s.children ?? []).map((c) =>
               ids.includes(c.id) ? { ...c, groupId: gid } : c
-            );
-            return { ...s, children: kids };
-          });
+            ),
+          }));
+          return;
         }
-        return;
       }
 
       // ---- UNGROUP (Shift + Cmd/Ctrl + G) ----
       if (meta && e.shiftKey && e.key.toLowerCase() === "g") {
+        const topIds = selectedShapeIds.filter((id) => !isChildToken(id));
         const childToks = selectedShapeIds
           .map(parseChildToken)
-          .filter(Boolean) as {
-          screenId: string;
-          childId: string;
-        }[];
+          .filter(Boolean) as { screenId: string; childId: string }[];
+
+        // (A) Ungroup top-level selection
+        if (topIds.length >= 1) {
+          e.preventDefault();
+          pause();
+          try {
+            for (const id of topIds) {
+              updateShape(id, (s) => ({ ...s, groupId: undefined }));
+            }
+          } finally {
+            resume();
+          }
+          return;
+        }
+
+        // (B) Ungroup children (same screen)
         if (childToks.length >= 1) {
           e.preventDefault();
           const screenId = childToks[0].screenId;
@@ -358,14 +393,14 @@ export default function InfiniteCanvas({
           if (!sameScreen) return;
 
           const ids = childToks.map((t) => t.childId);
-          updateShape(screenId, (s) => {
-            const kids = (s.children ?? []).map((c) =>
+          updateShape(screenId, (s) => ({
+            ...s,
+            children: (s.children ?? []).map((c) =>
               ids.includes(c.id) ? { ...c, groupId: undefined } : c
-            );
-            return { ...s, children: kids };
-          });
+            ),
+          }));
+          return;
         }
-        return;
       }
 
       // Delete
@@ -960,7 +995,19 @@ export default function InfiniteCanvas({
                 onResizeStart={startResizing}
                 selectedCount={selectedShapeIds.length}
                 isSelected={selectedShapeIds.includes(shape.id)}
-                onMouseDown={(e) => handleShapeMouseDown(e, shape.id)}
+                onMouseDown={(e) => {
+                  // handleShapeMouseDown(e, shape.id);
+                  const additive = e.metaKey || e.ctrlKey;
+                  if (!additive && shape.groupId) {
+                    // Expand selection to entire top-level group
+                    const ids = groupMemberIdsTopLevel(shape.groupId);
+                    setSelectedShapeIds(ids);
+                    // then delegate to your existing handler so drag/resize keeps working
+                    handleShapeMouseDown(e, shape.id);
+                  } else {
+                    handleShapeMouseDown(e, shape.id);
+                  }
+                }}
                 onConnectorMouseDown={handleConnectorMouseDown}
                 //@ts-ignore
                 onCommitText={(id, text) =>
@@ -991,36 +1038,69 @@ export default function InfiniteCanvas({
                   screenId: string,
                   childId: string
                 ) => {
+                  // e.preventDefault();
+                  // e.stopPropagation();
+
+                  // const token = childToken(screenId, childId);
+                  // const additive = e.metaKey || e.ctrlKey; // Cmd on mac, Ctrl on Windows
+
+                  // setDragging(false);
+                  // setResizing(null);
+
+                  // setSelectedShapeIds((prev) => {
+                  //   const already = prev.includes(token);
+                  //   const selectedInThisScreen = prev.filter((id) =>
+                  //     id.startsWith(`child:${screenId}:`)
+                  //   );
+
+                  //   if (additive) {
+                  //     // Toggle membership
+                  //     return already
+                  //       ? prev.filter((id) => id !== token)
+                  //       : [...prev, token];
+                  //   }
+
+                  //   // No modifier:
+                  //   // If multiple from this screen are selected and we clicked one of them,
+                  //   // keep the group as-is (don’t collapse to a single).
+                  //   if (selectedInThisScreen.length > 1 && already) {
+                  //     return prev;
+                  //   }
+
+                  //   // Otherwise, focus just this child.
+                  //   return [token];
+                  // });
                   e.preventDefault();
                   e.stopPropagation();
 
-                  const token = childToken(screenId, childId);
-                  const additive = e.metaKey || e.ctrlKey; // Cmd on mac, Ctrl on Windows
+                  const additive = e.metaKey || e.ctrlKey;
+                  const token = `child:${screenId}:${childId}`;
 
                   setDragging(false);
                   setResizing(null);
 
-                  setSelectedShapeIds((prev) => {
-                    const already = prev.includes(token);
-                    const selectedInThisScreen = prev.filter((id) =>
-                      id.startsWith(`child:${screenId}:`)
-                    );
+                  // Fetch this screen to read child's groupId
+                  const screen = shapes.find((s) => s.id === screenId);
+                  const child = screen?.children?.find((c) => c.id === childId);
+                  const gid = child?.groupId;
 
+                  setSelectedShapeIds((prev) => {
                     if (additive) {
-                      // Toggle membership
-                      return already
+                      // Toggle only the clicked child (preserves your current behavior)
+                      return prev.includes(token)
                         ? prev.filter((id) => id !== token)
                         : [...prev, token];
                     }
 
-                    // No modifier:
-                    // If multiple from this screen are selected and we clicked one of them,
-                    // keep the group as-is (don’t collapse to a single).
-                    if (selectedInThisScreen.length > 1 && already) {
-                      return prev;
+                    if (gid) {
+                      // expand to the full child group within this screen
+                      const groupedIds = (screen?.children ?? [])
+                        .filter((c) => c.groupId === gid)
+                        .map((c) => `child:${screenId}:${c.id}`);
+                      return groupedIds.length ? groupedIds : [token];
                     }
 
-                    // Otherwise, focus just this child.
+                    // No group: single-select this child
                     return [token];
                   });
                 }}

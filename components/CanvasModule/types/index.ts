@@ -127,6 +127,8 @@ export interface Shape {
   accentColor?: string;
 
   checked?: boolean;
+
+  groupId?: string;
 }
 
 export type Attachment = {
