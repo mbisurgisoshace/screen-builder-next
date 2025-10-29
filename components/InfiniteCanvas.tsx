@@ -951,6 +951,448 @@ export default function InfiniteCanvas({
         </AlertDialogContent>
       </AlertDialog>
 
+      <div className="absolute bottom-4 left-4 z-20 flex items-center flex-row gap-2">
+        <Button
+          variant={"default"}
+          size={"icon"}
+          className="size-8"
+          onClick={zoomIn}
+        >
+          <ZoomInIcon />
+        </Button>
+        <Button
+          variant={"default"}
+          size={"icon"}
+          className="size-8"
+          onClick={zoomOut}
+        >
+          <ZoomOutIcon />
+        </Button>
+      </div>
+
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+        <ActiveUsersBar maxVisible={3} includeSelf={false} />
+      </div>
+
+      <LiveCursors
+        canvasRef={canvasRef}
+        position={position}
+        scale={scale}
+        includeSelf={false}
+        zIndex={550}
+      />
+
+      {/* Toolbar */}
+      {editable && (
+        <div className="absolute top-1/2 -translate-y-1/2 left-4 z-20 py-4 px-3 bg-white  rounded-2xl shadow flex flex-col gap-6 items-center">
+          {toolbarOptions.rectangle && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                console.log("e", e);
+
+                e.dataTransfer.setData("shape-type", "rect");
+              }}
+              className="w-10 h-10 gap-1 flex flex-col items-center "
+              title="Rectangle"
+            >
+              {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+              <NextImage
+                src={"/rectangle.svg"}
+                alt="Rectangle"
+                width={20}
+                height={20}
+                className="pointer-events-none"
+              />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Rectangle
+              </span>
+            </button>
+          )}
+
+          {toolbarOptions.ellipse && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "ellipse");
+              }}
+              className="w-10 h-10 gap-1 flex flex-col items-center "
+              title="Ellipse"
+            >
+              {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+              <NextImage
+                src={"/ellipse.svg"}
+                alt="Ellipse"
+                width={20}
+                height={20}
+                className="pointer-events-none"
+              />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Ellipse
+              </span>
+            </button>
+          )}
+
+          {/* <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "text");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-yellow-300 rounded text-black font-bold"
+          title="Text"
+        >
+          Tx
+        </button> */}
+
+          {toolbarOptions.text && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "text");
+              }}
+              className="w-10 h-10 gap-1 flex flex-col items-center "
+              title="Text"
+            >
+              {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+              <NextImage
+                src={"/text.svg"}
+                alt="Text"
+                width={16}
+                height={16}
+                className="pointer-events-none"
+              />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Text
+              </span>
+            </button>
+          )}
+
+          {/* <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "interview");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-purple-300 rounded text-black font-bold"
+          title="Interview"
+        >
+          In
+        </button> */}
+
+          {toolbarOptions.interview && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "interview");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Interview"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Interview
+              </span>
+            </button>
+          )}
+
+          {/* <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "question");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-red-300 rounded text-black font-bold"
+          title="Question"
+        >
+          Qs
+        </button> */}
+
+          {toolbarOptions.question && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "question");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Question"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Question
+              </span>
+            </button>
+          )}
+
+          {/* <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "question_answer");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-amber-300 rounded text-black font-bold"
+          title="Answer"
+        >
+          An
+        </button> */}
+
+          {toolbarOptions.answer && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "question_answer");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Answer"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Answer
+              </span>
+            </button>
+          )}
+
+          {/* <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "table");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-pink-300 rounded text-black font-bold"
+          title="Table"
+        >
+          Tb
+        </button> */}
+          {toolbarOptions.table && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "table");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Table"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Table
+              </span>
+            </button>
+          )}
+
+          {/* <button
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("shape-type", "feature_idea");
+          }}
+          className="w-10 h-10 flex items-center justify-center bg-indigo-300 rounded text-black font-bold"
+          title="Feature Idea"
+        >
+          Fi
+        </button> */}
+          {toolbarOptions.feature && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "feature_idea");
+              }}
+              className="w-10 h-10  flex flex-col items-center "
+              title="Feature Idea"
+            >
+              <SquarePlus className="text-[#111827] pointer-events-none" />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Feature
+              </span>
+            </button>
+          )}
+
+          {toolbarOptions.card && (
+            <button
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("shape-type", "card");
+              }}
+              className="w-10 h-10 gap-1 flex flex-col items-center "
+              title="Card"
+            >
+              {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+              <NextImage
+                src={"/card.svg"}
+                alt="Card"
+                width={20}
+                height={20}
+                className="pointer-events-none"
+              />
+              <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+                Card
+              </span>
+            </button>
+          )}
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "screen");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Screen"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Card"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Screen
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "button");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Button"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Button"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Button
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "label");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Label"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Label"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Label
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "input");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Input"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Input"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Input
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "dropdown");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Dropdown"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Dropdown"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Dropdown
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "checkbox");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Checkbox"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Checkbox"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Checkbox
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "toggle");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Toggle"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Toggle"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Toggle
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "container");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Container"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Container"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Container
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* Canvas */}
       <div
         ref={canvasRef}
