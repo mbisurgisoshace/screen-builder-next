@@ -1160,28 +1160,75 @@ export default function InfiniteCanvas({
     return [...rootGroups, ...rootChildLeaves];
   }
 
-  function selectGroupTokens(
+  // function selectGroupTokens(
+  //   screenId: string,
+  //   groupId: string,
+  //   additive: boolean
+  // ) {
+  //   const scr = screens.find((s) => s.id === screenId);
+  //   if (!scr) return;
+  //   const tokens =
+  //     scr.children
+  //       ?.filter((c) => c.groupId === groupId)
+  //       .map((c) => childToken(screenId, c.id)) ?? [];
+
+  //   setSelectedShapeIds((prev) => {
+  //     if (additive) {
+  //       // add any missing tokens
+  //       const set = new Set(prev);
+  //       tokens.forEach((t) => set.add(t));
+  //       return Array.from(set);
+  //     }
+  //     return tokens;
+  //   });
+  // }
+
+  const selectGroupTokens = (
     screenId: string,
     groupId: string,
     additive: boolean
-  ) {
-    const scr = screens.find((s) => s.id === screenId);
-    if (!scr) return;
-    const tokens =
-      scr.children
-        ?.filter((c) => c.groupId === groupId)
-        .map((c) => childToken(screenId, c.id)) ?? [];
+  ) => {
+    const screen = (shapes as IShape[]).find((s) => s.id === screenId);
+    if (!screen || screen.type !== "screen") return;
+
+    const groups = (screen as any).groups ?? [];
+    const children = (screen as any).children ?? [];
+
+    // Build parent->children index of groups
+    const byParent = new Map<string, string[]>();
+    for (const g of groups) {
+      const pid = (g.parentGroupId ?? "") as string;
+      const arr = byParent.get(pid) ?? [];
+      arr.push(g.id);
+      byParent.set(pid, arr);
+    }
+
+    // Collect all descendant groupIds (including root)
+    const allGroupIds = new Set<string>();
+    const stack = [groupId];
+    while (stack.length) {
+      const gid = stack.pop()!;
+      if (allGroupIds.has(gid)) continue;
+      allGroupIds.add(gid);
+      (byParent.get(gid) ?? []).forEach((cid) => stack.push(cid));
+    }
+
+    // Gather child tokens for any child whose groupId is in allGroupIds
+    const toks = children
+      .filter((c: any) => c.groupId && allGroupIds.has(c.groupId as string))
+      .map((c: any) => childToken(screenId, c.id));
 
     setSelectedShapeIds((prev) => {
       if (additive) {
-        // add any missing tokens
+        const allIncluded = toks.every((t) => prev.includes(t));
+        if (allIncluded) return prev.filter((t) => !toks.includes(t));
         const set = new Set(prev);
-        tokens.forEach((t) => set.add(t));
+        toks.forEach((t) => set.add(t));
         return Array.from(set);
       }
-      return tokens;
+      return toks;
     });
-  }
+  };
 
   const screens = shapes.filter((s) => s.type === "screen") as ScreenShape[];
 
@@ -1195,9 +1242,10 @@ export default function InfiniteCanvas({
         setSelectedShapeIds={setSelectedShapeIds}
         childToken={childToken}
         parseChildToken={parseChildToken}
-        selectGroupTokens={(screenId, groupId, additive) =>
-          selectGroupTokens(screenId, groupId, additive)
-        }
+        // selectGroupTokens={(screenId, groupId, additive) =>
+        //   selectGroupTokens(screenId, groupId, additive)
+        // }
+        selectGroupTokens={selectGroupTokens}
         buildLayerTree={(screen) => buildLayerTree(screen)}
       />
 
