@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useStorage } from "@liveblocks/react";
 import { v4 as uuidv4 } from "uuid";
-import { Shape as IShape } from "../../types";
+import { GroupMeta, Shape as IShape } from "../../types";
 import { ShapeFrame, ShapeFrameProps } from "../BlockFrame";
 import { ScreenFrame } from "../ScreenFrame";
 import { shapeRegistry } from "../blockRegistry";
@@ -94,6 +94,12 @@ const PALETTE = [
   "#000000",
   "#F2F4FE",
 ];
+
+export interface ScreenShape extends IShape {
+  type: "screen";
+  children?: IShape[];
+  groups?: GroupMeta[]; // <— NEW
+}
 
 export const Screen: React.FC<
   { shape: IShape } & Omit<ShapeFrameProps, "shape" | "children"> &

@@ -54,6 +54,8 @@ import NextImage from "next/image";
 import { HelperQuestions } from "./CanvasModule/HelperQuestions";
 import { HelperValueProp } from "./CanvasModule/HelperValueProp";
 import { HelperAnalysis } from "./CanvasModule/HelperAnalysis";
+import { ScreenShape } from "./CanvasModule/blocks/core/Screen";
+import { LayerPanel } from "./LayerPanel";
 
 type RelativeAnchor = { x: number; y: number };
 type Connection = {
@@ -87,6 +89,10 @@ interface InfiniteCanvasProps {
     interview: boolean;
   };
 }
+
+type TreeNode =
+  | { type: "group"; id: string; name: string; children: TreeNode[] }
+  | { type: "child"; id: string; label: string };
 
 export default function InfiniteCanvas({
   editable = true,
@@ -344,7 +350,7 @@ export default function InfiniteCanvas({
           return;
         }
 
-        // (B) Screen-children group: must be same screen + >= 2 children
+        // (B) Screen-children grouping (can be: only children, only groups, or mix)
         if (childToks.length >= 2) {
           e.preventDefault();
           const screenId = childToks[0].screenId;
@@ -352,14 +358,85 @@ export default function InfiniteCanvas({
           if (!sameScreen) return;
 
           const ids = childToks.map((t) => t.childId);
-          const gid = uuidv4();
 
-          updateShape(screenId, (s) => ({
-            ...s,
-            children: (s.children ?? []).map((c) =>
-              ids.includes(c.id) ? { ...c, groupId: gid } : c
-            ),
-          }));
+          updateShape(screenId, (s) => {
+            const scr = s as ScreenShape;
+            const groups = scr.groups ?? [];
+            const children = scr.children ?? [];
+
+            // helper: collect ALL descendant childIds of a group (recursively)
+            const collectDescendants = (gid: string): string[] => {
+              const directChildren = children
+                .filter((c) => (c as any).groupId === gid)
+                .map((c) => c.id);
+
+              const subGroups = groups
+                .filter((g) => (g.parentGroupId ?? null) === gid)
+                .map((g) => g.id);
+
+              let acc = [...directChildren];
+              for (const sg of subGroups) {
+                acc = acc.concat(collectDescendants(sg));
+              }
+              return acc;
+            };
+
+            const selectedSet = new Set(ids);
+
+            // groups fully covered by the selection (all their descendant children selected)
+            const fullySelectedGroupIds = groups
+              .filter((g) => {
+                const desc = collectDescendants(g.id);
+                return (
+                  desc.length > 0 && desc.every((cid) => selectedSet.has(cid))
+                );
+              })
+              .map((g) => g.id);
+
+            // childIds covered by those fully-selected groups
+            const coveredByGroups = new Set<string>();
+            for (const gid of fullySelectedGroupIds) {
+              for (const cid of collectDescendants(gid))
+                coveredByGroups.add(cid);
+            }
+
+            // loose children explicitly selected that are NOT already covered by those groups
+            const looseChildIds = ids.filter(
+              (cid) => !coveredByGroups.has(cid)
+            );
+
+            // if nothing meaningful to group (shouldn't happen with >=2, but be safe)
+            if (fullySelectedGroupIds.length + looseChildIds.length < 2) {
+              return scr;
+            }
+
+            // create the new parent group
+            const newParentId = uuidv4();
+            const newParentGroup = {
+              id: newParentId,
+              name: `Group ${(groups.length ?? 0) + 1}`,
+              parentGroupId: null as string | null,
+              childIds: [...looseChildIds], // only loose children go here
+            };
+
+            // nest the fully-selected groups under the new parent
+            const nextGroups = [
+              ...groups.map((g) =>
+                fullySelectedGroupIds.includes(g.id)
+                  ? { ...g, parentGroupId: newParentId }
+                  : g
+              ),
+              newParentGroup,
+            ];
+
+            // for loose children, point them to the new parent via child.groupId
+            const nextChildren = children.map((c) =>
+              looseChildIds.includes(c.id) ? { ...c, groupId: newParentId } : c
+            );
+
+            return { ...scr, groups: nextGroups, children: nextChildren };
+          });
+
           return;
         }
       }
@@ -371,7 +448,7 @@ export default function InfiniteCanvas({
           .map(parseChildToken)
           .filter(Boolean) as { screenId: string; childId: string }[];
 
-        // (A) Ungroup top-level selection
+        // (A) top-level: unchanged
         if (topIds.length >= 1) {
           e.preventDefault();
           pause();
@@ -385,20 +462,81 @@ export default function InfiniteCanvas({
           return;
         }
 
-        // (B) Ungroup children (same screen)
+        // (B) children: if selection is a group, ungroup that group; else remove groupId from selected children
         if (childToks.length >= 1) {
           e.preventDefault();
           const screenId = childToks[0].screenId;
           const sameScreen = childToks.every((t) => t.screenId === screenId);
           if (!sameScreen) return;
 
+          updateShape(screenId, (s) => {
+            const scr = s as ScreenShape;
+            // Find if the selection fully matches any group
+            const selIds = new Set(childToks.map((t) => t.childId));
+            const groups = scr.groups ?? [];
+            const fullGroup = groups.find(
+              (g) =>
+                g.childIds.length > 0 &&
+                g.childIds.every((id) => selIds.has(id)) &&
+                g.childIds.length === selIds.size
+            );
+
+            if (fullGroup) {
+              return { ...scr, ...ungroup(scr, fullGroup.id) };
+            }
+
+            // Otherwise just clear groupId on selected children
+            return {
+              ...scr,
+              children: (scr.children ?? []).map((c) =>
+                selIds.has(c.id) ? { ...c, groupId: undefined } : c
+              ),
+            };
+          });
+          return;
+        }
+
+        // inside your onKeyDown, in the (B) Screen-children group block:
+        if (childToks.length >= 2) {
+          e.preventDefault();
+          const screenId = childToks[0].screenId;
+          const sameScreen = childToks.every((t) => t.screenId === screenId);
+          if (!sameScreen) return;
+
           const ids = childToks.map((t) => t.childId);
-          updateShape(screenId, (s) => ({
-            ...s,
-            children: (s.children ?? []).map((c) =>
-              ids.includes(c.id) ? { ...c, groupId: undefined } : c
-            ),
-          }));
+          updateShape(screenId, (s) => {
+            const scr = s as ScreenShape;
+
+            // ⬇️ new: detect if any selected children are actually groups
+            const selectedGroups =
+              (scr.groups ?? []).filter((g) =>
+                g.childIds.every((id) => ids.includes(id))
+              ) ?? [];
+
+            if (selectedGroups.length >= 2) {
+              // user selected multiple existing groups → nest them
+              const newParentId = uuidv4();
+              const groups = [
+                ...(scr.groups ?? []),
+                {
+                  id: newParentId,
+                  name: `Group ${(scr.groups?.length ?? 0) + 1}`,
+                  parentGroupId: null,
+                  childIds: [], // none directly yet
+                },
+              ].map((g) =>
+                selectedGroups.some((sg) => sg.id === g.id)
+                  ? { ...g, parentGroupId: newParentId }
+                  : g
+              );
+
+              return { ...scr, groups };
+            }
+
+            // default: group selected child elements
+            const { screenPatch } = createGroup(scr, ids, null);
+            return { ...scr, ...screenPatch };
+          });
           return;
         }
       }
@@ -919,10 +1057,150 @@ export default function InfiniteCanvas({
   // token helpers
   const isChildToken = (id: string) => id.startsWith("child:");
 
-  console.log("selectedShapes", selectedShapeIds);
+  function selectedChildIdsForScreen(
+    screenId: string,
+    selectedShapeIds: string[],
+    parseChildToken: (t: string) => { screenId: string; childId: string } | null
+  ) {
+    return selectedShapeIds
+      .map(parseChildToken)
+      .filter(
+        (x): x is { screenId: string; childId: string } =>
+          !!x && x.screenId === screenId
+      )
+      .map((x) => x.childId);
+  }
+
+  // Create a new group under a screen (optionally nested in parentGroupId)
+  function createGroup(
+    screen: ScreenShape,
+    childIds: string[],
+    parentGroupId?: string | null
+  ): { screenPatch: Partial<ScreenShape>; newGroupId: string } {
+    const gid = uuidv4();
+    const groups = [
+      ...(screen.groups ?? []),
+      {
+        id: gid,
+        name: `Group ${(screen.groups?.length ?? 0) + 1}`,
+        parentGroupId: parentGroupId ?? null,
+        childIds: [...childIds],
+      },
+    ];
+
+    const children = (screen.children ?? []).map((c) =>
+      childIds.includes(c.id) ? { ...c, groupId: gid } : c
+    );
+
+    return { screenPatch: { groups, children }, newGroupId: gid };
+  }
+
+  // Remove a group: move its children to parentGroupId (or screen root), delete group
+  function ungroup(screen: ScreenShape, groupId: string): Partial<ScreenShape> {
+    const groups = [...(screen.groups ?? [])];
+    const idx = groups.findIndex((g) => g.id === groupId);
+    if (idx === -1) return {};
+
+    const parentGroupId = groups[idx].parentGroupId ?? null;
+    const childIds = groups[idx].childIds;
+
+    // move children out
+    const children = (screen.children ?? []).map((c) =>
+      childIds.includes(c.id)
+        ? { ...c, groupId: parentGroupId ?? undefined }
+        : c
+    );
+
+    // delete group
+    groups.splice(idx, 1);
+
+    return { groups, children };
+  }
+
+  function buildLayerTree(screen: ScreenShape): TreeNode[] {
+    const groups = screen.groups ?? [];
+    const byParent: Record<string, string[]> = {};
+    const groupMap = new Map(groups.map((g) => [g.id, g]));
+    for (const g of groups) {
+      const parent = g.parentGroupId ?? "__root__";
+      if (!byParent[parent]) byParent[parent] = [];
+      byParent[parent].push(g.id);
+    }
+
+    // children that are at root (no groupId)
+    const rootChildIds = (screen.children ?? [])
+      .filter((c) => !c.groupId)
+      .map((c) => c.id);
+
+    function buildGroupNode(groupId: string): TreeNode {
+      const g = groupMap.get(groupId)!;
+      // child leaf nodes inside this group
+      const childLeaves: TreeNode[] = (screen.children ?? [])
+        .filter((c) => c.groupId === groupId)
+        .map((c) => ({ type: "child", id: c.id, label: c.label ?? c.type }));
+
+      // nested groups
+      const nested = (byParent[groupId] ?? []).map(buildGroupNode);
+
+      return {
+        type: "group",
+        id: g.id,
+        name: g.name ?? "Group",
+        children: [...nested, ...childLeaves],
+      };
+    }
+
+    const rootGroups = (byParent["__root__"] ?? []).map(buildGroupNode);
+    const rootChildLeaves: TreeNode[] = rootChildIds.map((id) => {
+      const c = (screen.children ?? []).find((x) => x.id === id)!;
+      return { type: "child", id, label: c.label ?? c.type };
+    });
+
+    // Render groups first then loose children (like Figma)
+    return [...rootGroups, ...rootChildLeaves];
+  }
+
+  function selectGroupTokens(
+    screenId: string,
+    groupId: string,
+    additive: boolean
+  ) {
+    const scr = screens.find((s) => s.id === screenId);
+    if (!scr) return;
+    const tokens =
+      scr.children
+        ?.filter((c) => c.groupId === groupId)
+        .map((c) => childToken(screenId, c.id)) ?? [];
+
+    setSelectedShapeIds((prev) => {
+      if (additive) {
+        // add any missing tokens
+        const set = new Set(prev);
+        tokens.forEach((t) => set.add(t));
+        return Array.from(set);
+      }
+      return tokens;
+    });
+  }
+
+  const screens = shapes.filter((s) => s.type === "screen") as ScreenShape[];
+
+  console.log("shapes", JSON.stringify(shapes));
 
   return (
     <div className="w-full h-full overflow-hidden bg-[#EFF0F4] relative flex">
+      <LayerPanel
+        screens={screens}
+        selectedShapeIds={selectedShapeIds}
+        setSelectedShapeIds={setSelectedShapeIds}
+        childToken={childToken}
+        parseChildToken={parseChildToken}
+        selectGroupTokens={(screenId, groupId, additive) =>
+          selectGroupTokens(screenId, groupId, additive)
+        }
+        buildLayerTree={(screen) => buildLayerTree(screen)}
+      />
+
       {/* HUD + helpers omitted for brevity (keep yours) */}
 
       <AlertDialog
@@ -984,7 +1262,7 @@ export default function InfiniteCanvas({
 
       {/* Toolbar */}
       {editable && (
-        <div className="absolute top-1/2 -translate-y-1/2 left-4 z-20 py-4 px-3 bg-white  rounded-2xl shadow flex flex-col gap-6 items-center">
+        <div className="absolute top-1/2 -translate-y-1/2 left-[300px] z-20 py-4 px-3 bg-white  rounded-2xl shadow flex flex-col gap-6 items-center">
           {toolbarOptions.rectangle && (
             <button
               draggable

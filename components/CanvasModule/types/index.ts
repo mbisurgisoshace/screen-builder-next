@@ -49,6 +49,12 @@ export type CardType =
 
 export type Kind = "image" | "video" | "pdf" | "file";
 
+export type GroupMeta = {
+  id: string; // group id (uuid)
+  name?: string; // e.g., "Group 1"
+  parentGroupId?: string | null; // undefined/null = direct under screen
+  childIds: string[]; // ids of children OR subgroups (we’ll store only children ids here to keep it simple)
+};
 export interface Shape {
   cardTitle?: string;
   x: number;
