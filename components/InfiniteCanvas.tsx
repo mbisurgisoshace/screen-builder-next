@@ -94,6 +94,15 @@ type TreeNode =
   | { type: "group"; id: string; name: string; children: TreeNode[] }
   | { type: "child"; id: string; label: string };
 
+type ClipboardChildrenPayload = {
+  kind: "screen-children-v1";
+  createdAt: number;
+  screenId: string; // the source screen (fallback if you paste outside any screen)
+  anchor: { x: number; y: number }; // local (screen) bbox top-left of the copied children
+  children: IShape[]; // raw child shapes (as stored inside screen.children)
+  groups?: ScreenShape["groups"]; // ONLY the groups that matter for these children (see copySelection)
+};
+
 export default function InfiniteCanvas({
   editable = true,
   toolbarOptions = {
@@ -954,50 +963,289 @@ export default function InfiniteCanvas({
     setIsDraggingConnector?.(false);
   };
 
+  // async function copySelection() {
+  //   if (!selectedShapeIds.length) return;
+  //   const sel = shapes.filter((s) => selectedShapeIds.includes(s.id));
+  //   if (!sel.length) return;
+  //   const box = bbox(sel);
+  //   const payload: ClipboardPayload<IShape> = {
+  //     kind: "shapes-v1",
+  //     createdAt: Date.now(),
+  //     anchor: { x: box.left, y: box.top },
+  //     shapes: sel,
+  //   };
+  //   await writeClipboard(payload);
+  // }
   async function copySelection() {
     if (!selectedShapeIds.length) return;
-    const sel = shapes.filter((s) => selectedShapeIds.includes(s.id));
-    if (!sel.length) return;
-    const box = bbox(sel);
-    const payload: ClipboardPayload<IShape> = {
-      kind: "shapes-v1",
+
+    // Partition: top-level vs child-tokens
+    const topIds = selectedShapeIds.filter((id) => !isChildToken(id));
+    const childToks = selectedShapeIds
+      .map(parseChildToken)
+      .filter((x): x is { screenId: string; childId: string } => !!x);
+
+    // If we’re copying top-level (your existing behavior)
+    if (topIds.length) {
+      const sel = shapes.filter((s) => topIds.includes(s.id));
+      if (!sel.length) return;
+      const box = bbox(sel);
+      const payload: ClipboardPayload<IShape> = {
+        kind: "shapes-v1",
+        createdAt: Date.now(),
+        anchor: { x: box.left, y: box.top },
+        shapes: sel,
+      };
+      await writeClipboard(payload);
+      return;
+    }
+
+    // Otherwise: copying children (must be from a single screen)
+    if (!childToks.length) return;
+    const screenId = childToks[0].screenId;
+    if (!childToks.every((t) => t.screenId === screenId)) {
+      // optional: bail or only copy from the first screen
+      return;
+    }
+
+    const screen = shapes.find((s) => s.id === screenId) as
+      | ScreenShape
+      | undefined;
+    if (!screen) return;
+
+    const ids = childToks.map((t) => t.childId);
+    const kids = (screen.children ?? []).filter((c) => ids.includes(c.id));
+    if (!kids.length) return;
+
+    const localBox = bboxChildren(kids);
+    const groups = collectGroupsForChildren(screen, ids);
+
+    const payload: ClipboardChildrenPayload = {
+      kind: "screen-children-v1",
       createdAt: Date.now(),
-      anchor: { x: box.left, y: box.top },
-      shapes: sel,
+      screenId,
+      anchor: { x: localBox.left, y: localBox.top }, // local anchor
+      children: kids,
+      groups,
     };
+
     await writeClipboard(payload);
   }
 
+  // async function cutSelection() {
+  //   if (!selectedShapeIds.length) return;
+  //   await copySelection();
+  //   deleteSelectedShapes();
+  // }
   async function cutSelection() {
     if (!selectedShapeIds.length) return;
+
+    // If there are child tokens, handle them specially (then copy)
+    const childToks = selectedShapeIds
+      .map(parseChildToken)
+      .filter((x): x is { screenId: string; childId: string } => !!x);
+
+    if (childToks.length) {
+      await copySelection();
+
+      // Delete selected children from their screens; drop empty groups
+      pause();
+      try {
+        const byScreen = new Map<string, string[]>();
+        childToks.forEach(({ screenId, childId }) => {
+          (
+            byScreen.get(screenId) ?? byScreen.set(screenId, []).get(screenId)!
+          ).push(childId);
+        });
+
+        for (const [screenId, childIds] of byScreen) {
+          updateShape(screenId, (s) => {
+            const children = (s.children ?? []).filter(
+              (c) => !childIds.includes(c.id)
+            );
+            let groups = s.groups ?? [];
+
+            // Remove childIds from groups, then drop empty groups
+            groups = groups
+              .map((g) => ({
+                ...g,
+                childIds: (g.childIds ?? []).filter(
+                  (id) => !childIds.includes(id)
+                ),
+              }))
+              .filter((g) => (g.childIds?.length ?? 0) > 0);
+
+            return { ...s, children, groups };
+          });
+        }
+
+        setSelectedShapeIds([]);
+      } finally {
+        resume();
+      }
+      return;
+    }
+
+    // Fallback: your existing top-level cut
     await copySelection();
     deleteSelectedShapes();
   }
 
+  // async function pasteFromClipboard() {
+  //   const data = await readClipboard<ClipboardPayload<IShape>>();
+  //   if (!data?.shapes?.length) return;
+  //   console.log("data", data);
+  //   const anchorTarget = pasteAnchor();
+  //   const { left, top, width, height } = bbox(data.shapes);
+  //   const dx = anchorTarget.x - (left + width / 2);
+  //   const dy = anchorTarget.y - (top + height / 2);
+  //   const newIds: string[] = [];
+  //   pause();
+  //   try {
+  //     for (const s of data.shapes) {
+  //       const newId = uuidv4();
+  //       newIds.push(newId);
+  //       addShape(s.type as ShapeType, s.x + dx, s.y + dy, newId);
+  //       updateShape(newId, () => ({
+  //         ...toTemplate(s),
+  //         id: newId,
+  //         x: s.x + dx,
+  //         y: s.y + dy,
+  //       }));
+  //     }
+  //     setSelectedShapeIds(newIds);
+  //   } finally {
+  //     resume();
+  //   }
+  // }
+
   async function pasteFromClipboard() {
-    const data = await readClipboard<ClipboardPayload<IShape>>();
-    if (!data?.shapes?.length) return;
-    const anchorTarget = pasteAnchor();
-    const { left, top, width, height } = bbox(data.shapes);
-    const dx = anchorTarget.x - (left + width / 2);
-    const dy = anchorTarget.y - (top + height / 2);
-    const newIds: string[] = [];
-    pause();
-    try {
-      for (const s of data.shapes) {
-        const newId = uuidv4();
-        newIds.push(newId);
-        addShape(s.type as ShapeType, s.x + dx, s.y + dy, newId);
-        updateShape(newId, () => ({
-          ...toTemplate(s),
-          id: newId,
-          x: s.x + dx,
-          y: s.y + dy,
-        }));
+    const data = await readClipboard<any>();
+    if (!data) return;
+
+    // === Existing top-level paste ===
+    if (data.kind === "shapes-v1") {
+      const sel = data.shapes as IShape[];
+      if (!sel?.length) return;
+
+      const anchorTarget = pasteAnchor();
+      const { left, top, width, height } = bbox(sel);
+      const dx = anchorTarget.x - (left + width / 2);
+      const dy = anchorTarget.y - (top + height / 2);
+
+      const newIds: string[] = [];
+      pause();
+      try {
+        for (const s of sel) {
+          const newId = uuidv4();
+          newIds.push(newId);
+          addShape(s.type as ShapeType, s.x + dx, s.y + dy, newId);
+          updateShape(newId, () => ({
+            ...toTemplate(s),
+            id: newId,
+            x: s.x + dx,
+            y: s.y + dy,
+          }));
+        }
+        setSelectedShapeIds(newIds);
+      } finally {
+        resume();
       }
-      setSelectedShapeIds(newIds);
-    } finally {
-      resume();
+      return;
+    }
+
+    // === New: paste screen children ===
+    if (data.kind === "screen-children-v1") {
+      const payload = data as ClipboardChildrenPayload;
+      const srcKids = payload.children ?? [];
+      if (!srcKids.length) return;
+
+      // Where are we pasting? Try pointer; otherwise fallback to source screen
+      const worldAnchor = pasteAnchor(); // world coords (canvas space)
+      const screensList = shapes.filter(
+        (s) => s.type === "screen"
+      ) as ScreenShape[];
+      const targetScreen =
+        screenAtPoint(worldAnchor.x, worldAnchor.y, screensList) ||
+        screensList.find((s) => s.id === payload.screenId);
+      if (!targetScreen) return;
+
+      // Convert world paste point to target screen local coords (center paste)
+      const localPasteX = worldAnchor.x - targetScreen.x;
+      const localPasteY = worldAnchor.y - targetScreen.y;
+
+      const srcBox = bboxChildren(srcKids);
+      const srcCenterX = srcBox.left + srcBox.width / 2;
+      const srcCenterY = srcBox.top + srcBox.height / 2;
+
+      const dx = localPasteX - srcCenterX;
+      const dy = localPasteY - srcCenterY;
+
+      // Remap child IDs and group IDs (to keep groups intact)
+      const childIdMap = new Map<string, string>();
+      srcKids.forEach((c) => childIdMap.set(c.id, uuidv4()));
+
+      // Which groups are included?
+      const srcGroups = (payload.groups ?? []) as NonNullable<
+        ScreenShape["groups"]
+      >;
+      const groupIdMap = new Map<string, string>();
+      srcGroups.forEach((g) => groupIdMap.set(g.id, uuidv4()));
+
+      // Build new groups with remapped ids, parentGroupId, and childIds
+      const newGroups = srcGroups.map((g) => ({
+        id: groupIdMap.get(g.id)!,
+        name: g.name,
+        parentGroupId: g.parentGroupId
+          ? groupIdMap.get(g.parentGroupId) ?? null
+          : null,
+        childIds: (g.childIds ?? [])
+          .map((cid) => childIdMap.get(cid)!)
+          .filter(Boolean),
+      }));
+
+      // Build new children (clamped inside screen)
+      const MIN_W = 1,
+        MIN_H = 1;
+      const newChildren = srcKids.map((c) => {
+        const nx = Math.min(
+          Math.max(c.x + dx, 0),
+          Math.max(0, targetScreen.width - c.width)
+        );
+        const ny = Math.min(
+          Math.max(c.y + dy, 0),
+          Math.max(0, targetScreen.height - c.height)
+        );
+        return {
+          ...c,
+          id: childIdMap.get(c.id)!,
+          x: nx,
+          y: ny,
+          width: Math.max(MIN_W, c.width),
+          height: Math.max(MIN_H, c.height),
+          // remap group
+          groupId: c.groupId ? groupIdMap.get(c.groupId) : undefined,
+        } as IShape;
+      });
+
+      // Commit
+      pause();
+      try {
+        updateShape(targetScreen.id, (s) => {
+          const children = [...(s.children ?? []), ...newChildren];
+          const groups = [...(s.groups ?? []), ...newGroups];
+          return { ...s, children, groups };
+        });
+
+        // Select newly pasted children
+        const tokens = newChildren.map((c) =>
+          childToken(targetScreen.id, c.id)
+        );
+        setSelectedShapeIds(tokens);
+      } finally {
+        resume();
+      }
+      return;
     }
   }
 
@@ -1056,6 +1304,80 @@ export default function InfiniteCanvas({
 
   // token helpers
   const isChildToken = (id: string) => id.startsWith("child:");
+
+  // Find the screen under a world point (x,y)
+  function screenAtPoint(
+    worldX: number,
+    worldY: number,
+    screens: ScreenShape[]
+  ) {
+    for (let i = screens.length - 1; i >= 0; i--) {
+      const s = screens[i];
+      if (
+        worldX >= s.x &&
+        worldX <= s.x + s.width &&
+        worldY >= s.y &&
+        worldY <= s.y + s.height
+      )
+        return s;
+    }
+    return null;
+  }
+
+  // Compute local bbox (in screen coords) for a set of children
+  function bboxChildren(children: IShape[]) {
+    const xs = children.map((c) => c.x);
+    const ys = children.map((c) => c.y);
+    const xe = children.map((c) => c.x + c.width);
+    const ye = children.map((c) => c.y + c.height);
+    const left = Math.min(...xs);
+    const top = Math.min(...ys);
+    const right = Math.max(...xe);
+    const bottom = Math.max(...ye);
+    return { left, top, width: right - left, height: bottom - top };
+  }
+
+  // Build the minimal group subtree for the selected children
+  function collectGroupsForChildren(screen: ScreenShape, childIds: string[]) {
+    const usedGroupIds = new Set<string>();
+    const byId = new Map((screen.groups ?? []).map((g) => [g.id, g]));
+    const byParent = new Map<string | null, string[]>();
+    (screen.groups ?? []).forEach((g) => {
+      const k = g.parentGroupId ?? null;
+      (byParent.get(k) ?? byParent.set(k, []).get(k)!).push(g.id);
+    });
+
+    // Mark groups that own any selected children
+    const owners = new Set<string>();
+    for (const c of screen.children ?? []) {
+      const gid = (c as any).groupId as string | undefined;
+      if (!gid) continue;
+      if (childIds.includes(c.id)) owners.add(gid);
+    }
+
+    // For each owner, include it and its ancestor chain
+    const includeChain = (gid: string) => {
+      let cur: string | undefined | null = gid;
+      while (cur) {
+        if (usedGroupIds.has(cur)) break;
+        usedGroupIds.add(cur);
+        const g = byId.get(cur);
+        cur = g?.parentGroupId ?? null;
+      }
+    };
+    owners.forEach(includeChain);
+
+    // Return only groups in usedGroupIds, and trim childIds to those included
+    const groups = (screen.groups ?? [])
+      .filter((g) => usedGroupIds.has(g.id))
+      .map((g) => ({
+        ...g,
+        // Only keep childIds that are actually in the selection
+        childIds: (g.childIds ?? []).filter((cid) => childIds.includes(cid)),
+      }));
+
+    return groups;
+  }
 
   function selectedChildIdsForScreen(
     screenId: string,
@@ -1231,8 +1553,6 @@ export default function InfiniteCanvas({
   };
 
   const screens = shapes.filter((s) => s.type === "screen") as ScreenShape[];
-
-  console.log("shapes", JSON.stringify(shapes));
 
   return (
     <div className="w-full h-full overflow-hidden bg-[#EFF0F4] relative flex">
