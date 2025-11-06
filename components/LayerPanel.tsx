@@ -575,6 +575,7 @@ export const LayerPanel: React.FC<LayerPanelProps> = ({
             }}
           >
             <div className="flex items-center h-8 px-2 text-xs uppercase tracking-wide text-gray-500 bg-gray-50">
+              {/* @ts-ignore */}
               Screen: {screen.platform ?? "Screen"}
             </div>
             <div className="py-1">
