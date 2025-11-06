@@ -428,7 +428,12 @@ export const LayerPanel: React.FC<LayerPanelProps> = ({
                     ) {
                       return;
                     }
-                    nestGroup(screen.id, data.groupId, parentGroupId);
+                    // nestGroup(screen.id, data.groupId, parentGroupId);
+                    wrapIntoGroup(screen.id, {
+                      childIds: [node.id],
+                      groupIds: [data.groupId],
+                      parentGroupId,
+                    });
                   }
                 }}
               >
@@ -482,7 +487,7 @@ export const LayerPanel: React.FC<LayerPanelProps> = ({
                 style={{ paddingLeft: leftPad }}
                 onMouseDown={(e) => {
                   e.stopPropagation();
-                  e.preventDefault();
+                  //e.preventDefault();
                   handleSelectGroupDeep(node as any, e.metaKey || e.ctrlKey);
                 }}
                 draggable
