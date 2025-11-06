@@ -15,7 +15,12 @@ import {
   ClipboardPayload,
 } from "./CanvasModule/clipboard";
 import SelectionGroup from "./CanvasModule/SelectionBox";
-import { Shape as IShape, Position, ShapeType } from "./CanvasModule/types";
+import {
+  GroupMeta,
+  Shape as IShape,
+  Position,
+  ShapeType,
+} from "./CanvasModule/types";
 import { useSmartGuidesStore } from "./CanvasModule/hooks/useSmartGuidesStore";
 import {
   AlertDialog,
@@ -1536,7 +1541,7 @@ export default function InfiniteCanvas({
     }
 
     // Gather child tokens for any child whose groupId is in allGroupIds
-    const toks = children
+    const toks: string[] = children
       .filter((c: any) => c.groupId && allGroupIds.has(c.groupId as string))
       .map((c: any) => childToken(screenId, c.id));
 
@@ -1554,6 +1559,97 @@ export default function InfiniteCanvas({
 
   const screens = shapes.filter((s) => s.type === "screen") as ScreenShape[];
 
+  const moveChildToGroup = (
+    screenId: string,
+    childId: string,
+    targetGroupId: string | null
+  ) => {
+    updateShape(screenId, (s) => {
+      const kids = (s.children ?? []).map((c) =>
+        c.id === childId ? { ...c, groupId: targetGroupId ?? undefined } : c
+      );
+      return { ...s, children: kids };
+    });
+  };
+
+  const nestGroup = (
+    screenId: string,
+    groupId: string,
+    parentGroupId: string | null
+  ) => {
+    updateShape(screenId, (s) => {
+      const groups = (s.groups ?? []).map((g) =>
+        g.id === groupId ? { ...g, parentGroupId: parentGroupId ?? null } : g
+      );
+      return { ...s, groups };
+    });
+  };
+
+  const createGroupWith = (
+    screenId: string,
+    childIds: string[],
+    parentGroupId: string | null
+  ) => {
+    const screen = (shapes as any[]).find((sh) => sh.id === screenId) as
+      | ScreenShape
+      | undefined;
+    if (!screen || childIds.length < 2) return;
+
+    // your existing helper does exactly this
+    const { screenPatch, newGroupId } = createGroup(
+      screen,
+      childIds,
+      parentGroupId
+    );
+    updateShape(screenId, (s) => ({ ...s, ...screenPatch }));
+
+    // Select the whole new group
+    setSelectedShapeIds(childIds.map((id) => `child:${screenId}:${id}`));
+  };
+
+  // Create a new group that contains (A) these childIds and (B) these groupIds,
+  // all under parentGroupId (or root if null).
+  function wrapIntoGroup(
+    screenId: string,
+    payload: {
+      childIds: string[];
+      groupIds: string[];
+      parentGroupId: string | null;
+    }
+  ) {
+    const screen = (shapes as ScreenShape[]).find((s) => s.id === screenId);
+    if (!screen) return;
+
+    const newId = uuidv4();
+    const parentGroupId = payload.parentGroupId ?? null;
+
+    // 1) create the new group meta
+    const newGroup: GroupMeta = {
+      id: newId,
+      name: `Group ${(screen.groups?.length ?? 0) + 1}`,
+      parentGroupId,
+      childIds: [], // we store children on shapes; this array is optional meta
+    };
+
+    updateShape(screenId, (s) => {
+      // 2) re-parent the dragged groups under the new group
+      const groups = (s.groups ?? []).map((g) =>
+        payload.groupIds.includes(g.id) ? { ...g, parentGroupId: newId } : g
+      );
+
+      // 3) move the listed children into the new group
+      const children = (s.children ?? []).map((c) =>
+        payload.childIds.includes(c.id) ? { ...c, groupId: newId } : c
+      );
+
+      return {
+        ...s,
+        groups: [...groups, newGroup],
+        children,
+      };
+    });
+  }
+
   return (
     <div className="w-full h-full overflow-hidden bg-[#EFF0F4] relative flex">
       <LayerPanel
@@ -1567,6 +1663,10 @@ export default function InfiniteCanvas({
         // }
         selectGroupTokens={selectGroupTokens}
         buildLayerTree={(screen) => buildLayerTree(screen)}
+        moveChildToGroup={moveChildToGroup}
+        nestGroup={nestGroup}
+        createGroupWith={createGroupWith}
+        wrapIntoGroup={wrapIntoGroup}
       />
 
       {/* HUD + helpers omitted for brevity (keep yours) */}
