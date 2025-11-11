@@ -401,8 +401,7 @@ export const Screen: React.FC<
   // --- Child dragging (ignore if the event started on a resize handle) ---
   const onChildPointerDown = useCallback(
     (e: React.PointerEvent, child: IShape) => {
-      // If this pointerdown originated from a resize handle inside ShapeFrame,
-      // skip starting a drag (the handle's mousedown will kick off resizing).
+      // If this is a resize handle, bail.
       const target = e.target as HTMLElement | null;
       if (
         target &&
@@ -411,21 +410,19 @@ export const Screen: React.FC<
         return;
       }
 
+      // Let the double-click bubble to the child (Label) so its onDoubleClick runs.
       if ((e as any).detail >= 2) {
-        e.preventDefault();
-        e.stopPropagation();
-        onChildMouseDown?.(e, shape.id, child.id); // ensure child becomes selected
-        return;
+        return; // <-- NO stopPropagation, NO preventDefault, NO capture
       }
 
+      // Single click: select + prep potential drag (but DO NOT capture yet)
       e.stopPropagation();
       onChildMouseDown?.(e, shape.id, child.id);
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
 
       const world = clientToWorldFast(e.clientX, e.clientY);
       startLocalRef.current = { x: world.x - shape.x, y: world.y - shape.y };
 
-      // Resolve which children are selected in THIS screen
+      // Build selection set
       const selectedInThisScreen = getSelectedChildIdsForThisScreen(
         shape.id,
         children,
@@ -447,19 +444,10 @@ export const Screen: React.FC<
         if (c) initById[id] = { x: c.x, y: c.y, w: c.width, h: c.height };
       }
 
-      groupDragRef.current = {
-        activeId: child.id,
-        selectedIds: ids,
-        initById,
-      };
+      groupDragRef.current = { activeId: child.id, selectedIds: ids, initById };
+      dragRef.current = { id: child.id, initX: child.x, initY: child.y };
 
-      dragRef.current = {
-        id: child.id,
-        initX: child.x,
-        initY: child.y,
-      };
-
-      setGuides([]); // clear any stale guides
+      setGuides([]);
     },
     [onChildMouseDown, shape.id, clientToWorldFast]
   );
