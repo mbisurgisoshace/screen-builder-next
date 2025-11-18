@@ -55,6 +55,40 @@ export type GroupMeta = {
   parentGroupId?: string | null; // undefined/null = direct under screen
   childIds: string[]; // ids of children OR subgroups (we’ll store only children ids here to keep it simple)
 };
+
+// Layout "mode" of a container
+export type LayoutMode = "absolute" | "flex-row" | "flex-column";
+
+// Alignment enums – keep them small for now
+export type LayoutAlignItems = "start" | "center" | "end";
+export type LayoutJustifyContent = "start" | "center" | "end" | "space-between";
+
+// Props that define how a container lays out its children
+export interface LayoutProps {
+  mode: LayoutMode; // "absolute" by default
+  padding?: number; // start simple (uniform padding)
+  gap?: number; // spacing between flow children
+  alignItems?: LayoutAlignItems; // cross-axis
+  justifyContent?: LayoutJustifyContent; // main-axis
+  clipChildren?: boolean; // for later (overflow behavior)
+}
+
+// How a child behaves inside a container
+export type LayoutChildMode = "flow" | "absolute";
+
+export interface LayoutChildProps {
+  mode: LayoutChildMode; // "flow" means part of the flex flow, "absolute" ignores layout
+  grow?: number;
+  shrink?: number;
+  basis?: number | "auto";
+}
+
+export interface LayoutGridColumns {
+  enabled: boolean;
+  count: number; // e.g. 4, 8, 12
+  gutter: number; // px between columns
+  margin: number; // left/right margin from screen edge
+}
 export interface Shape {
   cardTitle?: string;
   x: number;
@@ -135,6 +169,15 @@ export interface Shape {
   checked?: boolean;
 
   groupId?: string;
+
+  layout?: LayoutProps;
+
+  layoutChild?: LayoutChildProps;
+
+  padding?: number;
+  margin?: number;
+
+  gridColumns?: LayoutGridColumns;
 }
 
 export type Attachment = {

@@ -14,6 +14,8 @@ import { ScreenFrame } from "../ScreenFrame";
 import { shapeRegistry } from "../blockRegistry";
 import { useScreenChildren } from "../../hooks/realtime/useRealtimeShapes";
 import { useRegisterToolbarExtras } from "../toolbar/toolbarExtrasStore";
+import { BoxModelOverlay } from "../BoxModelOverlay";
+import { GridColumnsOverlay } from "../GridColumnsOverlay";
 
 type ChildDragState = null | {
   id: string;
@@ -99,6 +101,8 @@ export interface ScreenShape extends IShape {
   type: "screen";
   children?: IShape[];
   groups?: GroupMeta[]; // <— NEW
+  padding?: number;
+  margin?: number;
 }
 
 export const Screen: React.FC<
@@ -916,6 +920,15 @@ export const Screen: React.FC<
     );
   }, [children, isChildSelected, shape.id]);
 
+  const { width, height, padding = 10, margin = 10 } = shape;
+
+  const gridColumns = {
+    enabled: true,
+    count: 4,
+    gutter: 16,
+    margin: 16,
+  };
+
   return (
     <ScreenFrame
       shape={shape}
@@ -926,6 +939,19 @@ export const Screen: React.FC<
       showConnectors={false}
       resizable={false}
     >
+      {isSelected && (
+        <BoxModelOverlay
+          width={width}
+          height={height}
+          padding={padding}
+          margin={margin}
+        />
+      )}
+
+      {gridColumns && (
+        <GridColumnsOverlay width={width} height={height} grid={gridColumns} />
+      )}
+
       <div
         data-shape-id={shape.id}
         data-shape-type="screen"
