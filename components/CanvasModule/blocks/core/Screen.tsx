@@ -16,6 +16,7 @@ import { useScreenChildren } from "../../hooks/realtime/useRealtimeShapes";
 import { useRegisterToolbarExtras } from "../toolbar/toolbarExtrasStore";
 import { BoxModelOverlay } from "../BoxModelOverlay";
 import { GridColumnsOverlay } from "../GridColumnsOverlay";
+import { Input } from "@/components/ui/input";
 
 type ChildDragState = null | {
   id: string;
@@ -801,6 +802,8 @@ export const Screen: React.FC<
     }
   }
 
+  const { width, height, padding = 10, margin = 10 } = shape;
+
   useRegisterToolbarExtras(
     shape.id,
     () => (
@@ -883,6 +886,40 @@ export const Screen: React.FC<
               </div>
             )}
           </div>
+
+          {/* Padding */}
+          <div className="relative">
+            <div className="px-2 rounded bg-gray-100 border gap-1 flex items-center justify-between">
+              <span className="text-gray-500">Padding</span>
+              <Input
+                className="h-[26px] w-[100px] border-none outline-none ring-0 focus:ring-0 focus:outline-none bg-transparent text-right"
+                type="number"
+                value={padding}
+                onChange={(e) => {
+                  onCommitStyle?.(shape.id, {
+                    padding: Math.max(0, Number(e.target.value)) || 0,
+                  });
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Margin */}
+          <div className="relative">
+            <div className="px-2 rounded bg-gray-100 border gap-1 flex items-center justify-between">
+              <span className="text-gray-500">Margin</span>
+              <Input
+                className="h-[26px] w-[100px] border-none outline-none ring-0 focus:ring-0 focus:outline-none bg-transparent text-right"
+                type="number"
+                value={margin}
+                onChange={(e) => {
+                  onCommitStyle?.(shape.id, {
+                    margin: Math.max(0, Number(e.target.value)) || 0,
+                  });
+                }}
+              />
+            </div>
+          </div>
         </div>
       </>
     ),
@@ -919,8 +956,6 @@ export const Screen: React.FC<
       (id) => !!isChildSelected(shape.id, id)
     );
   }, [children, isChildSelected, shape.id]);
-
-  const { width, height, padding = 10, margin = 10 } = shape;
 
   const gridColumns = {
     enabled: true,
