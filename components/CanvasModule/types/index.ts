@@ -88,6 +88,7 @@ export interface LayoutGridColumns {
   count: number; // e.g. 4, 8, 12
   gutter: number; // px between columns
   margin: number; // left/right margin from screen edge
+  snapToColumns?: boolean;
 }
 export interface Shape {
   cardTitle?: string;

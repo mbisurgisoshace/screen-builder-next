@@ -892,7 +892,7 @@ export const Screen: React.FC<
             <div className="px-2 rounded bg-gray-100 border gap-1 flex items-center justify-between">
               <span className="text-gray-500">Padding</span>
               <Input
-                className="h-[26px] w-[100px] border-none outline-none ring-0 focus:ring-0 focus:outline-none bg-transparent text-right"
+                className="h-[26px] w-[75px] border-none outline-none ring-0 focus:ring-0 focus:outline-none bg-transparent text-right"
                 type="number"
                 value={padding}
                 onChange={(e) => {
@@ -909,7 +909,7 @@ export const Screen: React.FC<
             <div className="px-2 rounded bg-gray-100 border gap-1 flex items-center justify-between">
               <span className="text-gray-500">Margin</span>
               <Input
-                className="h-[26px] w-[100px] border-none outline-none ring-0 focus:ring-0 focus:outline-none bg-transparent text-right"
+                className="h-[26px] w-[75px] border-none outline-none ring-0 focus:ring-0 focus:outline-none bg-transparent text-right"
                 type="number"
                 value={margin}
                 onChange={(e) => {

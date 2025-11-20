@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useHistory } from "@liveblocks/react";
 
 import { Position, Shape } from "../types";
+import { snapXToGridColumns } from "../utils/gridColumns";
 import { useSmartGuidesStore } from "../hooks/useSmartGuidesStore";
 
 interface UseShapeDraggingParams {
@@ -57,7 +58,7 @@ export function useShapeDragging({
         const others = shapes.filter((s) => !selectedShapeIds.includes(s.id));
         const selB = boundsOf(sel);
 
-        // Proposed new bounds
+        // Proposed new bounds (before snapping)
         const prop = {
           left: selB.left + worldDX,
           right: selB.right + worldDX,
@@ -67,11 +68,11 @@ export function useShapeDragging({
           cy: selB.cy + worldDY,
         };
 
-        // Build candidate lines from others
         type VLine = { x: number; top: number; bottom: number };
         type HLine = { y: number; left: number; right: number };
         const vLines: VLine[] = [];
         const hLines: HLine[] = [];
+
         for (const o of others) {
           const l = o.x;
           const r = o.x + o.width;
@@ -87,19 +88,15 @@ export function useShapeDragging({
           hLines.push({ y: b, left: l, right: r });
         }
 
-        // Screen-constant tolerance (px) -> world units
         const tol = 6 / scale;
 
         let snapDX = 0;
         let snapDY = 0;
-        const guides: ReturnType<typeof setGuides> extends infer _T
-          ? any[]
-          : any[] = [];
+        const guides: any[] = [];
 
-        // Disable snapping while holding Shift
         const snappingEnabled = !e.shiftKey;
 
-        // X alignment: left/center/right vs other vertical lines
+        // ------- existing X smart guides -------
         const candidatesX = [
           { val: prop.left, key: "left" as const },
           { val: prop.cx, key: "cx" as const },
@@ -127,7 +124,7 @@ export function useShapeDragging({
           guides.push({ type: "v", x: bestX.line.x, fromY, toY });
         }
 
-        // Y alignment: top/center/bottom vs other horizontal lines
+        // ------- existing Y smart guides -------
         const candidatesY = [
           { val: prop.top, key: "top" as const },
           { val: prop.cy, key: "cy" as const },
@@ -159,11 +156,38 @@ export function useShapeDragging({
         if (guides.length) setGuides(guides);
         else clear();
 
+        // --- NEW: combine drag + smart-guide snapping ---
+        let finalDX = worldDX + snapDX;
+        let finalDY = worldDY + snapDY;
+
+        // --- NEW: grid-column snapping on X (using active screen) ---
+        // For now we assume there is a single screen shape in `shapes`
+        const screen = shapes.find((s: any) => s.type === "screen") as any;
+        const grid = screen?.gridColumns;
+
+        if (grid?.enabled && grid.snapToColumns) {
+          // bounds after smart-guide snap
+          const snappedLeft = selB.left + finalDX;
+
+          // if your screen is not at x=0, subtract screen.x here
+          const localX = snappedLeft - (screen?.x ?? 0);
+
+          const snappedLocalX = snapXToGridColumns(localX, screen.width, grid);
+
+          const correctedLeft = snappedLocalX + (screen?.x ?? 0);
+
+          // how much extra we need to move to align to the column
+          const extraDX = correctedLeft - snappedLeft;
+          finalDX += extraDX;
+        }
+
+        // Apply final delta (drag + smart guides + grid snapping)
         updateMany(selectedShapeIds, (s) => ({
           ...s,
-          x: s.x + worldDX,
-          y: s.y + worldDY,
+          x: s.x + finalDX,
+          y: s.y + finalDY,
         }));
+
         setLastMousePos({ x: e.clientX, y: e.clientY });
       }
     };
