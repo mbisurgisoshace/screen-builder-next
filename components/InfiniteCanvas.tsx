@@ -630,6 +630,8 @@ export default function InfiniteCanvas({
   });
   const startMarqueeSafe = editable ? startMarquee : () => {};
 
+  console.log("shapes", shapes);
+
   useShapeDragging({
     selectedShapeIds,
     setShapes,

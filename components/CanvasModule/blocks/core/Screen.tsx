@@ -106,6 +106,28 @@ export interface ScreenShape extends IShape {
   margin?: number;
 }
 
+function computeColumnEdges(
+  screenWidth: number,
+  grid: { count: number; gutter: number; margin: number }
+) {
+  const { count, gutter, margin } = grid;
+
+  const totalGutter = gutter * (count - 1);
+  const columnsWidth = screenWidth - margin * 2 - totalGutter;
+  const colWidth = columnsWidth / count;
+
+  const edges = [margin]; // left margin
+
+  for (let i = 0; i < count; i++) {
+    const left = margin + i * (colWidth + gutter);
+    const right = left + colWidth;
+    edges.push(left, right);
+  }
+
+  edges.push(screenWidth - margin); // right margin
+  return edges;
+}
+
 export const Screen: React.FC<
   { shape: IShape } & Omit<ShapeFrameProps, "shape" | "children"> &
     ChildSelectionProps
@@ -136,6 +158,7 @@ export const Screen: React.FC<
   const [openPicker, setOpenPicker] = useState<
     null | "bg" | "fg" | "size" | "fs"
   >(null);
+  const [showGridColumns, setShowGridColumns] = useState(false);
 
   // drag + resize state (local to this screen)
   const dragRef = useRef<ChildDragState>(null);
@@ -180,6 +203,11 @@ export const Screen: React.FC<
     (activeId: string) => {
       const xs: number[] = [];
       const ys: number[] = [];
+
+      if (gridColumns?.enabled) {
+        const colEdges = computeColumnEdges(shape.width, gridColumns);
+        for (const x of colEdges) xs.push(x);
+      }
 
       if (INCLUDE_SCREEN_EDGES) {
         xs.push(0, shape.width);
@@ -920,6 +948,29 @@ export const Screen: React.FC<
               />
             </div>
           </div>
+
+          {/* Grid Columns Toggle */}
+          <div className="relative">
+            <button
+              className={`px-2 h-[26px] rounded border flex items-center gap-1 ${
+                showGridColumns ? "bg-blue-100 border-blue-400" : "bg-gray-100"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowGridColumns(!showGridColumns);
+              }}
+            >
+              <span className="text-gray-500">Grid</span>
+              <span
+                className="w-3 h-3 rounded border"
+                style={{
+                  backgroundColor: showGridColumns
+                    ? "rgba(255,0,0,0.4)"
+                    : "transparent",
+                }}
+              />
+            </button>
+          </div>
         </div>
       </>
     ),
@@ -958,10 +1009,11 @@ export const Screen: React.FC<
   }, [children, isChildSelected, shape.id]);
 
   const gridColumns = {
-    enabled: true,
+    enabled: showGridColumns,
     count: 4,
     gutter: 16,
     margin: 16,
+    snapToColumns: true,
   };
 
   return (

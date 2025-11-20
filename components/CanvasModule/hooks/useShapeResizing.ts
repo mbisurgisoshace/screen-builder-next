@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useHistory } from "@liveblocks/react";
 
 import { Position, Shape } from "../types";
+import { snapWidthToGridColumns } from "../utils/gridColumns"; // 👈 NEW
 
 interface UseShapeResizingProps {
   scale: number;
@@ -26,11 +27,16 @@ export const useShapeResizing = ({
   setLastMousePos,
 }: UseShapeResizingProps) => {
   const { pause, resume } = useHistory();
+
   useEffect(() => {
     if (!resizing) return;
 
     pause();
     let didPause = true;
+
+    // 👇 Get the active screen and its grid config (same assumption as dragging)
+    const screen = shapes.find((s: any) => (s as any).type === "screen") as any;
+    const grid = screen?.gridColumns;
 
     const handleMouseMove = (e: MouseEvent) => {
       const dx = (e.clientX - lastMousePos.x) / scale;
@@ -39,6 +45,7 @@ export const useShapeResizing = ({
       updateShape(resizing.id, (shape) => {
         let { x, y, width, height } = shape;
 
+        // --- base resize behavior (unchanged) ---
         if (resizing.handle.includes("e")) width = Math.max(20, width + dx);
         if (resizing.handle.includes("s")) height = Math.max(20, height + dy);
         if (resizing.handle.includes("w")) {
@@ -49,6 +56,27 @@ export const useShapeResizing = ({
           y += dy;
           height = Math.max(20, height - dy);
         }
+
+        // --- NEW: snap right edge to grid columns when dragging east handle ---
+        if (
+          grid?.enabled &&
+          grid.snapToColumns &&
+          resizing.handle.includes("e") &&
+          screen
+        ) {
+          // x is the left edge (unchanged for "e" handle)
+          const localX = x - (screen.x ?? 0);
+
+          const snappedWidth = snapWidthToGridColumns(
+            localX,
+            width,
+            screen.width,
+            grid
+          );
+
+          width = Math.max(20, snappedWidth);
+        }
+
         return { ...shape, x, y, width, height };
       });
 
@@ -71,5 +99,15 @@ export const useShapeResizing = ({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [resizing, lastMousePos, scale]);
+  }, [
+    resizing,
+    lastMousePos,
+    scale,
+    shapes,
+    setResizing,
+    setLastMousePos,
+    updateShape,
+    pause,
+    resume,
+  ]);
 };
