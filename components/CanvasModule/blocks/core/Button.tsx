@@ -317,8 +317,9 @@ export const Button: React.FC<ButtonBlockProps> = (props) => {
       }}
     >
       <div
+        onDoubleClick={beginEdit}
         className="w-full h-full flex items-center justify-center"
-        style={{ pointerEvents: "none" }}
+        //style={{ pointerEvents: "none" }}
       >
         <div
           className="w-full h-full rounded-md border text-sm truncate flex items-center justify-center"
