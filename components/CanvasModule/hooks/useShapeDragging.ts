@@ -158,7 +158,7 @@ export function useShapeDragging({
 
         // --- NEW: combine drag + smart-guide snapping ---
         let finalDX = worldDX + snapDX;
-        let finalDY = worldDY + snapDY;
+        const finalDY = worldDY + snapDY;
 
         // --- NEW: grid-column snapping on X (using active screen) ---
         // For now we assume there is a single screen shape in `shapes`
