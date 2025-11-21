@@ -15,7 +15,7 @@ export function findShapeWithParent(
   root: Shape,
   predicate: (shape: Shape) => boolean
 ): { shape: Shape; parent: Shape | null } | null {
-  let result = null;
+  let result: any = null;
   forEachShape(root, (shape, parent) => {
     if (!result && predicate(shape)) {
       result = { shape, parent };
