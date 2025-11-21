@@ -143,10 +143,12 @@ export const Screen: React.FC<
   selectedCount,
   isChildSelected,
   onChildMouseDown,
+  showInspector = false,
   selectedChildIds = [],
 }) => {
   const { updateChild } = useScreenChildren();
   const children = shape.children ?? [];
+  const gridColumns = shape.gridColumns;
   const wrapRef = React.useRef<HTMLDivElement>(null);
 
   const groupDragRef = useRef<null | {
@@ -156,7 +158,7 @@ export const Screen: React.FC<
   }>(null);
 
   const [openPicker, setOpenPicker] = useState<
-    null | "bg" | "fg" | "size" | "fs"
+    null | "bg" | "fg" | "size" | "fs" | "grid"
   >(null);
   const [showGridColumns, setShowGridColumns] = useState(false);
 
@@ -950,26 +952,150 @@ export const Screen: React.FC<
           </div>
 
           {/* Grid Columns Toggle */}
-          <div className="relative">
+          {/* <div className="relative">
             <button
               className={`px-2 h-[26px] rounded border flex items-center gap-1 ${
-                showGridColumns ? "bg-blue-100 border-blue-400" : "bg-gray-100"
+                gridColumns?.enabled
+                  ? "bg-blue-100 border-blue-400"
+                  : "bg-gray-100"
               }`}
               onClick={(e) => {
                 e.stopPropagation();
-                setShowGridColumns(!showGridColumns);
+                onCommitStyle?.(shape.id, {
+                  gridColumns: {
+                    ...gridColumns!,
+                    enabled: !gridColumns?.enabled,
+                  },
+                });
               }}
             >
               <span className="text-gray-500">Grid</span>
               <span
                 className="w-3 h-3 rounded border"
                 style={{
-                  backgroundColor: showGridColumns
+                  backgroundColor: gridColumns?.enabled
                     ? "rgba(255,0,0,0.4)"
                     : "transparent",
                 }}
               />
             </button>
+          </div> */}
+
+          {/* Grid Settings */}
+          <div className="relative">
+            <button
+              className="px-2 h-[26px] rounded bg-gray-100 border flex items-center gap-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenPicker(openPicker === "grid" ? null : "grid");
+              }}
+            >
+              <span className="text-gray-500">Grid</span>
+              <span
+                className="w-3 h-3 rounded border"
+                style={{
+                  backgroundColor: gridColumns?.enabled
+                    ? "rgba(255,0,0,0.4)"
+                    : "transparent",
+                }}
+              />
+            </button>
+
+            {openPicker === "grid" && (
+              <div
+                className="absolute z-50 mt-1 w-[220px] rounded-md border bg-white shadow-lg p-3 space-y-2"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Visibility */}
+                <label className="flex items-center justify-between text-sm">
+                  <span>Show grid</span>
+                  <input
+                    type="checkbox"
+                    checked={gridColumns?.enabled}
+                    onChange={(e) =>
+                      onCommitStyle?.(shape.id, {
+                        gridColumns: {
+                          ...gridColumns!,
+                          enabled: e.target.checked,
+                        },
+                      })
+                    }
+                  />
+                </label>
+
+                {/* Snapping
+      <label className="flex items-center justify-between text-sm">
+        <span>Snap to grid</span>
+        <input
+          type="checkbox"
+          checked={gridC.snap}
+          onChange={(e) =>
+            onCommitStyle?.(shape.id, {
+              gridColumns: { ...grid, snap: e.target.checked },
+            })
+          }
+        />
+      </label> */}
+
+                {/* Count */}
+                <label className="flex flex-col text-sm">
+                  Columns
+                  <input
+                    className="border rounded p-1 text-xs"
+                    type="number"
+                    min={1}
+                    max={24}
+                    value={gridColumns?.count}
+                    onChange={(e) =>
+                      onCommitStyle?.(shape.id, {
+                        gridColumns: {
+                          ...gridColumns!,
+                          count: Number(e.target.value) || 1,
+                        },
+                      })
+                    }
+                  />
+                </label>
+
+                {/* Gutter */}
+                <label className="flex flex-col text-sm">
+                  Gutter
+                  <input
+                    className="border rounded p-1 text-xs"
+                    type="number"
+                    min={0}
+                    value={gridColumns?.gutter}
+                    onChange={(e) =>
+                      onCommitStyle?.(shape.id, {
+                        gridColumns: {
+                          ...gridColumns!,
+                          gutter: Number(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </label>
+
+                {/* Margin */}
+                <label className="flex flex-col text-sm">
+                  Margin
+                  <input
+                    className="border rounded p-1 text-xs"
+                    type="number"
+                    min={0}
+                    value={gridColumns?.margin}
+                    onChange={(e) =>
+                      onCommitStyle?.(shape.id, {
+                        gridColumns: {
+                          ...gridColumns!,
+                          margin: Number(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </label>
+              </div>
+            )}
           </div>
         </div>
       </>
@@ -1008,13 +1134,13 @@ export const Screen: React.FC<
     );
   }, [children, isChildSelected, shape.id]);
 
-  const gridColumns = {
-    enabled: showGridColumns,
-    count: 4,
-    gutter: 16,
-    margin: 16,
-    snapToColumns: true,
-  };
+  // const gridColumns = {
+  //   //enabled: showGridColumns,
+  //   count: 4,
+  //   gutter: 16,
+  //   margin: 16,
+  //   snapToColumns: true,
+  // };
 
   return (
     <ScreenFrame
@@ -1026,7 +1152,7 @@ export const Screen: React.FC<
       showConnectors={false}
       resizable={false}
     >
-      {isSelected && (
+      {showInspector && (
         <BoxModelOverlay
           width={width}
           height={height}

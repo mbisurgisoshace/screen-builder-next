@@ -131,9 +131,9 @@ export default function InfiniteCanvas({
   const isQuestionsCanvas = pathname.includes("/questions");
   const isValuePropCanvas = pathname.includes("/value-proposition");
 
-  const [problems, setProblems] = useState(true);
   const [examples, setExamples] = useState(true);
   const [solutions, setSolutions] = useState(true);
+  const [inspector, setInspector] = useState(false);
 
   const undo = useUndo();
   const redo = useRedo();
@@ -630,8 +630,6 @@ export default function InfiniteCanvas({
   });
   const startMarqueeSafe = editable ? startMarquee : () => {};
 
-  console.log("shapes", shapes);
-
   useShapeDragging({
     selectedShapeIds,
     setShapes,
@@ -783,6 +781,13 @@ export default function InfiniteCanvas({
         screenPreset: "Desktop",
         platform: "web",
         children: [],
+        gridColumns: {
+          enabled: false,
+          count: 4,
+          gutter: 16,
+          margin: 16,
+          snapToColumns: true,
+        },
       }));
       return;
     }
@@ -1680,6 +1685,20 @@ export default function InfiniteCanvas({
 
       {/* HUD + helpers omitted for brevity (keep yours) */}
 
+      <div className="absolute bottom-4 right-4 z-20 flex flex-row gap-6 bg-black p-2 rounded-md text-white">
+        <div className="flex items-center gap-3 ">
+          <Checkbox
+            id="inspector"
+            checked={inspector}
+            onCheckedChange={() => setInspector(!inspector)}
+            className={
+              "data-[state=checked]:bg-white data-[state=checked]:text-black"
+            }
+          />
+          <Label htmlFor="inspector">Inspector</Label>
+        </div>
+      </div>
+
       <AlertDialog
         open={showDeleteConfirm.length > 0}
         onOpenChange={() => setShowDeleteConfirm([])}
@@ -1706,7 +1725,7 @@ export default function InfiniteCanvas({
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="absolute bottom-4 left-4 z-20 flex items-center flex-row gap-2">
+      <div className="absolute bottom-4 left-[275px] z-20 flex items-center flex-row gap-2">
         <Button
           variant={"default"}
           size={"icon"}
@@ -2188,6 +2207,7 @@ export default function InfiniteCanvas({
                 //canvasEl={canvasRef.current}
                 canvasEl={worldRef.current}
                 position={position}
+                showInspector={inspector}
                 //renderHandles={renderHandles}
                 onResizeStart={startResizing}
                 selectedCount={selectedShapeIds.length}

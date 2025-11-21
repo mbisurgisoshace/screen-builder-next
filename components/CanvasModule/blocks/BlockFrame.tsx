@@ -19,6 +19,7 @@ export interface ShapeFrameProps {
   // selection state
   isSelected: boolean;
   selectedCount: number;
+  showInspector?: boolean;
 
   // events coming from canvas logic
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;

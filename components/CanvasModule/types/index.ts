@@ -198,6 +198,7 @@ export type Attachment = {
 export type ShapeComponentProps = {
   shape: Shape;
   scale?: number;
+  showInspector?: boolean;
   canvasEl?: HTMLDivElement | null;
   positioned?: boolean;
   position?: { x: number; y: number };
