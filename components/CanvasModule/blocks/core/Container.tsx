@@ -20,6 +20,8 @@ const PALETTE = [
   "#F0F1F8",
   "#FFE3EA",
   "#E7F5EA",
+  "#F9F9F9",
+  "#CECECE",
 ];
 interface ContainerBlockProps
   extends Omit<ShapeFrameProps, "children" | "shape"> {

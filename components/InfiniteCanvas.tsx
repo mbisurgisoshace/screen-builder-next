@@ -814,6 +814,7 @@ export default function InfiniteCanvas({
         "checkbox",
         "toggle",
         "container",
+        "tabs",
       ].includes(type) &&
       parent
     ) {
@@ -861,6 +862,15 @@ export default function InfiniteCanvas({
           toggleOn: true,
           textColor: "#0f172a",
           accentColor: "#1F2A44",
+        },
+        tabs: {
+          width: 260,
+          height: 40,
+          tabs: [
+            { id: uuidv4(), label: "Tab 1" },
+            { id: uuidv4(), label: "Tab 2" },
+            { id: uuidv4(), label: "Tab 3" },
+          ],
         },
         container: { width: 300, height: 75, color: "#ffffff" },
       };
@@ -2162,6 +2172,27 @@ export default function InfiniteCanvas({
             />
             <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
               Container
+            </span>
+          </button>
+
+          <button
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("shape-type", "tabs");
+            }}
+            className="w-10 h-10 gap-1 flex flex-col items-center "
+            title="Tabs"
+          >
+            {/* <SquarePlus className="text-[#111827] pointer-events-none" /> */}
+            <NextImage
+              src={"/card.svg"}
+              alt="Tabs"
+              width={20}
+              height={20}
+              className="pointer-events-none"
+            />
+            <span className="text-[10px] font-bold text-[#111827] opacity-60 pointer-events-none">
+              Tabs
             </span>
           </button>
         </div>
