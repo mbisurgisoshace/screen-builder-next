@@ -17,7 +17,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
     onMouseDown,
     onResizeStart,
   } = props;
-  const { tabs } = shape;
+  const { tabs = [] } = shape;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
   const [selectedTabId, setSelectedTabId] = useState<string | null>(null);
