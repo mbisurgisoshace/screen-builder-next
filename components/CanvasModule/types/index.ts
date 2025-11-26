@@ -106,7 +106,7 @@ export interface Shape {
   type: ShapeType;
   subtype?: CardType;
 
-  tabs: { id: string; label: string; borderRadius?: number }[];
+  tabs?: { id: string; label: string; borderRadius?: number }[];
   activeTabId?: string;
 
   // interview block
