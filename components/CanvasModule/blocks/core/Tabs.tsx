@@ -119,7 +119,7 @@ export const TabsBlock: React.FC<TabsBlockProps> = (props) => {
   // ---- Commit label edit ----
   const commitLabel = () => {
     if (!editingId) return;
-    const nextTabs = tabs.map((t) =>
+    const nextTabs = tabs?.map((t) =>
       t.id === editingId ? { ...t, label: editingValue || t.label } : t
     );
     onCommitStyle?.(shape.id, { tabs: nextTabs });
