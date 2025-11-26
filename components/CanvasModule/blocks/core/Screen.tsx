@@ -1303,8 +1303,8 @@ export const Screen: React.FC<
                     onChildResizeStart(evt, child, handle)
                   }
                   //selectedCount={selectedCount}
-                  selectedCount={selected ? 1 : 0}
-                  //selectedCount={childSelectedCount}
+                  //selectedCount={selected ? 1 : 0}
+                  selectedCount={childSelectedCount}
                   //@ts-ignore
                   onCommitStyle={(_id, patch) =>
                     updateChild(shape.id, child.id, (c) => ({ ...c, ...patch }))
